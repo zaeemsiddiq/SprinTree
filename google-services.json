@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "882329207788-ep8qo4gvdssrro0fl8k6as4glrch0163.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "monash.sprintree",
+            "certificate_hash": "5e55f4052e61e0b90134ed38f26e881dc50d0083"
+          }
+        },
+        {
           "client_id": "882329207788-5jkerca964pcvrrb27c55gevpp2oikth.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -29,8 +37,13 @@
           "status": 1
         },
         "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "882329207788-5jkerca964pcvrrb27c55gevpp2oikth.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         },
         "ads_service": {
           "status": 2
