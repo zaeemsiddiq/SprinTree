@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "882329207788",
+    "firebase_url": "https://sprintree.firebaseio.com",
+    "project_id": "sprintree",
+    "storage_bucket": "sprintree.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:882329207788:android:a009f60a53a98537",
+        "android_client_info": {
+          "package_name": "monash.sprintree"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "882329207788-ep8qo4gvdssrro0fl8k6as4glrch0163.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "monash.sprintree",
+            "certificate_hash": "5e55f4052e61e0b90134ed38f26e881dc50d0083"
+          }
+        },
+        {
+          "client_id": "882329207788-5jkerca964pcvrrb27c55gevpp2oikth.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDKcBd39qXHi62zAWkbFeMiSh3KItlMGks"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "882329207788-5jkerca964pcvrrb27c55gevpp2oikth.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
