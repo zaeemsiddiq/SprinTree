@@ -26,4 +26,5 @@ public class Tree extends SugarRecord {
     double longitude;
     double easting;
     double northing;
+
 }
