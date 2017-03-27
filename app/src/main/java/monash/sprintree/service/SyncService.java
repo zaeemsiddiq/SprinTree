@@ -1,13 +1,18 @@
 package monash.sprintree.service;
 
 
+import android.widget.NumberPicker;
+
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import monash.sprintree.activities.MapsActivity;
 import monash.sprintree.activities.Splash;
@@ -27,19 +32,28 @@ public class SyncService {
         myRef = database.getReference();
     }
 
-    private void firebase(){
+    private void firebaseStart( ){
         try {
-            // Read from fire base
-            myRef.orderByKey().limitToFirst(10).addValueEventListener(new ValueEventListener() {
+            //myRef.orderByKey().startAt("1013395");
+            myRef.orderByKey().limitToFirst(1000).addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     // This method is called once with the initial value and again
                     // whenever data at this location is updated.
                     Object key = dataSnapshot.getKey();
                     Object value = dataSnapshot.getValue();
-                    ArrayList parent = (ArrayList) value;
-                    ArrayList child = (ArrayList) parent.get(0);
-                    System.out.println(child.get(8));
+
+                    String comId = "";
+                    for( DataSnapshot tree: dataSnapshot.getChildren()) {
+                         comId = tree.getKey();
+                        for( DataSnapshot columns: tree.getChildren() ) {
+                            String attribute = columns.getKey();
+                            Object data = (Object)columns.getValue();
+                            int n= 0;
+                            System.out.print("asds");
+                        }
+                    }
+                    listener.pageComplete(comId);
                 }
 
                 @Override
@@ -55,9 +69,42 @@ public class SyncService {
     }
 
 
-    public void syncTrees( int offset, int limit ) {   // start syncing stops
-        // Write a message to the database
-        firebase();
+    public void firebaseReload( String startComId ) {
+        try {
+            //myRef.orderByKey().startAt("1013395");
+            myRef.orderByKey().startAt(startComId).limitToFirst(1000).addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    // This method is called once with the initial value and again
+                    // whenever data at this location is updated.
+                    Object key = dataSnapshot.getKey();
+                    Object value = dataSnapshot.getValue();
 
+                    for( DataSnapshot tree: dataSnapshot.getChildren()) {
+                        String comId = tree.getKey();
+                        for( DataSnapshot columns: tree.getChildren() ) {
+                            String attribute = columns.getKey();
+                            Object data = (Object)columns.getValue();
+                            int n= 0;
+                            System.out.print("asds");
+                        }
+                    }
+                    listener.loadComplete();
+                }
+
+                @Override
+                public void onCancelled(DatabaseError error) {
+                    // Failed to read value
+                    //Log.w(TAG, "Failed to read value.", error.toException());
+                }
+            });
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+    public void syncTrees(  ) {   // start syncing stops
+        // Write a message to the database
+        firebaseStart();
     }
 }

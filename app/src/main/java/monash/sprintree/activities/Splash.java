@@ -27,13 +27,22 @@ public class Splash extends AppCompatActivity implements SyncServiceComplete{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
         SyncService service = new SyncService(this);
-        service.syncTrees(0,0);
+        service.syncTrees();
         //test develop
         //Intent maps = new Intent(this, MapsActivity.class);
         //startActivity(maps);
     }
 
     @Override
-    public void syncComplete() {
+    public void pageComplete(String comId) {
+        // update the progress bar here
+
+        SyncService service = new SyncService(this);
+        service.firebaseReload(comId);
+    }
+
+    @Override
+    public void loadComplete() {
+        System.out.print("load complete");
     }
 }
