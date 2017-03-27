@@ -6,9 +6,13 @@ import android.os.Bundle;
 import android.view.Window;
 import android.view.WindowManager;
 
-import monash.sprintree.R;
+import com.google.firebase.FirebaseApp;
 
-public class Splash extends AppCompatActivity {
+import monash.sprintree.R;
+import monash.sprintree.service.SyncService;
+import monash.sprintree.service.SyncServiceComplete;
+
+public class Splash extends AppCompatActivity implements SyncServiceComplete{
 
     private void fullScreen() {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -18,12 +22,19 @@ public class Splash extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        FirebaseApp.initializeApp(this);
         fullScreen();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
+        SyncService service = new SyncService(this);
+        service.syncTrees(0,0);
         //test develop
         //Intent maps = new Intent(this, MapsActivity.class);
         //startActivity(maps);
     }
 
+    @Override
+    public void syncComplete() {
+
+    }
 }
