@@ -35,6 +35,5 @@ public class Splash extends AppCompatActivity implements SyncServiceComplete{
 
     @Override
     public void syncComplete() {
-
     }
 }
