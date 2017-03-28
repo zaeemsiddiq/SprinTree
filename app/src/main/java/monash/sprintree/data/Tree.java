@@ -7,24 +7,23 @@ import com.orm.SugarRecord;
  */
 
 public class Tree extends SugarRecord {
-    String comId;
-    String commonName;
-    String scientificName;
-    String genus;
-    String family;
-    int diameter;
-    int yearPlanted;
-    String datePlanted;
-    String ageDescription;
-    String usefulLifeExpectency;
-    int usefulLifeExpectencyValue;
-    String precinct;
-    String locatedIn;
-    String uploadedDate;
-    String uploadDate;
-    Double latitude;
-    double longitude;
-    double easting;
-    double northing;
-
+    public String comId;
+    public String commonName;
+    public String scientificName;
+    public String genus;
+    public String family;
+    public int diameter;
+    public int yearPlanted;
+    public String datePlanted;
+    public String ageDescription;
+    public String usefulLifeExpectency;
+    public int usefulLifeExpectencyValue;
+    public String precinct;
+    public String locatedIn;
+    public String uploadedDate;
+    public String uploadDate;
+    public Double latitude;
+    public double longitude;
+    public double easting;
+    public double northing;
 }

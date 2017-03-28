@@ -1,9 +1,15 @@
 package monash.sprintree.activities;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
+import android.os.Build;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -28,55 +34,30 @@ import java.io.InputStream;
 import java.util.ArrayList;
 
 import monash.sprintree.R;
+import monash.sprintree.data.Constants;
 import monash.sprintree.service.SyncService;
+
+import static java.security.AccessController.getContext;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, LocationListener {
 
     private GoogleMap mMap;
+    static final int REQUEST_PERMISSION_CODE = 100;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        FirebaseApp.initializeApp(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+        handlePermissions();
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-
         /*try {
             loadJSONFromAsset();
         } catch (JSONException e) {
             e.printStackTrace();
         }*/
-
-        try {
-            FirebaseDatabase database = FirebaseDatabase.getInstance();
-            DatabaseReference myRef = database.getReference();
-            // Read from the database
-            myRef.child("data").limitToFirst(10).addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    // This method is called once with the initial value and again
-                    // whenever data at this location is updated.
-                    Object value = dataSnapshot.getValue();
-                    ArrayList parent = (ArrayList) value;
-                    ArrayList child = (ArrayList) parent.get(0);
-                    System.out.println(child.get(8));
-
-                }
-
-                @Override
-                public void onCancelled(DatabaseError error) {
-                    // Failed to read value
-                    //Log.w(TAG, "Failed to read value.", error.toException());
-                }
-            });
-        }
-        catch (Exception ex) {
-            ex.printStackTrace();
-        }
-
     }
 
     public String loadJSONFromAsset() throws JSONException {
@@ -103,8 +84,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
         JSONObject test = new JSONObject(json);
         JSONArray data = test.getJSONArray("data");
-        for(int i =0 ; i<data.length(); i++)
-        {
+        for (int i = 0; i < data.length(); i++) {
             JSONArray tree = data.getJSONArray(i);
             String name = tree.get(9).toString();
             System.out.println(name);
@@ -126,11 +106,26 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-
+        //mMap.getUiSettings().setMyLocationButtonEnabled(true);
         // Add a marker in Sydney and move the camera
         LatLng sydney = new LatLng(-34, 151);
         mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            mMap.setMyLocationEnabled(true);
+        } else {
+            Toast.makeText(this, "You have to accept to enjoy all app's services!", Toast.LENGTH_LONG).show();
+            if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+                    == PackageManager.PERMISSION_GRANTED) {
+                mMap.setMyLocationEnabled(true);
+            }
+        }
+        /*
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+        }*/
+        //mMap.(true);
     }
 
     @Override
@@ -151,5 +146,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onProviderDisabled(String provider) {
 
+    }
+
+    private void handlePermissions() {
+        if (Build.VERSION.SDK_INT> Build.VERSION_CODES.LOLLIPOP_MR1) {  // current version is Marshmallow, which requires permissions on runtime
+            requestPermissions(Constants.permissions, REQUEST_PERMISSION_CODE);
+        }
+    }
+
+
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_PERMISSION_CODE:
+                boolean permsAccepted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
+        }
     }
 }

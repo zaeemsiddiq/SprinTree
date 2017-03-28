@@ -16,26 +16,26 @@ import java.util.HashMap;
 
 import monash.sprintree.activities.MapsActivity;
 import monash.sprintree.activities.Splash;
+import monash.sprintree.data.Constants;
+import monash.sprintree.data.Tree;
 
 /**
  * Created by Zaeem on 5/10/2016.
  */
 
 public class SyncService {
-    Splash listener;
-    FirebaseDatabase database;
-    DatabaseReference myRef;
+    private Splash listener;
+    private DatabaseReference myRef;
 
     public SyncService(Splash listener) {
         this.listener = listener;
-        database = FirebaseDatabase.getInstance();
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
         myRef = database.getReference();
     }
 
     private void firebaseStart( ){
         try {
-            //myRef.orderByKey().startAt("1013395");
-            myRef.orderByKey().limitToFirst(1000).addValueEventListener(new ValueEventListener() {
+            myRef.orderByKey().limitToFirst(Constants.FIREBASE_PAGE_SIZE).addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     // This method is called once with the initial value and again
@@ -49,8 +49,6 @@ public class SyncService {
                         for( DataSnapshot columns: tree.getChildren() ) {
                             String attribute = columns.getKey();
                             Object data = (Object)columns.getValue();
-                            int n= 0;
-                            System.out.print("asds");
                         }
                     }
                     listener.pageComplete(comId);
@@ -72,7 +70,7 @@ public class SyncService {
     public void firebaseReload( String startComId ) {
         try {
             //myRef.orderByKey().startAt("1013395");
-            myRef.orderByKey().startAt(startComId).limitToFirst(1000).addValueEventListener(new ValueEventListener() {
+            myRef.orderByKey().startAt(startComId).limitToFirst(Constants.FIREBASE_PAGE_SIZE).addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     // This method is called once with the initial value and again
