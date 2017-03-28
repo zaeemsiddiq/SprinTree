@@ -40,18 +40,8 @@ public class SyncService {
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     // This method is called once with the initial value and again
                     // whenever data at this location is updated.
-                    Object key = dataSnapshot.getKey();
-                    Object value = dataSnapshot.getValue();
-
-                    String comId = "";
-                    for( DataSnapshot tree: dataSnapshot.getChildren()) {
-                         comId = tree.getKey();
-                        for( DataSnapshot columns: tree.getChildren() ) {
-                            String attribute = columns.getKey();
-                            Object data = (Object)columns.getValue();
-                        }
-                    }
-                    listener.pageComplete(comId);
+                   TreeService.saveTree(dataSnapshot);
+                    listener.pageComplete(TreeService.saveTree(dataSnapshot));
                 }
 
                 @Override
@@ -83,8 +73,6 @@ public class SyncService {
                         for( DataSnapshot columns: tree.getChildren() ) {
                             String attribute = columns.getKey();
                             Object data = (Object)columns.getValue();
-                            int n= 0;
-                            System.out.print("asds");
                         }
                     }
                     listener.loadComplete();
@@ -92,8 +80,7 @@ public class SyncService {
 
                 @Override
                 public void onCancelled(DatabaseError error) {
-                    // Failed to read value
-                    //Log.w(TAG, "Failed to read value.", error.toException());
+
                 }
             });
         }
