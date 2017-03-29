@@ -8,14 +8,18 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
@@ -27,7 +31,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.orm.SugarContext;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -41,12 +44,14 @@ import java.util.List;
 import monash.sprintree.R;
 import monash.sprintree.data.Constants;
 import monash.sprintree.data.Tree;
+import monash.sprintree.fragments.GMapFragment;
 import monash.sprintree.service.SyncService;
 
 import static java.security.AccessController.getContext;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, LocationListener {
 
+    private TabLayout tabLayoutDashboard;
     private LocationManager locationManager;
     private String provider;
     private GoogleMap mMap;
@@ -72,7 +77,34 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void initLayout() {
+        initiateTabsLayout();
+        GMapFragment fragment = GMapFragment.newInstance(MapsActivity.this);
+        showFragment(fragment);
+    }
 
+    private void initiateTabsLayout() { // adding the tabs dynamically
+        tabLayoutDashboard = (TabLayout) findViewById(R.id.mainTabs);
+        tabLayoutDashboard.addTab(tabLayoutDashboard.newTab().setText("Map")); //0
+        tabLayoutDashboard.addTab(tabLayoutDashboard.newTab().setText("History")); //1
+        tabLayoutDashboard.addTab(tabLayoutDashboard.newTab().setText("My Forest")); //2
+        tabLayoutDashboard.setTabMode(TabLayout.MODE_FIXED);
+
+        tabLayoutDashboard.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                System.out.println(tab.getPosition());
+
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+            }
+        });
     }
 
 
@@ -162,6 +194,25 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         switch (requestCode) {
             case REQUEST_PERMISSION_CODE:
                 boolean permsAccepted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
+        }
+    }
+
+    private void hideFragment(Fragment fragment){
+        if(fragment != null) {
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+            ft.hide(fragment);
+            ft.commit();
+        }
+    }
+    private void showFragment(Fragment fragment) {
+        if(!fragment.isAdded()) {
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+            ft.add(R.id.mainFrame, fragment);
+            ft.commit();
+        } else {
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+            ft.show(fragment);
+            ft.commit();
         }
     }
 }

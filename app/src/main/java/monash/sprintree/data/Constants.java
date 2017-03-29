@@ -1,5 +1,7 @@
 package monash.sprintree.data;
 
+import android.location.Location;
+
 /**
  * Created by Zaeem on 3/28/2017.
  */
@@ -10,4 +12,8 @@ public class Constants {
     public static String[] permissions = {
             "android.permission.ACCESS_FINE_LOCATION"
     };
+
+    /* MAP SETTINGS */
+    public static int MAP_ZOOM = 50;
+    public static Location LAST_LOCATION;
 }

@@ -9,7 +9,7 @@ import android.view.WindowManager;
 import android.widget.ProgressBar;
 
 import com.google.firebase.FirebaseApp;
-import com.orm.SugarContext;
+
 
 import java.util.List;
 
@@ -39,7 +39,6 @@ public class Splash extends AppCompatActivity implements SyncServiceComplete{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        SugarContext.init(getApplicationContext());
         FirebaseApp.initializeApp(this);
 
         fullScreen();
@@ -48,7 +47,9 @@ public class Splash extends AppCompatActivity implements SyncServiceComplete{
         initiateLayout();
 
         SyncService service = new SyncService(this);
-        //service.syncTrees();
+        service.syncTrees();
+        List<Tree> trees = Tree.listAll(Tree.class);
+        System.out.println("Size of the tree table is "+trees.size());
     }
 
     private int getProgressPercentage(int n) {
