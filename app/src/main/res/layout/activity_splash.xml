@@ -30,6 +30,4 @@
         android:progress="50"
         android:id="@+id/mainProgressBar"
         style="?android:attr/progressBarStyleHorizontal"/>
-
-
 </LinearLayout>

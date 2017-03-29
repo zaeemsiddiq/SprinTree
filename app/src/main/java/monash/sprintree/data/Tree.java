@@ -7,6 +7,7 @@ import com.orm.SugarRecord;
  */
 
 public class Tree extends SugarRecord {
+
     public String comId;
     public String commonName;
     public String scientificName;
@@ -27,7 +28,11 @@ public class Tree extends SugarRecord {
     public double easting;
     public double northing;
 
-    public Tree(String comId, String commonName, String scientificName, String genus, String family, long diameter, long yearPlanted, String datePlanted, String ageDescription, String usefulLifeExpectency, long usefulLifeExpectencyValue, String precinct, String coordinateLocation, String locatedIn, String uploadDate, double latitude, double longitude, double easting, double northing) {
+    public Tree() {
+
+    }
+
+    public Tree(String comId, String commonName, String scientificName, String genus, String family, int diameter, int yearPlanted, String datePlanted, String ageDescription, String usefulLifeExpectency, int usefulLifeExpectencyValue, String precinct, String locatedIn, String uploadedDate, String uploadDate, Double latitude, double longitude, double easting, double northing) {
         this.comId = comId;
         this.commonName = commonName;
         this.scientificName = scientificName;
@@ -47,8 +52,5 @@ public class Tree extends SugarRecord {
         this.longitude = longitude;
         this.easting = easting;
         this.northing = northing;
-    }
-
-    public Tree() {
     }
 }

@@ -15,6 +15,7 @@ import java.util.List;
 
 import monash.sprintree.R;
 import monash.sprintree.data.Constants;
+import monash.sprintree.data.Tree;
 import monash.sprintree.service.SyncService;
 import monash.sprintree.service.SyncServiceComplete;
 
@@ -48,14 +49,6 @@ public class Splash extends AppCompatActivity implements SyncServiceComplete{
 
         SyncService service = new SyncService(this);
         //service.syncTrees();
-        Tree tree=new Tree();
-        tree.comId = "12345";
-        //tree.save();
-        List<Tree> treeLiist = Tree.listAll(Tree.class);
-        System.out.print("hello!");
-
-
-
     }
 
     private int getProgressPercentage(int n) {
