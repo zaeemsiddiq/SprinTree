@@ -53,7 +53,7 @@ public class Splash extends AppCompatActivity implements SyncServiceComplete{
         System.out.println("Size of the tree table is "+trees.size());
     }
 
-    public void launchHome(View view) {
+    public void launchHistory(View view) {
         Intent home = new Intent(this, Home.class);
         startActivity(home);
     }
