@@ -73,8 +73,6 @@ public class SyncService {
                         for( DataSnapshot columns: tree.getChildren() ) {
                             String attribute = columns.getKey();
                             Object data = (Object)columns.getValue();
-                            int n= 0;
-                            System.out.print("asds");
                         }
                     }
                     listener.loadComplete();
@@ -82,8 +80,7 @@ public class SyncService {
 
                 @Override
                 public void onCancelled(DatabaseError error) {
-                    // Failed to read value
-                    //Log.w(TAG, "Failed to read value.", error.toException());
+
                 }
             });
         }
