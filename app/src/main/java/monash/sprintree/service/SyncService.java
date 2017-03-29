@@ -24,24 +24,81 @@ import monash.sprintree.data.Tree;
  */
 
 public class SyncService {
-    private Splash listener;
-    private DatabaseReference myRef;
+    Splash listener;
+    FirebaseDatabase database;
+    DatabaseReference myRef;
+
 
     public SyncService(Splash listener) {
         this.listener = listener;
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        database = FirebaseDatabase.getInstance();
+        //FirebaseDatabase database = FirebaseDatabase.getInstance();
         myRef = database.getReference();
     }
 
-    private void firebaseStart( ){
+    public void firebaseStart( ){
         try {
-            myRef.orderByKey().limitToFirst(Constants.FIREBASE_PAGE_SIZE).addValueEventListener(new ValueEventListener() {
+            myRef.orderByKey().limitToFirst(1000).addValueEventListener(new ValueEventListener() {
+            //myRef.orderByKey().limitToFirst(Constants.FIREBASE_PAGE_SIZE).addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     // This method is called once with the initial value and again
                     // whenever data at this location is updated.
-                    String lastAddedComId = TreeService.saveTree(dataSnapshot);
-                    listener.pageComplete(lastAddedComId);
+                    Object key = dataSnapshot.getKey();
+                    Object value = dataSnapshot.getValue();
+
+                    String comId = "";
+                    for( DataSnapshot tree: dataSnapshot.getChildren()) {
+                        comId = tree.getKey();
+                        Tree t= new Tree();
+                        t.comId=comId;
+                    for( DataSnapshot columns: tree.getChildren() ) {
+                        String attribute = columns.getKey();
+                        Object data = (Object)columns.getValue();
+                        if (attribute=="Age Description")
+                            t.ageDescription=(String)data;
+                        if(attribute=="Common Name")
+                            t.commonName=(String)data;
+                        if(attribute=="CoordinateLocation")
+                            t.coordinateLocation=(String)data;
+                        if(attribute=="Date Planted")
+                            t.datePlanted=(String)data;
+                        if(attribute=="Diameter Breast Height")
+                            t.diameter=(Long)data;
+                        if(attribute=="Easting")
+                            t.easting=(Double)data;
+                        if(attribute=="Family")
+                            t.family=(String)data;
+                        if(attribute=="Genus")
+                            t.genus=(String)data;
+                        if(attribute=="Latitude")
+                            t.latitude=(Double)data;
+                        if(attribute=="Located in")
+                            t.locatedIn=(String)data;
+                        if(attribute=="Longitude")
+                            t.longitude=(Double)data;
+                        if(attribute=="Northing")
+                            t.northing=(Double)data;
+                        if(attribute=="Precinct")
+                            t.precinct=(String)data;
+                        if(attribute=="Scientific Name")
+                            t.scientificName=(String)data;
+                        if(attribute=="UploadDate")
+                            t.uploadDate=(String)data;
+                        if(attribute=="Useful Life Expectancy")
+                            t.usefulLifeExpectency=(String)data;
+                        if(attribute=="Useful Life Expectancy Value")
+                            t.usefulLifeExpectencyValue=(Long)data;
+                        if(attribute=="Year Planted")
+                            t.yearPlanted=(Long)data;
+                            t.save();
+                        int n= 0;
+                        System.out.print("asds");
+                    }
+                }
+                    listener.pageComplete(comId);
+
+
                 }
 
                 @Override
@@ -57,7 +114,7 @@ public class SyncService {
     }
 
 
-    public void firebaseReload( String startComId ) {
+  public void firebaseReload( String startComId ) {
         try {
             //myRef.orderByKey().startAt("1013395");
             myRef.orderByKey().startAt(startComId).limitToFirst(Constants.FIREBASE_PAGE_SIZE).addValueEventListener(new ValueEventListener() {
@@ -88,8 +145,10 @@ public class SyncService {
             ex.printStackTrace();
         }
     }
+
     public void syncTrees(  ) {   // start syncing stops
         // Write a message to the database
+        System.out.print("test");
         firebaseStart();
     }
 }

@@ -1,4 +1,5 @@
 package monash.sprintree.activities;
+import monash.sprintree.data.Tree;
 
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
@@ -40,11 +41,13 @@ public class Splash extends AppCompatActivity implements SyncServiceComplete{
     protected void onCreate(Bundle savedInstanceState) {
         SugarContext.init(getApplicationContext());
         FirebaseApp.initializeApp(this);
+
         fullScreen();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
         initiateLayout();
-        //SyncService service = new SyncService(this);
+
+        SyncService service = new SyncService(this);
         //service.syncTrees();
     }
 
@@ -54,7 +57,6 @@ public class Splash extends AppCompatActivity implements SyncServiceComplete{
         double d = ((numer / denom) * 100);
         return (int) d;
     }
-
     private void initiateLayout() {
         loadedTrees = 0;
         syncProgress = (ProgressBar) findViewById(R.id.mainProgressBar);
@@ -63,7 +65,7 @@ public class Splash extends AppCompatActivity implements SyncServiceComplete{
     @Override
     public void pageComplete(String comId) {
         loadedTrees += Constants.FIREBASE_PAGE_SIZE;
-        syncProgress.setProgress( getProgressPercentage(loadedTrees));
+        //syncProgress.setProgress( getProgressPercentage(loadedTrees));
         SyncService service = new SyncService(this);
         service.firebaseReload(comId);
     }
