@@ -49,6 +49,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
         handlePermissions();
+
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -63,21 +64,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public String loadJSONFromAsset() throws JSONException {
         String json = null;
         try {
-
             InputStream is = getAssets().open("test.json");
-
             int size = is.available();
-
             byte[] buffer = new byte[size];
-
             is.read(buffer);
-
             is.close();
-
-
             json = new String(buffer, "UTF-8");
-
-
         } catch (IOException ex) {
             ex.printStackTrace();
             return null;
@@ -90,7 +82,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             System.out.println(name);
         }
         return json;
-
     }
 
 
