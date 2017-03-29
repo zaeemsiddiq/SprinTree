@@ -6,22 +6,30 @@
     android:layout_height="match_parent"
     tools:context="monash.sprintree.activities.Home"
     android:orientation="vertical"
-    android:gravity="center">
+    android:gravity="center"
+    android:background="@drawable/background"
+    android:weightSum="1">
 
-    <ImageView
-        android:layout_width="200px"
-        android:layout_height="200px"
-        android:src="@drawable/logo"
-        android:onClick="launchMapScreen"/>
+    <Button
+        android:id="@+id/button1"
+        android:layout_width="130dp"
+        android:layout_height="70dp"
+        android:layout_marginBottom="50px"
+        android:onClick="launchMapScreen"
+        android:text="Start"/>
 
-    <ImageView
-        android:layout_width="200px"
-        android:layout_height="200px"
-        android:src="@drawable/logo" />
+    <Button
+        android:id="@+id/button2"
+        android:layout_width="130dp"
+        android:layout_height="70dp"
+        android:layout_marginBottom="50px"
+        android:text="History"/>
 
-    <ImageView
-        android:layout_width="200px"
-        android:layout_height="200px"
-        android:src="@drawable/logo" />
+    <Button
+        android:id="@+id/button3"
+        android:layout_width="130dp"
+        android:layout_height="70dp"
+        android:layout_marginBottom="50px"
+        android:text="My Forest"/>
 
 </LinearLayout>
