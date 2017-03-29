@@ -46,7 +46,6 @@ public class Tree extends SugarRecord {
         this.usefulLifeExpectencyValue = usefulLifeExpectencyValue;
         this.precinct = precinct;
         this.locatedIn = locatedIn;
-        this.uploadedDate = uploadedDate;
         this.uploadDate = uploadDate;
         this.latitude = latitude;
         this.longitude = longitude;
