@@ -8,9 +8,13 @@ import android.view.WindowManager;
 import android.widget.ProgressBar;
 
 import com.google.firebase.FirebaseApp;
+import com.orm.SugarContext;
+
+import java.util.List;
 
 import monash.sprintree.R;
 import monash.sprintree.data.Constants;
+import monash.sprintree.data.Tree;
 import monash.sprintree.service.SyncService;
 import monash.sprintree.service.SyncServiceComplete;
 
@@ -34,14 +38,14 @@ public class Splash extends AppCompatActivity implements SyncServiceComplete{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        SugarContext.init(getApplicationContext());
         FirebaseApp.initializeApp(this);
         fullScreen();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
         initiateLayout();
-
-        SyncService service = new SyncService(this);
-        service.syncTrees();
+        //SyncService service = new SyncService(this);
+        //service.syncTrees();
     }
 
     private int getProgressPercentage(int n) {

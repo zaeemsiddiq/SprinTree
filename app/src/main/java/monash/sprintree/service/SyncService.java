@@ -40,18 +40,8 @@ public class SyncService {
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     // This method is called once with the initial value and again
                     // whenever data at this location is updated.
-                    Object key = dataSnapshot.getKey();
-                    Object value = dataSnapshot.getValue();
-
-                    String comId = "";
-                    for( DataSnapshot tree: dataSnapshot.getChildren()) {
-                         comId = tree.getKey();
-                        for( DataSnapshot columns: tree.getChildren() ) {
-                            String attribute = columns.getKey();
-                            Object data = (Object)columns.getValue();
-                        }
-                    }
-                    listener.pageComplete(comId);
+                    String lastAddedComId = TreeService.saveTree(dataSnapshot);
+                    listener.pageComplete(lastAddedComId);
                 }
 
                 @Override

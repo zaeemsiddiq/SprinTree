@@ -1,9 +1,12 @@
 package monash.sprintree.activities;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.pm.PackageManager;
+import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Build;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
@@ -24,6 +27,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.orm.SugarContext;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -32,27 +36,34 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.List;
 
 import monash.sprintree.R;
 import monash.sprintree.data.Constants;
+import monash.sprintree.data.Tree;
 import monash.sprintree.service.SyncService;
 
 import static java.security.AccessController.getContext;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, LocationListener {
 
+    private LocationManager locationManager;
+    private String provider;
     private GoogleMap mMap;
     static final int REQUEST_PERMISSION_CODE = 100;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
         handlePermissions();
+        initLayout();
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
+        //SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                //.findFragmentById(R.id.map);
+        //mapFragment.getMapAsync(this);
+        //initiateLocationManager();
         /*try {
             loadJSONFromAsset();
         } catch (JSONException e) {
@@ -60,36 +71,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }*/
     }
 
-    public String loadJSONFromAsset() throws JSONException {
-        String json = null;
-        try {
-
-            InputStream is = getAssets().open("test.json");
-
-            int size = is.available();
-
-            byte[] buffer = new byte[size];
-
-            is.read(buffer);
-
-            is.close();
-
-
-            json = new String(buffer, "UTF-8");
-
-
-        } catch (IOException ex) {
-            ex.printStackTrace();
-            return null;
-        }
-        JSONObject test = new JSONObject(json);
-        JSONArray data = test.getJSONArray("data");
-        for (int i = 0; i < data.length(); i++) {
-            JSONArray tree = data.getJSONArray(i);
-            String name = tree.get(9).toString();
-            System.out.println(name);
-        }
-        return json;
+    private void initLayout() {
 
     }
 
@@ -128,9 +110,28 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         //mMap.(true);
     }
 
+    private void initiateLocationManager() {
+        // Get the location manager
+        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        // Define the criteria how to select the location provider -> use
+        // default
+        Criteria criteria = new Criteria();
+        provider = locationManager.getBestProvider(criteria, false);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        Location location = locationManager.getLastKnownLocation(provider);
+
+        // Initialize the location fields
+        if (location != null) {
+            System.out.println("Provider " + provider + " has been selected.");
+            onLocationChanged(location);
+        }
+    }
+
     @Override
     public void onLocationChanged(Location location) {
-
+        System.out.println(location.getLatitude());
     }
 
     @Override
