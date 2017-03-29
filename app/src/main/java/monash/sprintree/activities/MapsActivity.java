@@ -45,6 +45,7 @@ import monash.sprintree.R;
 import monash.sprintree.data.Constants;
 import monash.sprintree.data.Tree;
 import monash.sprintree.fragments.GMapFragment;
+import monash.sprintree.fragments.HistoryFragment;
 import monash.sprintree.service.SyncService;
 
 import static java.security.AccessController.getContext;
@@ -56,6 +57,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private String provider;
     private GoogleMap mMap;
     static final int REQUEST_PERMISSION_CODE = 100;
+
+    Fragment currentFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,10 +79,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }*/
     }
 
+
     private void initLayout() {
         initiateTabsLayout();
-        GMapFragment fragment = GMapFragment.newInstance(MapsActivity.this);
-        showFragment(fragment);
+        Constants.mapFragment = GMapFragment.newInstance(MapsActivity.this);
+        showFragment(Constants.mapFragment);
+        currentFragment = Constants.mapFragment;
+        Constants.historyFragment = HistoryFragment.newInstance(this);
     }
 
     private void initiateTabsLayout() { // adding the tabs dynamically
@@ -93,7 +99,26 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 System.out.println(tab.getPosition());
-
+                if(tab.getPosition() == 0) {
+                    if(Constants.mapFragment != null) {
+                        // hide the current fragment first
+                        hideFragment(currentFragment);
+                        // add/show the fragment
+                        showFragment(Constants.mapFragment);
+                        // set the current fragment to this one
+                        currentFragment = Constants.mapFragment;
+                    }
+                }
+                if(tab.getPosition() == 1) {
+                    if(Constants.historyFragment != null) {
+                        // hide the current fragment first
+                        hideFragment(currentFragment);
+                        // add/show the fragment
+                        showFragment(Constants.historyFragment);
+                        // set the current fragment to this one
+                        currentFragment = Constants.historyFragment;
+                    }
+                }
             }
 
             @Override
@@ -214,5 +239,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             ft.show(fragment);
             ft.commit();
         }
+    }
+    public void selectTab(int fragmentNumber) {
+        if(fragmentNumber == Constants.FRAGMENT_MAP) {
+            hideFragment(currentFragment);
+            showFragment(Constants.mapFragment);
+            currentFragment = Constants.mapFragment;
+        } else  if(fragmentNumber == Constants.FRAGMENT_HISTORY) {
+            hideFragment(currentFragment);
+            showFragment(Constants.historyFragment);
+            currentFragment = Constants.historyFragment;
+        }
+        TabLayout.Tab tab = tabLayoutDashboard.getTabAt(fragmentNumber);
+        tab.select();
     }
 }

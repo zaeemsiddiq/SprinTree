@@ -30,4 +30,11 @@
         android:progress="50"
         android:id="@+id/mainProgressBar"
         style="?android:attr/progressBarStyleHorizontal"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Goto Home"
+        android:onClick="launchHome"
+        android:layout_gravity="center" />
 </LinearLayout>

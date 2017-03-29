@@ -4,6 +4,7 @@ import monash.sprintree.data.Tree;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ProgressBar;
@@ -47,9 +48,14 @@ public class Splash extends AppCompatActivity implements SyncServiceComplete{
         initiateLayout();
 
         SyncService service = new SyncService(this);
-        service.syncTrees();
+        //service.syncTrees();
         List<Tree> trees = Tree.listAll(Tree.class);
         System.out.println("Size of the tree table is "+trees.size());
+    }
+
+    public void launchHome(View view) {
+        Intent home = new Intent(this, Home.class);
+        startActivity(home);
     }
 
     private int getProgressPercentage(int n) {

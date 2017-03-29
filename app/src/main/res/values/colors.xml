@@ -2,5 +2,14 @@
 <resources>
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
+    <color name="colorAccent">#FF4081</color> <!-- FF4081 was original -->
+    <color name="steel">#EBEBEB</color>
+    <color name="olive_light">#E6F3EC</color>
+    <color name="olive_dark">#088040</color>
+    <color name="coal">#545454</color>
+    <color name="green_light">#23B665</color>
+    <color name="green_dark">#088040</color>
+    <color name="blue_dark">#1C4C9E</color>
+    <color name="blue_light">#1A769D</color>
+    <color name="transparent">#00000000</color>
 </resources>

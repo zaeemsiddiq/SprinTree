@@ -8,20 +8,22 @@
     android:orientation="vertical"
     android:gravity="center">
 
-    <ImageView
+    <Button
+        android:layout_width="200px"
+        android:layout_height="200px"
+        android:onClick="launchMapScreen"
+        android:text="Map"/>
+
+    <Button
         android:layout_width="200px"
         android:layout_height="200px"
         android:src="@drawable/logo"
-        android:onClick="launchMapScreen"/>
+        android:text="History"/>
 
-    <ImageView
+    <Button
         android:layout_width="200px"
         android:layout_height="200px"
-        android:src="@drawable/logo" />
-
-    <ImageView
-        android:layout_width="200px"
-        android:layout_height="200px"
-        android:src="@drawable/logo" />
+        android:src="@drawable/logo"
+        android:text="Forest"/>
 
 </LinearLayout>
