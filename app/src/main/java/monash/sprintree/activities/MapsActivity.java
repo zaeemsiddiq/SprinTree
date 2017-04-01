@@ -14,51 +14,37 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.content.ContextCompat;
-import android.widget.Toast;
 
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapFragment;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.firebase.FirebaseApp;
-import com.google.firebase.FirebaseException;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 import monash.sprintree.R;
 import monash.sprintree.data.Constants;
+import monash.sprintree.data.Marker;
 import monash.sprintree.data.Tree;
+import monash.sprintree.fragments.FragmentListener;
 import monash.sprintree.fragments.GMapFragment;
 import monash.sprintree.fragments.HistoryFragment;
-import monash.sprintree.service.SyncService;
 
-import static java.security.AccessController.getContext;
+public class MapsActivity extends FragmentActivity implements LocationListener, FragmentListener {
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, LocationListener {
-
+    /*
+    View Objects
+     */
     private TabLayout tabLayoutDashboard;
-    private LocationManager locationManager;
-    private String provider;
-    private GoogleMap mMap;
     static final int REQUEST_PERMISSION_CODE = 100;
-
     Fragment currentFragment;
+
+
+    /*
+    Data objects
+     */
+    List<Tree> greenTrees;
+    List<Tree> uniqueTrees;
+    List<Tree> nearesTrees;
+    List<Marker> markers;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,26 +52,36 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
         handlePermissions();
+        initiateLocationManager();
+        loadData();
         initLayout();
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        //SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                //.findFragmentById(R.id.map);
-        //mapFragment.getMapAsync(this);
-        //initiateLocationManager();
-        /*try {
-            loadJSONFromAsset();
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }*/
+
+    }
+
+    private void loadData() {
+        greenTrees = new ArrayList<>();
+        uniqueTrees = new ArrayList<>();
+        nearesTrees = new ArrayList<>();
+        markers = new ArrayList<>();
+
+        greenTrees = Tree.findWithQuery(Tree.class, "SELECT * FROM TREE LIMIT 3000");
+        for( Tree tree : greenTrees ) {
+            markers.add( new Marker(new LatLng(tree.latitude, tree.longitude), tree.comId, tree.commonName, R.drawable.tree));
+            if( tree.commonName.equals("Ulmus") ||
+                    tree.commonName.equals("UNKNOWN") ||
+                    tree.commonName.equals("Eucalyptus") ||
+                    tree.commonName.equals("Ulmus") ) {
+                uniqueTrees.add(tree);
+            }
+        }
     }
 
 
     private void initLayout() {
         initiateTabsLayout();
-        Constants.mapFragment = GMapFragment.newInstance(MapsActivity.this);
-        showFragment(Constants.mapFragment);
-        currentFragment = Constants.mapFragment;
+        Constants.mapFragment = GMapFragment.newInstance(MapsActivity.this, greenTrees, uniqueTrees, markers);
         Constants.historyFragment = HistoryFragment.newInstance(this);
+        selectTab(Constants.FRAGMENT_MAP);
     }
 
     private void initiateTabsLayout() { // adding the tabs dynamically
@@ -132,49 +128,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
     }
 
-
-    /**
-     * Manipulates the map once available.
-     * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
-     * If Google Play services is not installed on the device, the user will be prompted to install
-     * it inside the SupportMapFragment. This method will only be triggered once the user has
-     * installed Google Play services and returned to the app.
-     */
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        mMap = googleMap;
-        //mMap.getUiSettings().setMyLocationButtonEnabled(true);
-        // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED) {
-            mMap.setMyLocationEnabled(true);
-        } else {
-            Toast.makeText(this, "You have to accept to enjoy all app's services!", Toast.LENGTH_LONG).show();
-            if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION)
-                    == PackageManager.PERMISSION_GRANTED) {
-                mMap.setMyLocationEnabled(true);
-            }
-        }
-        /*
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-        }*/
-        //mMap.(true);
-    }
-
     private void initiateLocationManager() {
         // Get the location manager
-        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        handlePermissions();
+        // Get the location manager
+        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        locationManager.requestLocationUpdates( LocationManager.GPS_PROVIDER,
+                2000,
+                1, this);
         // Define the criteria how to select the location provider -> use
         // default
         Criteria criteria = new Criteria();
-        provider = locationManager.getBestProvider(criteria, false);
+        String provider = locationManager.getBestProvider(criteria, false);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            //Toast.makeText(this, "Allow permissions", Toast.LENGTH_SHORT).show();
             return;
         }
         Location location = locationManager.getLastKnownLocation(provider);
@@ -188,23 +155,32 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onLocationChanged(Location location) {
-        System.out.println(location.getLatitude());
+        float lat = (float) (location.getLatitude());
+        float lng = (float) (location.getLongitude());
+
+        System.out.println("Location Changed");
+        if(Constants.mapFragment != null) {
+            /*float[] results = new float[1]; // initialising a 1d result array to pass into distanceBetween method (source: developers.google.com)
+            Location.distanceBetween(lat,lng, previousStop.getStopLatitude(), previousStop.getStopLongitude(),results); // in case of 0 previous stop is the starting stop
+            System.out.println("*******StopsWalker" + results[0]);
+
+            if(results[0] < 500 ) {
+
+            }*/
+            //Constants.mapFragment.moveCamera(location);
+        }
     }
 
     @Override
     public void onStatusChanged(String provider, int status, Bundle extras) {
-
     }
 
     @Override
-    public void onProviderEnabled(String provider) {
+    public void onProviderDisabled(String provider) {}
 
-    }
 
     @Override
-    public void onProviderDisabled(String provider) {
-
-    }
+    public void onProviderEnabled(String provider) {}
 
     private void handlePermissions() {
         if (Build.VERSION.SDK_INT> Build.VERSION_CODES.LOLLIPOP_MR1) {  // current version is Marshmallow, which requires permissions on runtime
@@ -218,11 +194,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         switch (requestCode) {
             case REQUEST_PERMISSION_CODE:
-                boolean permsAccepted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
+                //boolean permsAccepted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
         }
     }
 
-    private void hideFragment(Fragment fragment){
+    private void hideFragment(Fragment fragment) {
         if(fragment != null) {
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ft.hide(fragment);
@@ -252,5 +228,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
         TabLayout.Tab tab = tabLayoutDashboard.getTabAt(fragmentNumber);
         tab.select();
+    }
+
+    @Override
+    public void mapReady() {
     }
 }

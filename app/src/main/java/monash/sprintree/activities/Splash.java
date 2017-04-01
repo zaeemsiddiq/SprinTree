@@ -10,8 +10,10 @@ import android.view.WindowManager;
 import android.widget.ProgressBar;
 
 import com.google.firebase.FirebaseApp;
+import com.orm.SugarRecord;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 import monash.sprintree.R;
@@ -31,6 +33,7 @@ public class Splash extends AppCompatActivity implements SyncServiceComplete{
     Data objects
      */
     private int loadedTrees;
+    SyncService service;
 
     private void fullScreen() {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -47,15 +50,21 @@ public class Splash extends AppCompatActivity implements SyncServiceComplete{
         setContentView(R.layout.activity_splash);
         initiateLayout();
 
-        SyncService service = new SyncService(this);
-        //service.syncTrees();
-        List<Tree> trees = Tree.listAll(Tree.class);
-        System.out.println("Size of the tree table is "+trees.size());
+        //Tree.deleteAll(Tree.class);
+        //service = new SyncService(this);
+        //service.firebaseStart();
+        //List<Tree> treeList = Tree.listAll(Tree.class);
+        //System.out.println("Size of the tree table is "+treeList.size());
+        //System.out.println("");
     }
 
     public void launchHistory(View view) {
-        Intent home = new Intent(this, Home.class);
-        startActivity(home);
+
+
+
+
+        //Intent home = new Intent(this, Home.class);
+        //startActivity(home);
     }
 
     private int getProgressPercentage(int n) {
@@ -67,14 +76,21 @@ public class Splash extends AppCompatActivity implements SyncServiceComplete{
     private void initiateLayout() {
         loadedTrees = 0;
         syncProgress = (ProgressBar) findViewById(R.id.mainProgressBar);
+        syncProgress.setProgress(0);
     }
 
     @Override
     public void pageComplete(String comId) {
         loadedTrees += Constants.FIREBASE_PAGE_SIZE;
-        //syncProgress.setProgress( getProgressPercentage(loadedTrees));
-        SyncService service = new SyncService(this);
+        syncProgress.setProgress( getProgressPercentage(loadedTrees));
         service.firebaseReload(comId);
+    }
+
+    public void launchHome(View view) {
+        Intent mapIntent = new Intent(this, MapsActivity.class);
+        startActivity(mapIntent);
+        //Intent intent = new Intent(this, Home.class);
+        //startActivity(intent);
     }
 
     @Override

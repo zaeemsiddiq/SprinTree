@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.View;
 
 import monash.sprintree.R;
+import monash.sprintree.data.History;
 
 public class Home extends AppCompatActivity {
 
