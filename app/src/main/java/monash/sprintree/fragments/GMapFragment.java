@@ -104,7 +104,6 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         v = inflater.inflate(R.layout.fragment_map, container, false);
-        Toast.makeText(getActivity(), "Loading now", Toast.LENGTH_SHORT).show();
         v.findViewById(R.id.check).setVisibility(View.VISIBLE);
         final com.google.android.gms.maps.MapFragment mapFragment = (com.google.android.gms.maps.MapFragment) getActivity().getFragmentManager().findFragmentById(R.id.map);
         mapWrapperLayout = (MapWrapperLayout) v.findViewById(R.id.map_relative_layout);
@@ -133,9 +132,9 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 Toast.makeText(getActivity(), "Selected"+position, Toast.LENGTH_SHORT).show();
                 if(position == 0) {
-                    //addMarkers(false);
+                    addMarkers(false);
                 } else {
-                    //addMarkers(true);
+                    addMarkers(true);
                 }
             }
 
@@ -257,11 +256,15 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
     public void onMapReady(GoogleMap googleMap) {
 
         mMap = googleMap;
+        /* for custom info window clusters */
+        /*
         mClusterManager = new ClusterManager<Marker>(getActivity(), mMap);
         mMap.setInfoWindowAdapter(mClusterManager.getMarkerManager());
         mMap.setOnCameraIdleListener(mClusterManager);
         mClusterManager.setRenderer(new OwnIconRendered(getActivity()));
-        mClusterManager.getMarkerCollection().setOnInfoWindowAdapter(new MyCustomAdapterForItems());
+        mClusterManager.getMarkerCollection().setOnInfoWindowAdapter(new MyCustomAdapterForItems());*/
+        /* end custom info window clusters */
+        /* for simple clusters */
         //mClusterManager.setRenderer(new MarkerRenderer(getActivity()));
         //mMap.setOnMarkerClickListener(mClusterManager);
         //mMap.setOnInfoWindowClickListener(mClusterManager);
@@ -269,15 +272,16 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
         //mClusterManager.setOnClusterInfoWindowClickListener(this);
         //mClusterManager.setOnClusterItemClickListener(this);
         //mClusterManager.setOnClusterItemInfoWindowClickListener(this);
+        /* end simple clusters */
 
-        mClusterManager.addItems(markers);
-        mClusterManager.cluster();
-
-
-
+        //mClusterManager.addItems(markers);
+        //mClusterManager.cluster();
 
 
-        //addMarkers(false);
+
+
+
+        addMarkers(false);
 
         if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
@@ -290,7 +294,6 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
             }
         }
         listener.mapReady();
-        Toast.makeText(getActivity(), "Map Ready", Toast.LENGTH_SHORT).show();
         v.findViewById(R.id.check).setVisibility(View.GONE);
 
         //LinearLayout loadingLayout = (LinearLayout) v.findViewById(R.id.loadingLayout);

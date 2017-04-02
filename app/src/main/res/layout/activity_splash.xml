@@ -5,14 +5,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="monash.sprintree.activities.Splash"
-    android:orientation="vertical">
+    android:background="@drawable/background" android:orientation="vertical">
 
 
 
         <ImageView
-
             android:layout_width="wrap_content"
             android:layout_height="650px"
+            android:scaleType="fitXY"
             android:src="@drawable/logo" />
 
     <TextView
@@ -20,7 +20,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:gravity="center"
-        android:text="Loading: Data"/>
+        android:text="Please wait while the application loads trees"/>
 
     <ProgressBar
         android:layout_width="match_parent"
@@ -36,5 +36,6 @@
         android:layout_height="wrap_content"
         android:text="Goto Home"
         android:onClick="launchHome"
+        android:visibility="gone"
         android:layout_gravity="center" />
 </LinearLayout>

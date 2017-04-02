@@ -1,4 +1,5 @@
 package monash.sprintree.activities;
+
 import monash.sprintree.data.Tree;
 
 import android.content.Intent;
@@ -8,6 +9,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.google.firebase.FirebaseApp;
 import com.orm.SugarRecord;
@@ -22,7 +24,7 @@ import monash.sprintree.data.Tree;
 import monash.sprintree.service.SyncService;
 import monash.sprintree.service.SyncServiceComplete;
 
-public class Splash extends AppCompatActivity implements SyncServiceComplete{
+public class Splash extends AppCompatActivity implements SyncServiceComplete {
 
     /*
     View objects
@@ -44,12 +46,17 @@ public class Splash extends AppCompatActivity implements SyncServiceComplete{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         FirebaseApp.initializeApp(this);
-
         fullScreen();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
         initiateLayout();
 
+        if (Tree.listAll(Tree.class).size() == 0) { // if the database is empty, load the trees from firebase
+            service = new SyncService(this);
+            service.firebaseStart();
+        } else {
+            startMapsActivity();
+        }
         //Tree.deleteAll(Tree.class);
         //service = new SyncService(this);
         //service.firebaseStart();
@@ -58,11 +65,12 @@ public class Splash extends AppCompatActivity implements SyncServiceComplete{
         //System.out.println("");
     }
 
+    private void startMapsActivity() {
+        Intent mapIntent = new Intent(this, MapsActivity.class);
+        startActivity(mapIntent);
+    }
+
     public void launchHistory(View view) {
-
-
-
-
         //Intent home = new Intent(this, Home.class);
         //startActivity(home);
     }
@@ -73,6 +81,7 @@ public class Splash extends AppCompatActivity implements SyncServiceComplete{
         double d = ((numer / denom) * 100);
         return (int) d;
     }
+
     private void initiateLayout() {
         loadedTrees = 0;
         syncProgress = (ProgressBar) findViewById(R.id.mainProgressBar);
@@ -82,19 +91,22 @@ public class Splash extends AppCompatActivity implements SyncServiceComplete{
     @Override
     public void pageComplete(String comId) {
         loadedTrees += Constants.FIREBASE_PAGE_SIZE;
-        syncProgress.setProgress( getProgressPercentage(loadedTrees));
-        service.firebaseReload(comId);
+        if (loadedTrees >= Constants.TOTAL_TREES) {
+            loadComplete();
+        } else {
+            syncProgress.setProgress(getProgressPercentage(loadedTrees));
+            service.firebaseReload(comId);
+        }
+
     }
 
     public void launchHome(View view) {
-        Intent mapIntent = new Intent(this, MapsActivity.class);
-        startActivity(mapIntent);
-        //Intent intent = new Intent(this, Home.class);
-        //startActivity(intent);
+        startMapsActivity();
     }
 
     @Override
     public void loadComplete() {
-        System.out.print("load complete");
+        Toast.makeText(this, "Data Loading Complete", Toast.LENGTH_SHORT).show();
+        startMapsActivity();
     }
 }

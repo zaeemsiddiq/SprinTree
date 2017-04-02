@@ -18,8 +18,9 @@ public class Constants {
     public static int FRAGMENT_MAP = 0; // used to map tab positions
     public static int FRAGMENT_HISTORY = 1;
 
-    public static int TOTAL_TREES = 66949;
-    public static int FIREBASE_PAGE_SIZE = 10000;
+    //public static int TOTAL_TREES = 66949;
+    public static int TOTAL_TREES = 3000;
+    public static int FIREBASE_PAGE_SIZE = 1000;
     public static String[] permissions = {
             "android.permission.ACCESS_FINE_LOCATION",
             "android.permission.ACCESS_NETWORK_STATE",

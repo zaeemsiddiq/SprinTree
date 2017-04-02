@@ -14,10 +14,13 @@
         <item name="tabSelectedTextColor">@color/olive_dark</item>
     </style>
     <style name="TreeTabTextAppearance" parent="TextAppearance.Design.Tab">
-        <item name="android:textSize">10dp</item>
+        <item name="android:textSize">20sp</item>
         <item name="android:textColor">@color/coal</item>
         <item name="textAllCaps">true</item>
         <item name="android:textStyle">bold</item>
+    </style>
+    <style name="appDialog" parent="Theme.AppCompat.Dialog">
+        <item name="android:windowNoTitle">true</item>
     </style>
 
 </resources>

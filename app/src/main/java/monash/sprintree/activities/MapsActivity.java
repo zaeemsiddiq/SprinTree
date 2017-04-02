@@ -2,6 +2,7 @@ package monash.sprintree.activities;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.location.Criteria;
 import android.location.Location;
@@ -14,6 +15,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AlertDialog;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 
@@ -67,10 +70,10 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
         greenTrees = Tree.findWithQuery(Tree.class, "SELECT * FROM TREE LIMIT 3000");
         for( Tree tree : greenTrees ) {
             markers.add( new Marker(new LatLng(tree.latitude, tree.longitude), tree.comId, tree.commonName, R.drawable.tree));
-            if( tree.commonName.equals("Ulmus") ||
-                    tree.commonName.equals("UNKNOWN") ||
-                    tree.commonName.equals("Eucalyptus") ||
-                    tree.commonName.equals("Ulmus") ) {
+            if( !tree.commonName.equals("Ulmus") ||
+                    !tree.commonName.equals("UNKNOWN") ||
+                    !tree.commonName.equals("Eucalyptus") ||
+                    !tree.commonName.equals("Ulmus") ) {
                 uniqueTrees.add(tree);
             }
         }
@@ -106,6 +109,8 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
                     }
                 }
                 if(tab.getPosition() == 1) {
+                    Toast.makeText(MapsActivity.this, "This feature will be added in upcoming versions", Toast.LENGTH_SHORT).show();
+                    /*
                     if(Constants.historyFragment != null) {
                         // hide the current fragment first
                         hideFragment(currentFragment);
@@ -113,7 +118,10 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
                         showFragment(Constants.historyFragment);
                         // set the current fragment to this one
                         currentFragment = Constants.historyFragment;
-                    }
+                    }*/
+                }
+                if(tab.getPosition() == 2) {
+                    Toast.makeText(MapsActivity.this, "This feature will be added in upcoming versions", Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -167,7 +175,7 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
             if(results[0] < 500 ) {
 
             }*/
-            //Constants.mapFragment.moveCamera(location);
+            Constants.mapFragment.moveCamera(location);
         }
     }
 
@@ -187,8 +195,6 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
             requestPermissions(Constants.permissions, REQUEST_PERMISSION_CODE);
         }
     }
-
-
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
