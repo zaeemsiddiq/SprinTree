@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.Bundle;
@@ -104,7 +106,6 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         v = inflater.inflate(R.layout.fragment_map, container, false);
-        v.findViewById(R.id.check).setVisibility(View.VISIBLE);
         final com.google.android.gms.maps.MapFragment mapFragment = (com.google.android.gms.maps.MapFragment) getActivity().getFragmentManager().findFragmentById(R.id.map);
         mapWrapperLayout = (MapWrapperLayout) v.findViewById(R.id.map_relative_layout);
         mapFragment.getMapAsync(this);
@@ -218,9 +219,20 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
 
     };
 
+    protected void RefreshMap() {
+
+    }
+
     @Override
     public void onDetach() {
         super.onDetach();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        System.out.println("Destroy called ---------------");
+        mMap.clear();
     }
 
     public Bitmap resizeTreeIcons(int width, int height){
@@ -230,39 +242,42 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
     }
 
     private void addMarkers(boolean uniqueTreesDisplay ) {
-        mMap.clear();
-        Bitmap tree = resizeTreeIcons(24,24);
-        if(uniqueTreesDisplay) {
-            for ( Tree t: uniqueTrees ) {
-                mMap.addMarker(new MarkerOptions()
-                        .position(new LatLng(t.latitude, t.longitude))
-                        .title(t.commonName)
-                        //.icon(BitmapDescriptorFactory.fromResource(R.drawable.tree))
-                        .icon(BitmapDescriptorFactory.fromBitmap( resizeTreeIcons(24,24) ))
-                );
-            }
-        } else {
-            for ( Tree t: greenTrees ) {
-                mMap.addMarker(new MarkerOptions()
-                        .position(new LatLng(t.latitude, t.longitude))
-                        .title(t.commonName)
-                        //.icon(BitmapDescriptorFactory.fromResource(R.drawable.tree))
-                        .icon(BitmapDescriptorFactory.fromBitmap(tree))
-                );
+        if(isAdded()) {
+            mMap.clear();
+            Bitmap tree = resizeTreeIcons(24,24);
+            if(uniqueTreesDisplay) {
+                for ( Tree t: uniqueTrees ) {
+                    mMap.addMarker(new MarkerOptions()
+                            .position(new LatLng(t.latitude, t.longitude))
+                            .title(t.commonName)
+                            //.icon(BitmapDescriptorFactory.fromResource(R.drawable.tree))
+                            .icon(BitmapDescriptorFactory.fromBitmap( resizeTreeIcons(24,24) ))
+                    );
+                }
+            } else {
+                for ( Tree t: greenTrees ) {
+                    mMap.addMarker(new MarkerOptions()
+                            .position(new LatLng(t.latitude, t.longitude))
+                            .title(t.commonName)
+                            //.icon(BitmapDescriptorFactory.fromResource(R.drawable.tree))
+                            .icon(BitmapDescriptorFactory.fromBitmap(tree))
+                    );
+                }
             }
         }
+
     }
     @Override
     public void onMapReady(GoogleMap googleMap) {
 
         mMap = googleMap;
         /* for custom info window clusters */
-        /*
-        mClusterManager = new ClusterManager<Marker>(getActivity(), mMap);
+
+        mClusterManager = new ClusterManager<>(getActivity(), mMap);
         mMap.setInfoWindowAdapter(mClusterManager.getMarkerManager());
         mMap.setOnCameraIdleListener(mClusterManager);
         mClusterManager.setRenderer(new OwnIconRendered(getActivity()));
-        mClusterManager.getMarkerCollection().setOnInfoWindowAdapter(new MyCustomAdapterForItems());*/
+        mClusterManager.getMarkerCollection().setOnInfoWindowAdapter(new MyCustomAdapterForItems());
         /* end custom info window clusters */
         /* for simple clusters */
         //mClusterManager.setRenderer(new MarkerRenderer(getActivity()));
@@ -274,14 +289,14 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
         //mClusterManager.setOnClusterItemInfoWindowClickListener(this);
         /* end simple clusters */
 
-        //mClusterManager.addItems(markers);
-        //mClusterManager.cluster();
+        mClusterManager.addItems(markers);
+        mClusterManager.cluster();
 
 
 
 
 
-        addMarkers(false);
+        //addMarkers(false);
 
         if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
@@ -294,10 +309,6 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
             }
         }
         listener.mapReady();
-        v.findViewById(R.id.check).setVisibility(View.GONE);
-
-        //LinearLayout loadingLayout = (LinearLayout) v.findViewById(R.id.loadingLayout);
-        //loadingLayout.setVisibility(View.GONE);
     }
 
     public void moveCamera(Location location) {
@@ -401,8 +412,12 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
     }
 
     private class OwnIconRendered extends DefaultClusterRenderer<Marker> {
+
+        private final IconGenerator mClusterIconGenerator;
+
         public OwnIconRendered(Context context) {
             super(context, mMap, mClusterManager);
+            mClusterIconGenerator = new IconGenerator(context);
         }
 
         @Override
@@ -411,6 +426,27 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
             markerOptions.snippet(item.getSnippet());
             markerOptions.title(item.getTitle());
             super.onBeforeClusterItemRendered(item, markerOptions);
+        }
+
+        @Override
+        protected void onBeforeClusterRendered(Cluster<Marker> cluster, MarkerOptions markerOptions){
+
+            final Drawable clusterIcon = getResources().getDrawable(R.drawable.tree);
+            //clusterIcon.setColorFilter(getResources().getColor(android.R.color.holo_orange_light), PorterDuff.Mode.SRC_ATOP);
+
+            mClusterIconGenerator.setBackground(clusterIcon);
+
+            //modify padding for one or two digit numbers
+            /*
+            if (cluster.getSize() < 10) {
+                mClusterIconGenerator.setContentPadding(40, 20, 0, 0);
+            }
+            else {
+                mClusterIconGenerator.setContentPadding(30, 20, 0, 0);
+            }*/
+
+            Bitmap icon = mClusterIconGenerator.makeIcon(String.valueOf(cluster.getSize()));
+            markerOptions.icon(BitmapDescriptorFactory.fromBitmap(icon));
         }
     }
 

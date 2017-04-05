@@ -2,7 +2,10 @@ package monash.sprintree.activities;
 
 import monash.sprintree.data.Tree;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -15,6 +18,10 @@ import com.google.firebase.FirebaseApp;
 import com.orm.SugarRecord;
 
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,6 +30,7 @@ import monash.sprintree.data.Constants;
 import monash.sprintree.data.Tree;
 import monash.sprintree.service.SyncService;
 import monash.sprintree.service.SyncServiceComplete;
+import monash.sprintree.utils.Utils;
 
 public class Splash extends AppCompatActivity implements SyncServiceComplete {
 
@@ -35,39 +43,55 @@ public class Splash extends AppCompatActivity implements SyncServiceComplete {
     Data objects
      */
     private int loadedTrees;
-    SyncService service;
 
-    private void fullScreen() {
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN);
-    }
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         FirebaseApp.initializeApp(this);
-        fullScreen();
         super.onCreate(savedInstanceState);
+        Utils.fullScreen(Splash.this);
         setContentView(R.layout.activity_splash);
+        if( getIntent().getBooleanExtra("Exit me", false)){
+            finish();
+        }
         initiateLayout();
 
-        if (Tree.listAll(Tree.class).size() == 0) { // if the database is empty, load the trees from firebase
-            service = new SyncService(this);
-            service.firebaseStart();
-        } else {
-            startMapsActivity();
-        }
-        //Tree.deleteAll(Tree.class);
-        //service = new SyncService(this);
-        //service.firebaseStart();
-        //List<Tree> treeList = Tree.listAll(Tree.class);
-        //System.out.println("Size of the tree table is "+treeList.size());
-        //System.out.println("");
+        new Thread() {
+            @Override
+            public void run() {
+                final List<Tree> trees = Tree.findWithQuery(Tree.class, "SELECT * FROM TREE");
+                Constants.trees = trees;
+                try {
+                    // code runs in a thread
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (trees.size() == 0) { // if the database is empty, load the trees from firebase
+                                SyncService service = new SyncService(Splash.this);
+                                service.firebaseStart();
+                            } else {
+                                startMapsActivity();
+                            }
+                        }
+                    });
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }.start();
     }
 
     private void startMapsActivity() {
         Intent mapIntent = new Intent(this, MapsActivity.class);
-        startActivity(mapIntent);
+        startActivityForResult(mapIntent, 0);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        super.onActivityResult(requestCode, resultCode, intent);
+        finish();
     }
 
     public void launchHistory(View view) {
@@ -89,13 +113,26 @@ public class Splash extends AppCompatActivity implements SyncServiceComplete {
     }
 
     @Override
-    public void pageComplete(String comId) {
+    public void pageComplete(final String comId) {
         loadedTrees += Constants.FIREBASE_PAGE_SIZE;
+        syncProgress.setProgress(getProgressPercentage(loadedTrees));
         if (loadedTrees >= Constants.TOTAL_TREES) {
             loadComplete();
         } else {
-            syncProgress.setProgress(getProgressPercentage(loadedTrees));
-            service.firebaseReload(comId);
+            new Thread() {
+                @Override
+                public void run() {
+                    SyncService service = new SyncService(Splash.this);
+                    service.firebaseReload(comId);
+                    try {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                            }
+                        });
+                    } catch (Exception e) { e.printStackTrace(); }
+                }
+            }.start();
         }
 
     }
@@ -106,6 +143,7 @@ public class Splash extends AppCompatActivity implements SyncServiceComplete {
 
     @Override
     public void loadComplete() {
+        Constants.trees = Tree.findWithQuery(Tree.class, "SELECT * FROM TREE");
         Toast.makeText(this, "Data Loading Complete", Toast.LENGTH_SHORT).show();
         startMapsActivity();
     }

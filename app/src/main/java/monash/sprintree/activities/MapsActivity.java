@@ -3,6 +3,7 @@ package monash.sprintree.activities;
 import android.Manifest;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Criteria;
 import android.location.Location;
@@ -16,6 +17,9 @@ import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
+import android.view.View;
+import android.view.Window;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
@@ -30,6 +34,7 @@ import monash.sprintree.data.Tree;
 import monash.sprintree.fragments.FragmentListener;
 import monash.sprintree.fragments.GMapFragment;
 import monash.sprintree.fragments.HistoryFragment;
+import monash.sprintree.utils.Utils;
 
 public class MapsActivity extends FragmentActivity implements LocationListener, FragmentListener {
 
@@ -39,6 +44,7 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
     private TabLayout tabLayoutDashboard;
     static final int REQUEST_PERMISSION_CODE = 100;
     Fragment currentFragment;
+    LocationManager locationManager;
 
 
     /*
@@ -51,15 +57,13 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
+        Utils.fullScreen(MapsActivity.this);
         setContentView(R.layout.activity_maps);
         handlePermissions();
-        initiateLocationManager();
-        loadData();
-        initLayout();
-
     }
+
+
 
     private void loadData() {
         greenTrees = new ArrayList<>();
@@ -67,7 +71,8 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
         nearesTrees = new ArrayList<>();
         markers = new ArrayList<>();
 
-        greenTrees = Tree.findWithQuery(Tree.class, "SELECT * FROM TREE LIMIT 1000");
+        //greenTrees = Tree.findWithQuery(Tree.class, "SELECT * FROM TREE LIMIT 40000");
+        greenTrees = Constants.trees;
         for( Tree tree : greenTrees ) {
             markers.add( new Marker(new LatLng(tree.latitude, tree.longitude), tree.comId, tree.commonName, R.drawable.tree));
             if( !tree.commonName.equals("Ulmus") ||
@@ -89,9 +94,9 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
 
     private void initiateTabsLayout() { // adding the tabs dynamically
         tabLayoutDashboard = (TabLayout) findViewById(R.id.mainTabs);
-        tabLayoutDashboard.addTab(tabLayoutDashboard.newTab().setText("Map")); //0
-        tabLayoutDashboard.addTab(tabLayoutDashboard.newTab().setText("History")); //1
-        tabLayoutDashboard.addTab(tabLayoutDashboard.newTab().setText("My Forest")); //2
+        tabLayoutDashboard.addTab(tabLayoutDashboard.newTab().setText("Map").setIcon(R.drawable.ic_action_name)); //0
+        tabLayoutDashboard.addTab(tabLayoutDashboard.newTab().setText("History").setIcon(R.drawable.ic_action_name)); //1
+        tabLayoutDashboard.addTab(tabLayoutDashboard.newTab().setText("My Forest").setIcon(R.drawable.ic_action_name)); //2
         tabLayoutDashboard.setTabMode(TabLayout.MODE_FIXED);
 
         tabLayoutDashboard.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
@@ -138,9 +143,12 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
 
     private void initiateLocationManager() {
         // Get the location manager
-        handlePermissions();
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            //Toast.makeText(this, "Allow permissions", Toast.LENGTH_SHORT).show();
+            return;
+        }
         // Get the location manager
-        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         locationManager.requestLocationUpdates( LocationManager.GPS_PROVIDER,
                 2000,
                 1, this);
@@ -163,6 +171,7 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
 
     @Override
     public void onLocationChanged(Location location) {
+        Constants.LAST_LOCATION = location;
         float lat = (float) (location.getLatitude());
         float lng = (float) (location.getLongitude());
 
@@ -175,7 +184,7 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
             if(results[0] < 500 ) {
 
             }*/
-            Constants.mapFragment.moveCamera(location);
+            //Constants.mapFragment.moveCamera(location);
         }
     }
 
@@ -198,9 +207,15 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        System.out.println("on permission");
         switch (requestCode) {
             case REQUEST_PERMISSION_CODE:
-                //boolean permsAccepted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
+                if( grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    initiateLocationManager();
+                    loadData();
+                    initLayout();
+                }
+
         }
     }
 
@@ -222,6 +237,11 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
             ft.commit();
         }
     }
+    private void removeFragment() {
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.remove(currentFragment);
+        ft.commit();
+    }
     public void selectTab(int fragmentNumber) {
         if(fragmentNumber == Constants.FRAGMENT_MAP) {
             hideFragment(currentFragment);
@@ -238,5 +258,41 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
 
     @Override
     public void mapReady() {
+        Constants.mapFragment.moveCamera(Constants.LAST_LOCATION);
+        findViewById(R.id.loadingProgressBar).setVisibility(View.GONE);
+        findViewById(R.id.mainFrame).setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void onBackPressed() {   // this is fired if user presses the back button. its a good idea to ask the user before quitting the app
+        new AlertDialog.Builder(this)
+                .setTitle("Caution")
+                .setMessage("Do you want to exit the application ?")
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        removeFragment();
+                        stopLocationUpdates();
+                        setResult(Constants.REQUEST_EXIT);
+                        finish();
+                    }
+                })
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        // do nothing
+                    }
+                })
+                .setIcon(android.R.drawable.button_onoff_indicator_on)
+                .show();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        System.out.println("Destroy called ---------------");
+    }
+
+    protected void stopLocationUpdates() {
+        System.out.println("Stoping location updates");
+        locationManager.removeUpdates(this);
     }
 }

@@ -84,11 +84,9 @@ class TreeService {
             }
             trees.add(t);
             //t.save();
-            System.out.println("saved-" + counter);
             counter++;
         }
         SugarRecord.saveInTx(trees);
         return comId;   // return the
     }
 }
-

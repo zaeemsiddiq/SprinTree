@@ -1,6 +1,7 @@
 package monash.sprintree.utils;
 
 import android.app.Activity;
+import android.content.Context;
 import android.view.Window;
 import android.view.WindowManager;
 
@@ -8,6 +9,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -16,11 +18,6 @@ import java.io.InputStream;
  */
 
 public class Utils {
-    private void fullScreen(Activity activity) {
-        activity.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        activity.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN);
-    }
 
     public String loadJSONFromAsset( ) throws JSONException {
         String json = null;
@@ -43,6 +40,21 @@ public class Utils {
             System.out.println(name);
         }*/
         return json;
+    }
 
+    public static void deleteDB(Context context) {
+        String currentDBPath = "/data/data/" + context.getPackageName() + "/databases/tree.db";
+        File currentDB = new File(currentDBPath);
+        if(currentDB.delete()) {
+            System.out.println("Database deleted");
+        } else {
+            System.out.println("Database could not be deleted");
+        }
+    }
+
+    public static void fullScreen(Activity activity) {
+        activity.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        activity.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
     }
 }
