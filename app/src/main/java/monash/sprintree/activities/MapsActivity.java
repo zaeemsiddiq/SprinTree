@@ -60,7 +60,15 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
         super.onCreate(savedInstanceState);
         Utils.fullScreen(MapsActivity.this);
         setContentView(R.layout.activity_maps);
-        handlePermissions();
+        if(Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1) {
+            handlePermissions();
+        }
+        else {
+            initiateLocationManager();
+            loadData();
+            initLayout();
+        }
+
     }
 
 
@@ -283,12 +291,6 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
                 })
                 .setIcon(android.R.drawable.button_onoff_indicator_on)
                 .show();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        System.out.println("Destroy called ---------------");
     }
 
     protected void stopLocationUpdates() {

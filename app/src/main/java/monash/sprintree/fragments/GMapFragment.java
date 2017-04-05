@@ -341,7 +341,6 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
 
     @Override
     public void onClusterItemInfoWindowClick(Marker marker) {
-
     }
 
     /**
@@ -414,18 +413,23 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
     private class OwnIconRendered extends DefaultClusterRenderer<Marker> {
 
         private final IconGenerator mClusterIconGenerator;
+        Context context;
 
         public OwnIconRendered(Context context) {
             super(context, mMap, mClusterManager);
+            this.context = context;
             mClusterIconGenerator = new IconGenerator(context);
         }
 
         @Override
         protected void onBeforeClusterItemRendered(Marker item, MarkerOptions markerOptions) {
-            markerOptions.icon( BitmapDescriptorFactory.fromBitmap( resizeTreeIcons(24,24) ) );
-            markerOptions.snippet(item.getSnippet());
-            markerOptions.title(item.getTitle());
-            super.onBeforeClusterItemRendered(item, markerOptions);
+            if( GMapFragment.this.isAdded() ) {
+                markerOptions.icon( BitmapDescriptorFactory.fromBitmap( resizeTreeIcons(24,24) ) );
+                markerOptions.snippet(item.getSnippet());
+                markerOptions.title(item.getTitle());
+                super.onBeforeClusterItemRendered(item, markerOptions);
+            }
+
         }
 
         @Override
