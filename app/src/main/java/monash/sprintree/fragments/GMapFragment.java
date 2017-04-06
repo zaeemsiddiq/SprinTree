@@ -7,11 +7,14 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
@@ -37,14 +40,31 @@ import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterManager;
 import com.google.maps.android.clustering.view.DefaultClusterRenderer;
 import com.google.maps.android.ui.IconGenerator;
+import com.squareup.picasso.Picasso;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import monash.sprintree.R;
+import monash.sprintree.activities.Splash;
 import monash.sprintree.data.Constants;
 import monash.sprintree.data.Marker;
 import monash.sprintree.data.Tree;
+import monash.sprintree.service.BackgroundTask;
+import monash.sprintree.service.BackgroundTaskComplete;
+import monash.sprintree.service.SyncService;
+import monash.sprintree.service.SyncServiceComplete;
+import monash.sprintree.service.TreeService;
 import monash.sprintree.utils.MapWrapperLayout;
 import monash.sprintree.utils.MultiDrawable;
 
@@ -85,9 +105,10 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
     List<Tree> uniqueTrees;
     List<Marker> markers;
 
-    public GMapFragment() { }
+    public GMapFragment() {
+    }
 
-    public static GMapFragment newInstance( FragmentListener listener, List<Tree> greenTrees, List<Tree> uniqueTrees, List<Marker>markers ) {
+    public static GMapFragment newInstance(FragmentListener listener, List<Tree> greenTrees, List<Tree> uniqueTrees, List<Marker> markers) {
         GMapFragment fragment = new GMapFragment();
         fragment.listener = listener;
         fragment.greenTrees = greenTrees;
@@ -131,8 +152,8 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
         treeView.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(getActivity(), "Selected"+position, Toast.LENGTH_SHORT).show();
-                if(position == 0) {
+                Toast.makeText(getActivity(), "Selected" + position, Toast.LENGTH_SHORT).show();
+                if (position == 0) {
                     addMarkers(false);
                 } else {
                     addMarkers(true);
@@ -183,13 +204,13 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
 
             public void onClick(View view) {
                 customHandler.removeCallbacksAndMessages(null);
-                timeInMilliseconds = 0L ;
-                startTime = 0L ;
-                timeSwapBuff = 0L ;
-                updatedTime = 0L ;
-                secs = 0 ;
-                mins = 0 ;
-                hrs = 0 ;
+                timeInMilliseconds = 0L;
+                startTime = 0L;
+                timeSwapBuff = 0L;
+                updatedTime = 0L;
+                secs = 0;
+                mins = 0;
+                hrs = 0;
                 timerValue.setText("00:00:00");
                 startButton.setVisibility(View.VISIBLE);
                 stopButton.setVisibility(View.GONE);
@@ -235,27 +256,27 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
         mMap.clear();
     }
 
-    public Bitmap resizeTreeIcons(int width, int height){
+    public Bitmap resizeTreeIcons(int width, int height) {
         Bitmap imageBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.tree);
         Bitmap resizedBitmap = Bitmap.createScaledBitmap(imageBitmap, width, height, false);
         return resizedBitmap;
     }
 
-    private void addMarkers(boolean uniqueTreesDisplay ) {
-        if(isAdded()) {
+    private void addMarkers(boolean uniqueTreesDisplay) {
+        if (isAdded()) {
             mMap.clear();
-            Bitmap tree = resizeTreeIcons(24,24);
-            if(uniqueTreesDisplay) {
-                for ( Tree t: uniqueTrees ) {
+            Bitmap tree = resizeTreeIcons(24, 24);
+            if (uniqueTreesDisplay) {
+                for (Tree t : uniqueTrees) {
                     mMap.addMarker(new MarkerOptions()
                             .position(new LatLng(t.latitude, t.longitude))
                             .title(t.commonName)
                             //.icon(BitmapDescriptorFactory.fromResource(R.drawable.tree))
-                            .icon(BitmapDescriptorFactory.fromBitmap( resizeTreeIcons(24,24) ))
+                            .icon(BitmapDescriptorFactory.fromBitmap(resizeTreeIcons(24, 24)))
                     );
                 }
             } else {
-                for ( Tree t: greenTrees ) {
+                for (Tree t : greenTrees) {
                     mMap.addMarker(new MarkerOptions()
                             .position(new LatLng(t.latitude, t.longitude))
                             .title(t.commonName)
@@ -267,6 +288,7 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
         }
 
     }
+
     @Override
     public void onMapReady(GoogleMap googleMap) {
 
@@ -293,9 +315,6 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
         mClusterManager.cluster();
 
 
-
-
-
         //addMarkers(false);
 
         if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION)
@@ -313,10 +332,9 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
 
     public void moveCamera(Location location) {
         LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-        if(mMap == null) {
+        if (mMap == null) {
             return;
-        }
-        else {
+        } else {
             CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, Constants.MAP_ZOOM);
             mMap.animateCamera(cameraUpdate);
             Constants.LAST_LOCATION = location;
@@ -423,8 +441,8 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
 
         @Override
         protected void onBeforeClusterItemRendered(Marker item, MarkerOptions markerOptions) {
-            if( GMapFragment.this.isAdded() ) {
-                markerOptions.icon( BitmapDescriptorFactory.fromBitmap( resizeTreeIcons(24,24) ) );
+            if (GMapFragment.this.isAdded()) {
+                markerOptions.icon(BitmapDescriptorFactory.fromBitmap(resizeTreeIcons(24, 24)));
                 markerOptions.snippet(item.getSnippet());
                 markerOptions.title(item.getTitle());
                 super.onBeforeClusterItemRendered(item, markerOptions);
@@ -433,7 +451,7 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
         }
 
         @Override
-        protected void onBeforeClusterRendered(Cluster<Marker> cluster, MarkerOptions markerOptions){
+        protected void onBeforeClusterRendered(Cluster<Marker> cluster, MarkerOptions markerOptions) {
 
             final Drawable clusterIcon = getResources().getDrawable(R.drawable.tree);
             //clusterIcon.setColorFilter(getResources().getColor(android.R.color.holo_orange_light), PorterDuff.Mode.SRC_ATOP);
@@ -454,11 +472,13 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
         }
     }
 
-    private class MyCustomAdapterForItems implements GoogleMap.InfoWindowAdapter {
+    private class MyCustomAdapterForItems implements GoogleMap.InfoWindowAdapter, BackgroundTaskComplete {
 
-        private final View myContentsView;
+        private View myContentsView;
+        com.google.android.gms.maps.model.Marker lastMarker;
+        private Tree lastTree;
 
-        public MyCustomAdapterForItems() {
+        private MyCustomAdapterForItems() {
             myContentsView = getActivity().getLayoutInflater().inflate(
                     R.layout.marker_info_window, null);
         }
@@ -469,16 +489,87 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
         }
 
         @Override
-        public View getInfoContents(com.google.android.gms.maps.model.Marker marker) {
+        public View getInfoContents(final com.google.android.gms.maps.model.Marker marker) {
+            lastMarker = marker;
+
             TextView tvTitle = ((TextView) myContentsView
                     .findViewById(R.id.txtTitle));
             TextView tvSnippet = ((TextView) myContentsView
                     .findViewById(R.id.txtSnippet));
+            ImageView imageView = ((ImageView) myContentsView
+                    .findViewById(R.id.wikiImage));
+            Tree tree = TreeService.findTreeByPosition(marker.getPosition());
+
+            if( lastTree == null ) {
+                if (!hasImage(imageView)) {
+                    BackgroundTask task = new BackgroundTask(this, imageView, tree);
+                    task.execute();
+                }
+            } else {
+                 if (!lastTree.comId.equals(tree.comId)){
+                     imageView.setImageDrawable(null);
+                     BackgroundTask task = new BackgroundTask(this, imageView, tree);
+                     task.execute();
+                 }
+            }
+            lastTree = tree;
 
             tvTitle.setText(marker.getTitle());
             tvSnippet.setText(marker.getSnippet());
-
             return myContentsView;
+        }
+
+        @Override
+        public void wikiImageComplete(JSONObject result, ImageView view) {
+            String source = "";
+            try {
+                source = recurseKeys(result, "source");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            Picasso.with(getActivity()).load(source).into(view, new com.squareup.picasso.Callback() {
+                @Override
+                public void onSuccess() {
+                    lastMarker.setVisible(true);
+                    lastMarker.hideInfoWindow();
+                    getInfoWindow(lastMarker);
+                    lastMarker.showInfoWindow();
+                }
+
+                @Override
+                public void onError() {
+
+                }
+            });
+        }
+
+        String recurseKeys(JSONObject jObj, String findKey) throws JSONException {
+
+            Iterator<?> keys = jObj.keys();
+            String key = "";
+
+            while (keys.hasNext() && !key.equalsIgnoreCase(findKey)) {
+                key = (String) keys.next();
+
+                if (key.equalsIgnoreCase(findKey)) {
+                    return jObj.getString(key);
+                }
+                if (jObj.get(key) instanceof JSONObject) {
+                    return recurseKeys((JSONObject)jObj.get(key), findKey);
+                }
+            }
+
+            return "";
+        }
+
+        private boolean hasImage(@NonNull ImageView view) {
+            Drawable drawable = view.getDrawable();
+            boolean hasImage = (drawable != null);
+
+            if (hasImage && (drawable instanceof BitmapDrawable)) {
+                hasImage = ((BitmapDrawable) drawable).getBitmap() != null;
+            }
+            return hasImage;
         }
     }
 }

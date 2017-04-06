@@ -1,4 +1,5 @@
 package monash.sprintree.service;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.database.DataSnapshot;
 import monash.sprintree.data.Tree;
 
@@ -14,7 +15,7 @@ import monash.sprintree.data.Tree;
  * Created by Zaeem on 3/28/2017.
  */
 
-class TreeService {
+public class TreeService {
 
     static String saveTrees(DataSnapshot dataSnapshot) {
         List<Tree> trees = new ArrayList<>();
@@ -84,5 +85,13 @@ class TreeService {
         }
         SugarRecord.saveInTx(trees);
         return comId;   // return the
+    }
+
+    public static Tree findTreeByPosition(LatLng position) {
+        List<Tree> trees = Tree.findWithQuery(Tree.class, "SELECT * FROM TREE WHERE LATITUDE = '" + position.latitude + "' AND LONGITUDE = '" + position.longitude + "'");
+        if (trees.size() > 0) {
+            return trees.get(0);
+        }
+        return new Tree();
     }
 }

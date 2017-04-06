@@ -4,7 +4,6 @@ import android.Manifest;
 import android.animation.Animator;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Criteria;
 import android.location.Location;
@@ -20,8 +19,6 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
-import android.view.Window;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
@@ -83,7 +80,7 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
 
         greenTrees = Constants.trees;
         for( Tree tree : greenTrees ) {
-            markers.add( new Marker(new LatLng(tree.latitude, tree.longitude), tree.comId, tree.commonName, R.drawable.tree));
+            markers.add( new Marker(new LatLng(tree.latitude, tree.longitude), tree.comId, tree.commonName, R.drawable.tree, tree.comId));
             if (tree == null) {
                 System.out.println("Tree null");
             }
@@ -303,6 +300,11 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
         Constants.mapFragment.moveCamera(Constants.LAST_LOCATION);
         findViewById(R.id.loadingProgressBar).setVisibility(View.GONE);
         findViewById(R.id.mainFrame).setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void mapButtonPressed(int buttonIdentifier) {
+
     }
 
     @Override

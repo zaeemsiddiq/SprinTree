@@ -52,18 +52,18 @@ public class Utils {
         }
     }
 
-    public static class FileUtils {
+    private static class FileUtils {
         private FileUtils() {
         }
 
-        public static File fileFromAsset(Context context, String assetName) throws IOException {
+        private static File fileFromAsset(Context context, String assetName) throws IOException {
             File outFile = new File(context.getCacheDir(), assetName );
             copy(context.getAssets().open(assetName), outFile);
 
             return outFile;
         }
 
-        public static void copy(InputStream inputStream, File output) throws IOException {
+        private static void copy(InputStream inputStream, File output) throws IOException {
             FileOutputStream outputStream = null;
 
             try {
@@ -90,8 +90,6 @@ public class Utils {
             }
 
         }
-    }
-    public static void readGson(Context context) {
     }
 
     public static String loadJSONFromAsset( Context context ) throws JSONException {
