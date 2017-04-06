@@ -79,7 +79,6 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
         nearesTrees = new ArrayList<>();
         markers = new ArrayList<>();
 
-        //greenTrees = Tree.findWithQuery(Tree.class, "SELECT * FROM TREE LIMIT 40000");
         greenTrees = Constants.trees;
         for( Tree tree : greenTrees ) {
             markers.add( new Marker(new LatLng(tree.latitude, tree.longitude), tree.comId, tree.commonName, R.drawable.tree));
