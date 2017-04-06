@@ -81,18 +81,17 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
     /*
     Data Objects
      */
-    List<Tree> greenTrees;
-    List<Tree> uniqueTrees;
-    List<Marker> markers;
+    List<Marker> nonUniqueTrees;
+    List<Marker> uniqueTrees;
 
     public GMapFragment() { }
 
-    public static GMapFragment newInstance( FragmentListener listener, List<Tree> greenTrees, List<Tree> uniqueTrees, List<Marker>markers ) {
+    public static GMapFragment newInstance( FragmentListener listener, List<Marker> nonUniqueTrees, List<Marker> uniqueTrees) {
         GMapFragment fragment = new GMapFragment();
         fragment.listener = listener;
-        fragment.greenTrees = greenTrees;
+        fragment.nonUniqueTrees = nonUniqueTrees;
         fragment.uniqueTrees = uniqueTrees;
-        fragment.markers = markers;
+
         return fragment;
     }
 
@@ -121,7 +120,7 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
         stopButton = (Button) view.findViewById(R.id.stopButton);
 
         List<String> list = new ArrayList<String>();
-        list.add("All");
+        list.add("All trees");
         list.add("Unique");
         treeView = (Spinner) view.findViewById(R.id.treeViewSpinner);
         ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(getActivity(),
@@ -133,9 +132,9 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 Toast.makeText(getActivity(), "Selected"+position, Toast.LENGTH_SHORT).show();
                 if(position == 0) {
-                    addMarkers(false);
-                } else {
                     addMarkers(true);
+                } else {
+                    addMarkers(false);
                 }
             }
 
@@ -241,30 +240,26 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
         return resizedBitmap;
     }
 
-    private void addMarkers(boolean uniqueTreesDisplay ) {
+    private void addMarkers(boolean displayAll ) {
+
         if(isAdded()) {
             mMap.clear();
+            mClusterManager = new ClusterManager<>(getActivity(), mMap);
+            mMap.setInfoWindowAdapter(mClusterManager.getMarkerManager());
+            mMap.setOnCameraIdleListener(mClusterManager);
+            mClusterManager.setRenderer(new OwnIconRendered(getActivity()));
+            mClusterManager.getMarkerCollection().setOnInfoWindowAdapter(new MyCustomAdapterForItems());
+        /* end custom info window clusters */
             Bitmap tree = resizeTreeIcons(24,24);
-            if(uniqueTreesDisplay) {
-                for ( Tree t: uniqueTrees ) {
-                    mMap.addMarker(new MarkerOptions()
-                            .position(new LatLng(t.latitude, t.longitude))
-                            .title(t.commonName)
-                            //.icon(BitmapDescriptorFactory.fromResource(R.drawable.tree))
-                            .icon(BitmapDescriptorFactory.fromBitmap( resizeTreeIcons(24,24) ))
-                    );
-                }
+            if(displayAll) {
+                mClusterManager.addItems(nonUniqueTrees);
+                mClusterManager.addItems(uniqueTrees);
+
             } else {
-                for ( Tree t: greenTrees ) {
-                    mMap.addMarker(new MarkerOptions()
-                            .position(new LatLng(t.latitude, t.longitude))
-                            .title(t.commonName)
-                            //.icon(BitmapDescriptorFactory.fromResource(R.drawable.tree))
-                            .icon(BitmapDescriptorFactory.fromBitmap(tree))
-                    );
-                }
+                mClusterManager.addItems(uniqueTrees);
             }
         }
+        mClusterManager.cluster();
 
     }
     @Override
@@ -273,30 +268,11 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
         mMap = googleMap;
         /* for custom info window clusters */
 
-        mClusterManager = new ClusterManager<>(getActivity(), mMap);
-        mMap.setInfoWindowAdapter(mClusterManager.getMarkerManager());
-        mMap.setOnCameraIdleListener(mClusterManager);
-        mClusterManager.setRenderer(new OwnIconRendered(getActivity()));
-        mClusterManager.getMarkerCollection().setOnInfoWindowAdapter(new MyCustomAdapterForItems());
-        /* end custom info window clusters */
-        /* for simple clusters */
-        //mClusterManager.setRenderer(new MarkerRenderer(getActivity()));
-        //mMap.setOnMarkerClickListener(mClusterManager);
-        //mMap.setOnInfoWindowClickListener(mClusterManager);
-        //mClusterManager.setOnClusterClickListener(this);
-        //mClusterManager.setOnClusterInfoWindowClickListener(this);
-        //mClusterManager.setOnClusterItemClickListener(this);
-        //mClusterManager.setOnClusterItemInfoWindowClickListener(this);
-        /* end simple clusters */
-
-        mClusterManager.addItems(markers);
-        mClusterManager.cluster();
 
 
 
 
-
-        //addMarkers(false);
+        addMarkers(true);
 
         if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {

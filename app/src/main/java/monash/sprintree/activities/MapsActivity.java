@@ -50,15 +50,13 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
     /*
     Data objects
      */
-    List<Tree> greenTrees;
-    List<Tree> uniqueTrees;
-    List<Tree> nearesTrees;
-    List<Marker> markers;
+    List<Marker> nonUniqueMarkers;
+    List<Marker> uniqueMarkers;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Utils.fullScreen(MapsActivity.this);
+        //Utils.fullScreen(MapsActivity.this);
         setContentView(R.layout.activity_maps);
         if(Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1) {
             handlePermissions();
@@ -74,37 +72,34 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
 
 
     private void loadData() {
-        greenTrees = new ArrayList<>();
-        uniqueTrees = new ArrayList<>();
-        nearesTrees = new ArrayList<>();
-        markers = new ArrayList<>();
-
-        //greenTrees = Tree.findWithQuery(Tree.class, "SELECT * FROM TREE LIMIT 40000");
-        greenTrees = Constants.trees;
-        for( Tree tree : greenTrees ) {
-            markers.add( new Marker(new LatLng(tree.latitude, tree.longitude), tree.comId, tree.commonName, R.drawable.tree));
+        uniqueMarkers = new ArrayList<>();
+        nonUniqueMarkers = new ArrayList<>();
+        for( Tree tree : Constants.trees ) {
             if( !tree.commonName.equals("Ulmus") ||
                     !tree.commonName.equals("UNKNOWN") ||
                     !tree.commonName.equals("Eucalyptus") ||
                     !tree.commonName.equals("Ulmus") ) {
-                uniqueTrees.add(tree);
+                uniqueMarkers.add( new Marker(new LatLng(tree.latitude, tree.longitude), tree.comId, tree.commonName, R.mipmap.unique_tree));
             }
+            else
+            nonUniqueMarkers.add( new Marker(new LatLng(tree.latitude, tree.longitude), tree.comId, tree.commonName, R.drawable.tree));
+
         }
     }
 
 
     private void initLayout() {
         initiateTabsLayout();
-        Constants.mapFragment = GMapFragment.newInstance(MapsActivity.this, greenTrees, uniqueTrees, markers);
+        Constants.mapFragment = GMapFragment.newInstance(MapsActivity.this, nonUniqueMarkers, uniqueMarkers);
         Constants.historyFragment = HistoryFragment.newInstance(this);
         selectTab(Constants.FRAGMENT_MAP);
     }
 
     private void initiateTabsLayout() { // adding the tabs dynamically
         tabLayoutDashboard = (TabLayout) findViewById(R.id.mainTabs);
-        tabLayoutDashboard.addTab(tabLayoutDashboard.newTab().setText("Map").setIcon(R.drawable.ic_action_name)); //0
-        tabLayoutDashboard.addTab(tabLayoutDashboard.newTab().setText("History").setIcon(R.drawable.ic_action_name)); //1
-        tabLayoutDashboard.addTab(tabLayoutDashboard.newTab().setText("My Forest").setIcon(R.drawable.ic_action_name)); //2
+        tabLayoutDashboard.addTab(tabLayoutDashboard.newTab().setText("Map")); //0
+        tabLayoutDashboard.addTab(tabLayoutDashboard.newTab().setText("History")); //1
+        tabLayoutDashboard.addTab(tabLayoutDashboard.newTab().setText("My Forest")); //2
         tabLayoutDashboard.setTabMode(TabLayout.MODE_FIXED);
 
         tabLayoutDashboard.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {

@@ -16,17 +16,17 @@
             <TextView
                 android:id="@+id/timerValue"
                 android:layout_width="0px"
-                android:layout_weight="100"
+                android:layout_weight="50"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
-                android:textSize="60sp"
+                android:textSize="40sp"
                 android:gravity="center"
                 android:textColor="#000000"
                 android:text="00:00:00" />
             <Spinner
                 android:layout_width="0px"
                 android:layout_weight="50"
-                android:visibility="gone"
+                android:visibility="visible"
                 android:id="@+id/treeViewSpinner"
                 android:layout_height="match_parent"></Spinner>
         </LinearLayout>
