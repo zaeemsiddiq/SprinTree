@@ -18,9 +18,12 @@ import com.google.firebase.FirebaseApp;
 import com.orm.SugarRecord;
 
 
+import org.json.JSONException;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.List;
@@ -45,18 +48,24 @@ public class Splash extends AppCompatActivity implements SyncServiceComplete {
     private int loadedTrees;
 
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         FirebaseApp.initializeApp(this);
         super.onCreate(savedInstanceState);
         Utils.fullScreen(Splash.this);
         setContentView(R.layout.activity_splash);
-        if( getIntent().getBooleanExtra("Exit me", false)){
+        if (getIntent().getBooleanExtra("Exit me", false)) {
             finish();
         }
         initiateLayout();
+        /*
+        try {
+            Utils.deleteDB(getApplicationContext());
+            Utils.openRenderer(getApplicationContext(), "structured.json");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }*/
+
 
         new Thread() {
             @Override
@@ -130,7 +139,9 @@ public class Splash extends AppCompatActivity implements SyncServiceComplete {
                             public void run() {
                             }
                         });
-                    } catch (Exception e) { e.printStackTrace(); }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
             }.start();
         }

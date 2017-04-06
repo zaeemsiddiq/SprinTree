@@ -33,8 +33,6 @@ class TreeService {
                     t.ageDescription = (String) data;
                 if (attribute.equals("Common Name"))
                     t.commonName = (String) data;
-                if (attribute.equals("CoordinateLocation"))
-                    t.coordinateLocation = (String) data;
                 if (attribute.equals("Date Planted"))
                     t.datePlanted = (String) data;
                 if (attribute.equals("Diameter Breast Height"))
@@ -72,8 +70,6 @@ class TreeService {
                 }
                 if (attribute.equals("Scientific Name"))
                     t.scientificName = (String) data;
-                if (attribute.equals("UploadDate"))
-                    t.uploadDate = (String) data;
                 if (attribute.equals("Useful Life Expectancy"))
                     t.usefulLifeExpectency = (String) data;
                 if (attribute.equals("Useful Life Expectancy Value"))

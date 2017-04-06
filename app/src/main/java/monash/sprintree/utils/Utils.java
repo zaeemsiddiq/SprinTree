@@ -2,16 +2,34 @@ package monash.sprintree.utils;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.AssetFileDescriptor;
+import android.content.res.AssetManager;
+import android.os.ParcelFileDescriptor;
 import android.view.Window;
 import android.view.WindowManager;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.stream.JsonReader;
+import com.orm.SugarRecord;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.FileDescriptor;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Reader;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
+
+import monash.sprintree.data.Tree;
 
 /**
  * Created by Zaeem on 3/27/2017.
@@ -19,15 +37,73 @@ import java.io.InputStream;
 
 public class Utils {
 
-    public String loadJSONFromAsset( ) throws JSONException {
+
+    public static void openRenderer(Context context,String fileName) throws IOException {
+        File file=  FileUtils.fileFromAsset(context, fileName);
+        try {
+            Gson gson = new Gson();
+            JsonReader reader = new JsonReader(new FileReader(file));
+            Type listType = new TypeToken<List<Tree>>(){}.getType();
+            List<Tree> posts = (List<Tree>) gson.fromJson(reader, listType);
+            SugarRecord.saveInTx(posts);
+            reader.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static class FileUtils {
+        private FileUtils() {
+        }
+
+        public static File fileFromAsset(Context context, String assetName) throws IOException {
+            File outFile = new File(context.getCacheDir(), assetName );
+            copy(context.getAssets().open(assetName), outFile);
+
+            return outFile;
+        }
+
+        public static void copy(InputStream inputStream, File output) throws IOException {
+            FileOutputStream outputStream = null;
+
+            try {
+                outputStream = new FileOutputStream(output);
+                boolean read = false;
+                byte[] bytes = new byte[1024];
+
+                int read1;
+                while((read1 = inputStream.read(bytes)) != -1) {
+                    outputStream.write(bytes, 0, read1);
+                }
+            } finally {
+                try {
+                    if(inputStream != null) {
+                        inputStream.close();
+                    }
+                } finally {
+                    if(outputStream != null) {
+                        outputStream.close();
+                    }
+
+                }
+
+            }
+
+        }
+    }
+    public static void readGson(Context context) {
+    }
+
+    public static String loadJSONFromAsset( Context context ) throws JSONException {
         String json = null;
-        /*try {
-            InputStream is = getAssets().open("test.json");
+        try {
+            InputStream is = context.getAssets().open("treeglossary.json");
             int size = is.available();
             byte[] buffer = new byte[size];
-            is.read(buffer)
+            is.read(buffer);
             is.close();
             json = new String(buffer, "UTF-8");
+            System.out.println(json);
         } catch (IOException ex) {
             ex.printStackTrace();
             return null;
@@ -38,7 +114,7 @@ public class Utils {
             JSONArray tree = data.getJSONArray(i);
             String name = tree.get(9).toString();
             System.out.println(name);
-        }*/
+        }
         return json;
     }
 

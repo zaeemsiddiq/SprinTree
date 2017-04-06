@@ -82,12 +82,21 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
         greenTrees = Constants.trees;
         for( Tree tree : greenTrees ) {
             markers.add( new Marker(new LatLng(tree.latitude, tree.longitude), tree.comId, tree.commonName, R.drawable.tree));
-            if( !tree.commonName.equals("Ulmus") ||
-                    !tree.commonName.equals("UNKNOWN") ||
-                    !tree.commonName.equals("Eucalyptus") ||
-                    !tree.commonName.equals("Ulmus") ) {
-                uniqueTrees.add(tree);
+            if (tree == null) {
+                System.out.println("Tree null");
             }
+            if(tree.commonName == null) {
+                System.out.println("common name is null");
+            }
+            else {
+                if( !tree.commonName.equals("Ulmus") ||
+                        !tree.commonName.equals("UNKNOWN") ||
+                        !tree.commonName.equals("Eucalyptus") ||
+                        !tree.commonName.equals("Ulmus") ) {
+                    uniqueTrees.add(tree);
+                }
+            }
+
         }
     }
 
