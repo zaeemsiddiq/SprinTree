@@ -1,6 +1,7 @@
 package monash.sprintree.activities;
 
 import android.Manifest;
+import android.animation.Animator;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -10,6 +11,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -274,6 +276,30 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
 
     @Override
     public void mapReady() {
+        final AppBarLayout appBar = (AppBarLayout)findViewById(R.id.appBar);
+        appBar.animate().translationY(0-appBar.getHeight()).alpha(1.0f)
+                .setListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                appBar.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+
+            }
+        });
+
         Constants.mapFragment.moveCamera(Constants.LAST_LOCATION);
         findViewById(R.id.loadingProgressBar).setVisibility(View.GONE);
         findViewById(R.id.mainFrame).setVisibility(View.VISIBLE);
