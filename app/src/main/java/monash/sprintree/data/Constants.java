@@ -34,6 +34,8 @@ public class Constants {
     /* MAP SETTINGS */
     public static int MAP_ZOOM = 150;
     public static Location LAST_LOCATION;
+    public static int WIKIPEDIA_IMAGE_SIZE = 200; //px
 
+    /* Data Objects */
     public static List<Tree> trees;
 }

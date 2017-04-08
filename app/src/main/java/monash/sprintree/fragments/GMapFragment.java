@@ -5,12 +5,9 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
@@ -31,7 +28,6 @@ import android.widget.Toast;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
@@ -45,25 +41,16 @@ import com.squareup.picasso.Picasso;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 import monash.sprintree.R;
-import monash.sprintree.activities.Splash;
 import monash.sprintree.data.Constants;
 import monash.sprintree.data.Marker;
 import monash.sprintree.data.Tree;
-import monash.sprintree.service.BackgroundTask;
-import monash.sprintree.service.BackgroundTaskComplete;
-import monash.sprintree.service.SyncService;
-import monash.sprintree.service.SyncServiceComplete;
+import monash.sprintree.service.WikimediaService;
+import monash.sprintree.service.WikimediaServiceComplete;
 import monash.sprintree.service.TreeService;
 import monash.sprintree.utils.MapWrapperLayout;
 import monash.sprintree.utils.MultiDrawable;
@@ -74,6 +61,22 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
         ClusterManager.OnClusterItemClickListener<Marker>,
         ClusterManager.OnClusterItemInfoWindowClickListener<Marker> {
 
+    /* References
+    1 - Info Window Reload after loading the picture dynamically:
+    http://stackoverflow.com/questions/16662484/why-custom-infowindow-of-google-map-v2-not-load-url-image
+
+    2 - Clustering:
+    Google map-utils (github)
+
+    3 - Image downloading from URL:
+    http://square.github.io/picasso/
+
+    4 - Opentrees.org wikimedia data loading
+    https://stevebennett.me/2015/04/07/opentrees-org-how-to-aggregate-373000-trees-from-9-open-data-sources/
+    http://www.opentrees.org/v1/index.html#Melbourne-1287384
+
+    5 -
+     */
     private ClusterManager<Marker> mClusterManager;
     /*
     View Objects
@@ -472,7 +475,7 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
         }
     }
 
-    private class MyCustomAdapterForItems implements GoogleMap.InfoWindowAdapter, BackgroundTaskComplete {
+    private class MyCustomAdapterForItems implements GoogleMap.InfoWindowAdapter, WikimediaServiceComplete {
 
         private View myContentsView;
         com.google.android.gms.maps.model.Marker lastMarker;
@@ -502,13 +505,13 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
 
             if( lastTree == null ) {
                 if (!hasImage(imageView)) {
-                    BackgroundTask task = new BackgroundTask(this, imageView, tree);
+                    WikimediaService task = new WikimediaService(this, imageView, tree);
                     task.execute();
                 }
             } else {
                  if (!lastTree.comId.equals(tree.comId)){
                      imageView.setImageDrawable(null);
-                     BackgroundTask task = new BackgroundTask(this, imageView, tree);
+                     WikimediaService task = new WikimediaService(this, imageView, tree);
                      task.execute();
                  }
             }

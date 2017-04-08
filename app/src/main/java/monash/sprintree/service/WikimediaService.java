@@ -13,25 +13,26 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import monash.sprintree.data.Constants;
 import monash.sprintree.data.Tree;
 
 /**
  * Created by Zaeem on 4/7/2017.
  */
 
-public class BackgroundTask extends AsyncTask<Void, Void, JSONObject> {
+public class WikimediaService extends AsyncTask<Void, Void, JSONObject> {
 
     private Tree tree;
     ImageView view;
-    private BackgroundTaskComplete listener;
+    private WikimediaServiceComplete listener;
 
-    public BackgroundTask( BackgroundTaskComplete listener, ImageView view, Tree tree ) {
+    public WikimediaService(WikimediaServiceComplete listener, ImageView view, Tree tree ) {
         this.listener = listener;
         this.view = view;
         this.tree = tree;
     }
     protected JSONObject doInBackground(Void... params) {
-        return request("https://en.wikipedia.org/w/api.php?action=query&format=json&prop=pageimages&redirects&titles="+tree.commonName+"");
+        return request("https://en.wikipedia.org/w/api.php?action=query&format=json&prop=pageimages&redirects&titles="+tree.commonName+"&pithumbsize="+ Constants.WIKIPEDIA_IMAGE_SIZE+"");
     }
     private JSONObject request(String urlString) {
 
