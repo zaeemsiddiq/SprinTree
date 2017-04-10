@@ -83,7 +83,7 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
      */
     List<Marker> nonUniqueTrees;
     List<Marker> uniqueTrees;
-
+    boolean displayAll = true;
     public GMapFragment() { }
 
     public static GMapFragment newInstance( FragmentListener listener, List<Marker> nonUniqueTrees, List<Marker> uniqueTrees) {
@@ -132,10 +132,11 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 Toast.makeText(getActivity(), "Selected"+position, Toast.LENGTH_SHORT).show();
                 if(position == 0) {
-                    addMarkers(true);
+                    displayAll = true;
                 } else {
-                    addMarkers(false);
+                    displayAll = false;
                 }
+                addMarkers(displayAll);
             }
 
             @Override
@@ -234,8 +235,8 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
         mMap.clear();
     }
 
-    public Bitmap resizeTreeIcons(int width, int height){
-        Bitmap imageBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.tree);
+    public Bitmap resizeTreeIcons(int width, int height, Marker marker){
+        Bitmap imageBitmap = BitmapFactory.decodeResource(getResources(),marker.image);
         Bitmap resizedBitmap = Bitmap.createScaledBitmap(imageBitmap, width, height, false);
         return resizedBitmap;
     }
@@ -244,13 +245,14 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
 
         if(isAdded()) {
             mMap.clear();
+
             mClusterManager = new ClusterManager<>(getActivity(), mMap);
             mMap.setInfoWindowAdapter(mClusterManager.getMarkerManager());
             mMap.setOnCameraIdleListener(mClusterManager);
             mClusterManager.setRenderer(new OwnIconRendered(getActivity()));
             mClusterManager.getMarkerCollection().setOnInfoWindowAdapter(new MyCustomAdapterForItems());
-        /* end custom info window clusters */
-            Bitmap tree = resizeTreeIcons(24,24);
+            mClusterManager.clearItems();
+            /* end custom info window clusters */
             if(displayAll) {
                 mClusterManager.addItems(nonUniqueTrees);
                 mClusterManager.addItems(uniqueTrees);
@@ -258,9 +260,8 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
             } else {
                 mClusterManager.addItems(uniqueTrees);
             }
+            mClusterManager.cluster();
         }
-        mClusterManager.cluster();
-
     }
     @Override
     public void onMapReady(GoogleMap googleMap) {
@@ -288,7 +289,7 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
     }
 
     public void moveCamera(Location location) {
-        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+        /*LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
         if(mMap == null) {
             return;
         }
@@ -296,7 +297,7 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
             CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, Constants.MAP_ZOOM);
             mMap.animateCamera(cameraUpdate);
             Constants.LAST_LOCATION = location;
-        }
+        }*/
 
     }
 
@@ -349,7 +350,7 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
         protected void onBeforeClusterItemRendered(Marker marker, MarkerOptions markerOptions) {
             // Draw a single person.
             // Set the info window to show their name.
-            mImageView.setImageResource(R.drawable.tree);
+            mImageView.setImageResource(marker.image);
             Bitmap icon = mIconGenerator.makeIcon();
             markerOptions
                     .icon(BitmapDescriptorFactory.fromBitmap(icon))
@@ -400,7 +401,7 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
         @Override
         protected void onBeforeClusterItemRendered(Marker item, MarkerOptions markerOptions) {
             if( GMapFragment.this.isAdded() ) {
-                markerOptions.icon( BitmapDescriptorFactory.fromBitmap( resizeTreeIcons(24,24) ) );
+                markerOptions.icon( BitmapDescriptorFactory.fromBitmap( resizeTreeIcons(24,24, item) ) );
                 markerOptions.snippet(item.getSnippet());
                 markerOptions.title(item.getTitle());
                 super.onBeforeClusterItemRendered(item, markerOptions);
@@ -410,8 +411,13 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
 
         @Override
         protected void onBeforeClusterRendered(Cluster<Marker> cluster, MarkerOptions markerOptions){
+            final Drawable clusterIcon;
+            if(displayAll) {
+                clusterIcon = getResources().getDrawable(R.drawable.tree);
+            } else {
+                clusterIcon = getResources().getDrawable(R.mipmap.unique_tree);
+            }
 
-            final Drawable clusterIcon = getResources().getDrawable(R.drawable.tree);
             //clusterIcon.setColorFilter(getResources().getColor(android.R.color.holo_orange_light), PorterDuff.Mode.SRC_ATOP);
 
             mClusterIconGenerator.setBackground(clusterIcon);

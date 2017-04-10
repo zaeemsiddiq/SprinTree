@@ -72,13 +72,14 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
 
 
     private void loadData() {
+
         uniqueMarkers = new ArrayList<>();
         nonUniqueMarkers = new ArrayList<>();
         for( Tree tree : Constants.trees ) {
-            if( !tree.commonName.equals("Ulmus") ||
-                    !tree.commonName.equals("UNKNOWN") ||
-                    !tree.commonName.equals("Eucalyptus") ||
-                    !tree.commonName.equals("Ulmus") ) {
+            if( tree.commonName.equals("Ulmus") ||
+                    tree.commonName.equals("UNKNOWN") ||
+                    tree.commonName.equals("Eucalyptus") ||
+                    tree.commonName.equals("Ulmus") ) {
                 uniqueMarkers.add( new Marker(new LatLng(tree.latitude, tree.longitude), tree.comId, tree.commonName, R.mipmap.unique_tree));
             }
             else
