@@ -75,15 +75,19 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
         uniqueMarkers = new ArrayList<>();
         nonUniqueMarkers = new ArrayList<>();
         for( Tree tree : Constants.trees ) {
-            if( tree.commonName.equals("Ulmus") ||
-                    tree.commonName.equals("UNKNOWN") ||
-                    tree.commonName.equals("Eucalyptus") ||
-                    tree.commonName.equals("Ulmus") ) {
-                uniqueMarkers.add( new Marker(new LatLng(tree.latitude, tree.longitude), tree.commonName, tree.commonName, R.mipmap.unique_tree, tree.comId));
+            if(tree.commonName != null) {
+                if( tree.commonName.equals("Ulmus") ||
+                        tree.commonName.equals("UNKNOWN") ||
+                        tree.commonName.equals("Eucalyptus") ||
+                        tree.commonName.equals("Ulmus") ) {
+                    uniqueMarkers.add( new Marker(new LatLng(tree.latitude, tree.longitude), tree.commonName, tree.commonName, R.mipmap.unique_tree, tree.comId));
+                }
+                else {
+                    nonUniqueMarkers.add( new Marker(new LatLng(tree.latitude, tree.longitude), tree.commonName, tree.commonName, R.drawable.tree, tree.comId));
+                }
+            } else {
+                System.out.println("");
             }
-            else
-            nonUniqueMarkers.add( new Marker(new LatLng(tree.latitude, tree.longitude), tree.commonName, tree.commonName, R.drawable.tree, tree.comId));
-
         }
     }
 
@@ -177,7 +181,6 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
         Constants.LAST_LOCATION = location;
         float lat = (float) (location.getLatitude());
         float lng = (float) (location.getLongitude());
-
         System.out.println("Location Changed");
         if(Constants.mapFragment != null) {
             /*float[] results = new float[1]; // initialising a 1d result array to pass into distanceBetween method (source: developers.google.com)
@@ -187,7 +190,7 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
             if(results[0] < 500 ) {
 
             }*/
-            //Constants.mapFragment.moveCamera(location);
+            Constants.mapFragment.moveCamera(location);
         }
     }
 
@@ -218,7 +221,6 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
                     loadData();
                     initLayout();
                 }
-
         }
     }
 
@@ -261,7 +263,6 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
 
     @Override
     public void mapReady() {
-
         Constants.mapFragment.moveCamera(Constants.LAST_LOCATION);
         findViewById(R.id.loadingProgressBar).setVisibility(View.GONE);
         findViewById(R.id.mainFrame).setVisibility(View.VISIBLE);

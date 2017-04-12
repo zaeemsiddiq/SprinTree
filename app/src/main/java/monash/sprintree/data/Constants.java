@@ -32,7 +32,7 @@ public class Constants {
     };
 
     /* MAP SETTINGS */
-    public static int MAP_ZOOM = 150;
+    public static float MAP_ZOOM = 17.0f;
     public static Location LAST_LOCATION;
     public static int WIKIPEDIA_IMAGE_SIZE = 200; //px
 

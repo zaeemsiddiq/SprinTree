@@ -2,6 +2,7 @@ package monash.sprintree.fragments;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -14,6 +15,7 @@ import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,6 +30,7 @@ import android.widget.Toast;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
@@ -156,7 +159,6 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 
-                Toast.makeText(getActivity(), "Selected"+position, Toast.LENGTH_SHORT).show();
                 if(position == 0) {
                     displayAll = true;
                 } else {
@@ -173,7 +175,9 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
 
         startButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-
+                Toast.makeText(getActivity(), "Your journey has started", Toast.LENGTH_SHORT).show();
+                treeView.setSelection(0,true);
+                moveCamera(Constants.LAST_LOCATION);
                 startTime = SystemClock.uptimeMillis();
                 customHandler.postDelayed(updateTimerThread, 0);
                 startButton.setVisibility(View.GONE);
@@ -221,6 +225,23 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
                 stopButton.setVisibility(View.GONE);
                 resumeButton.setVisibility(View.GONE);
                 pauseButton.setVisibility(View.GONE);
+
+                new AlertDialog.Builder(getActivity())
+                        .setTitle("Caution")
+                        .setMessage("Do you want to save your journey ?")
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+
+                            }
+                        })
+                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                // do nothing
+                            }
+                        })
+                        .setIcon(android.R.drawable.button_onoff_indicator_on)
+                        .show();
+
             }
         });
     }
@@ -277,6 +298,8 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
             mMap.setOnCameraIdleListener(mClusterManager);
             mClusterManager.setRenderer(new OwnIconRendered(getActivity()));
             mClusterManager.getMarkerCollection().setOnInfoWindowAdapter(new MyCustomAdapterForItems());
+            mClusterManager.setOnClusterItemClickListener(this);
+
             mClusterManager.clearItems();
             /* end custom info window clusters */
             if(displayAll) {
@@ -313,29 +336,31 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
     }
 
     public void moveCamera(Location location) {
-        /*LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
         if(mMap == null) {
             return;
         } else {
             CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, Constants.MAP_ZOOM);
             mMap.animateCamera(cameraUpdate);
             Constants.LAST_LOCATION = location;
-        }*/
+        }
 
     }
 
     @Override
     public boolean onClusterClick(Cluster<Marker> cluster) {
+        Toast.makeText(getActivity(), "Zoom in to see trees", Toast.LENGTH_SHORT).show();
         return false;
     }
 
     @Override
     public void onClusterInfoWindowClick(Cluster<Marker> cluster) {
-
+        System.out.println("");
     }
 
     @Override
     public boolean onClusterItemClick(Marker marker) {
+        System.out.println("");
         return false;
     }
 
@@ -433,6 +458,11 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
         }
 
         @Override
+        public void setOnClusterClickListener(ClusterManager.OnClusterClickListener<Marker> listener) {
+            super.setOnClusterClickListener(listener);
+        }
+
+        @Override
         protected void onBeforeClusterRendered(Cluster<Marker> cluster, MarkerOptions markerOptions){
             final Drawable clusterIcon;
             if(displayAll) {
@@ -487,7 +517,7 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
                     .findViewById(R.id.wikiImage));
             Tree tree = TreeService.findTreeByPosition(marker.getPosition());
 
-            if( lastTree == null ) {
+            /*if( lastTree == null ) {
                 if (!hasImage(imageView)) {
                     WikimediaService task = new WikimediaService(this, imageView, tree);
                     task.execute();
@@ -498,7 +528,7 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
                      WikimediaService task = new WikimediaService(this, imageView, tree);
                      task.execute();
                  }
-            }
+            }*/
             lastTree = tree;
 
             tvTitle.setText(marker.getTitle());
