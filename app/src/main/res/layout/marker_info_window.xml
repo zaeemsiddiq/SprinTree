@@ -5,6 +5,11 @@
     android:padding="20dp"
     android:orientation="vertical">
 
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/wikiImage"
+        />
     <TextView
         android:id="@+id/txtTitle"
         android:textColor="#D3649F"

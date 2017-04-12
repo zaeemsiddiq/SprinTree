@@ -20,16 +20,19 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.maps.android.clustering.ClusterItem;
 
 public class Marker implements ClusterItem {
-    public final String title;
+    private final String title;
     public final int image;
     private final LatLng mPosition;
     private final String snippet;
+    private final String comId;
 
-    public Marker(LatLng position, String title, String snippet, int pictureResource) {
+
+    public Marker(LatLng position, String title, String snippet, int pictureResource, String comId) {
         this.title = title;
         this.snippet = snippet;
         image = pictureResource;
         mPosition = position;
+        this.comId = comId;
     }
 
     @Override
@@ -46,4 +49,5 @@ public class Marker implements ClusterItem {
     public String getSnippet() {
         return snippet;
     }
+
 }

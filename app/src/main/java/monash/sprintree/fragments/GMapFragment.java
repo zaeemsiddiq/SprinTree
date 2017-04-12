@@ -5,13 +5,13 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
-import android.graphics.PorterDuff;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
@@ -28,7 +28,6 @@ import android.widget.Toast;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
@@ -37,14 +36,22 @@ import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterManager;
 import com.google.maps.android.clustering.view.DefaultClusterRenderer;
 import com.google.maps.android.ui.IconGenerator;
+import com.squareup.picasso.Picasso;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import monash.sprintree.R;
 import monash.sprintree.data.Constants;
 import monash.sprintree.data.Marker;
 import monash.sprintree.data.Tree;
+import monash.sprintree.service.WikimediaService;
+import monash.sprintree.service.WikimediaServiceComplete;
+import monash.sprintree.service.TreeService;
 import monash.sprintree.utils.MapWrapperLayout;
 import monash.sprintree.utils.MultiDrawable;
 
@@ -54,6 +61,22 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
         ClusterManager.OnClusterItemClickListener<Marker>,
         ClusterManager.OnClusterItemInfoWindowClickListener<Marker> {
 
+    /* References
+    1 - Info Window Reload after loading the picture dynamically:
+    http://stackoverflow.com/questions/16662484/why-custom-infowindow-of-google-map-v2-not-load-url-image
+
+    2 - Clustering:
+    Google map-utils (github)
+
+    3 - Image downloading from URL:
+    http://square.github.io/picasso/
+
+    4 - Opentrees.org wikimedia data loading
+    https://stevebennett.me/2015/04/07/opentrees-org-how-to-aggregate-373000-trees-from-9-open-data-sources/
+    http://www.opentrees.org/v1/index.html#Melbourne-1287384
+
+    5 -
+     */
     private ClusterManager<Marker> mClusterManager;
     /*
     View Objects
@@ -81,12 +104,14 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
     /*
     Data Objects
      */
+
     List<Marker> nonUniqueTrees;
     List<Marker> uniqueTrees;
     boolean displayAll = true;
     public GMapFragment() { }
 
     public static GMapFragment newInstance( FragmentListener listener, List<Marker> nonUniqueTrees, List<Marker> uniqueTrees) {
+
         GMapFragment fragment = new GMapFragment();
         fragment.listener = listener;
         fragment.nonUniqueTrees = nonUniqueTrees;
@@ -130,6 +155,7 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
         treeView.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
                 Toast.makeText(getActivity(), "Selected"+position, Toast.LENGTH_SHORT).show();
                 if(position == 0) {
                     displayAll = true;
@@ -183,13 +209,13 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
 
             public void onClick(View view) {
                 customHandler.removeCallbacksAndMessages(null);
-                timeInMilliseconds = 0L ;
-                startTime = 0L ;
-                timeSwapBuff = 0L ;
-                updatedTime = 0L ;
-                secs = 0 ;
-                mins = 0 ;
-                hrs = 0 ;
+                timeInMilliseconds = 0L;
+                startTime = 0L;
+                timeSwapBuff = 0L;
+                updatedTime = 0L;
+                secs = 0;
+                mins = 0;
+                hrs = 0;
                 timerValue.setText("00:00:00");
                 startButton.setVisibility(View.VISIBLE);
                 stopButton.setVisibility(View.GONE);
@@ -263,14 +289,12 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
             mClusterManager.cluster();
         }
     }
+
     @Override
     public void onMapReady(GoogleMap googleMap) {
 
         mMap = googleMap;
         /* for custom info window clusters */
-
-
-
 
 
         addMarkers(true);
@@ -292,8 +316,7 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
         /*LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
         if(mMap == null) {
             return;
-        }
-        else {
+        } else {
             CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, Constants.MAP_ZOOM);
             mMap.animateCamera(cameraUpdate);
             Constants.LAST_LOCATION = location;
@@ -436,11 +459,13 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
         }
     }
 
-    private class MyCustomAdapterForItems implements GoogleMap.InfoWindowAdapter {
+    private class MyCustomAdapterForItems implements GoogleMap.InfoWindowAdapter, WikimediaServiceComplete {
 
-        private final View myContentsView;
+        private View myContentsView;
+        com.google.android.gms.maps.model.Marker lastMarker;
+        private Tree lastTree;
 
-        public MyCustomAdapterForItems() {
+        private MyCustomAdapterForItems() {
             myContentsView = getActivity().getLayoutInflater().inflate(
                     R.layout.marker_info_window, null);
         }
@@ -451,16 +476,92 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
         }
 
         @Override
-        public View getInfoContents(com.google.android.gms.maps.model.Marker marker) {
+        public View getInfoContents(final com.google.android.gms.maps.model.Marker marker) {
+            lastMarker = marker;
+
             TextView tvTitle = ((TextView) myContentsView
                     .findViewById(R.id.txtTitle));
             TextView tvSnippet = ((TextView) myContentsView
                     .findViewById(R.id.txtSnippet));
+            ImageView imageView = ((ImageView) myContentsView
+                    .findViewById(R.id.wikiImage));
+            Tree tree = TreeService.findTreeByPosition(marker.getPosition());
+
+            if( lastTree == null ) {
+                if (!hasImage(imageView)) {
+                    WikimediaService task = new WikimediaService(this, imageView, tree);
+                    task.execute();
+                }
+            } else {
+                 if (!lastTree.comId.equals(tree.comId)){
+                     imageView.setImageDrawable(null);
+                     WikimediaService task = new WikimediaService(this, imageView, tree);
+                     task.execute();
+                 }
+            }
+            lastTree = tree;
 
             tvTitle.setText(marker.getTitle());
             tvSnippet.setText(marker.getSnippet());
-
             return myContentsView;
+        }
+
+        @Override
+        public void wikiImageComplete(JSONObject result, ImageView view) {
+            String source = "";
+            try {
+                source = recurseKeys(result, "source");
+                if(!source.equals("")) {
+                    Picasso.with(getActivity()).load(source).into(view, new com.squareup.picasso.Callback() {
+                        @Override
+                        public void onSuccess() {
+                            lastMarker.setVisible(true);
+                            lastMarker.hideInfoWindow();
+                            getInfoWindow(lastMarker);
+                            lastMarker.showInfoWindow();
+                        }
+
+                        @Override
+                        public void onError() {
+
+                        }
+                    });
+                }
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+
+        }
+
+        String recurseKeys(JSONObject jObj, String findKey) throws JSONException {
+
+            Iterator<?> keys = jObj.keys();
+            String key = "";
+
+            while (keys.hasNext() && !key.equalsIgnoreCase(findKey)) {
+                key = (String) keys.next();
+
+                if (key.equalsIgnoreCase(findKey)) {
+                    return jObj.getString(key);
+                }
+                if (jObj.get(key) instanceof JSONObject) {
+                    return recurseKeys((JSONObject)jObj.get(key), findKey);
+                }
+            }
+
+            return "";
+        }
+
+        private boolean hasImage(@NonNull ImageView view) {
+            Drawable drawable = view.getDrawable();
+            boolean hasImage = (drawable != null);
+
+            if (hasImage && (drawable instanceof BitmapDrawable)) {
+                hasImage = ((BitmapDrawable) drawable).getBitmap() != null;
+            }
+            return hasImage;
         }
     }
 }

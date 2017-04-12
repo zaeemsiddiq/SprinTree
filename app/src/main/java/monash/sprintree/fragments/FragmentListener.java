@@ -6,4 +6,5 @@ package monash.sprintree.fragments;
 
 public interface FragmentListener {
     public void mapReady();
+    public void mapButtonPressed( int buttonIdentifier );
 }

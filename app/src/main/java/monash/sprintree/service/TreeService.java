@@ -1,4 +1,5 @@
 package monash.sprintree.service;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.database.DataSnapshot;
 import monash.sprintree.data.Tree;
 
@@ -14,7 +15,7 @@ import monash.sprintree.data.Tree;
  * Created by Zaeem on 3/28/2017.
  */
 
-class TreeService {
+public class TreeService {
 
     static String saveTrees(DataSnapshot dataSnapshot) {
         List<Tree> trees = new ArrayList<>();
@@ -33,8 +34,6 @@ class TreeService {
                     t.ageDescription = (String) data;
                 if (attribute.equals("Common Name"))
                     t.commonName = (String) data;
-                if (attribute.equals("CoordinateLocation"))
-                    t.coordinateLocation = (String) data;
                 if (attribute.equals("Date Planted"))
                     t.datePlanted = (String) data;
                 if (attribute.equals("Diameter Breast Height"))
@@ -72,8 +71,6 @@ class TreeService {
                 }
                 if (attribute.equals("Scientific Name"))
                     t.scientificName = (String) data;
-                if (attribute.equals("UploadDate"))
-                    t.uploadDate = (String) data;
                 if (attribute.equals("Useful Life Expectancy"))
                     t.usefulLifeExpectency = (String) data;
                 if (attribute.equals("Useful Life Expectancy Value"))
@@ -88,5 +85,13 @@ class TreeService {
         }
         SugarRecord.saveInTx(trees);
         return comId;   // return the
+    }
+
+    public static Tree findTreeByPosition(LatLng position) {
+        List<Tree> trees = Tree.findWithQuery(Tree.class, "SELECT * FROM TREE WHERE LATITUDE = '" + position.latitude + "' AND LONGITUDE = '" + position.longitude + "'");
+        if (trees.size() > 0) {
+            return trees.get(0);
+        }
+        return new Tree();
     }
 }
