@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#23B665</color>
-    <color name="colorPrimaryDark">#23B665</color>
+    <color name="colorPrimary">@android:color/holo_green_light</color>
+    <color name="colorPrimaryDark">@android:color/holo_green_light</color>
     <color name="colorAccent">#FF4081</color> <!-- FF4081 was original -->
     <color name="steel">#23B665</color>
     <color name="olive_light">#E6F3EC</color>
