@@ -183,6 +183,7 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
                 startButton.setVisibility(View.GONE);
                 pauseButton.setVisibility(View.VISIBLE);
                 stopButton.setVisibility(View.VISIBLE);
+                listener.mapButtonPressed(Constants.FRAGMENT_BUTTON_START);
             }
         });
 
@@ -195,6 +196,7 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
                 resumeButton.setVisibility(View.GONE);
                 pauseButton.setVisibility(View.VISIBLE);
                 //timerValue.setVisibility(View.VISIBLE);
+                listener.mapButtonPressed(Constants.FRAGMENT_BUTTON_RESUME);
             }
         });
 
@@ -205,7 +207,7 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
                 customHandler.removeCallbacks(updateTimerThread);
                 pauseButton.setVisibility(View.GONE);
                 resumeButton.setVisibility(View.VISIBLE);
-
+                listener.mapButtonPressed(Constants.FRAGMENT_BUTTON_PAUSE);
             }
         });
 
@@ -226,21 +228,7 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
                 resumeButton.setVisibility(View.GONE);
                 pauseButton.setVisibility(View.GONE);
 
-                new AlertDialog.Builder(getActivity())
-                        .setTitle("Caution")
-                        .setMessage("Do you want to save your journey ?")
-                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-
-                            }
-                        })
-                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                // do nothing
-                            }
-                        })
-                        .setIcon(android.R.drawable.button_onoff_indicator_on)
-                        .show();
+                listener.mapButtonPressed(Constants.FRAGMENT_BUTTON_STOP);
 
             }
         });
@@ -265,10 +253,6 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
         }
 
     };
-
-    protected void RefreshMap() {
-
-    }
 
     @Override
     public void onDetach() {
@@ -349,7 +333,6 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
 
     @Override
     public boolean onClusterClick(Cluster<Marker> cluster) {
-        Toast.makeText(getActivity(), "Zoom in to see trees", Toast.LENGTH_SHORT).show();
         return false;
     }
 

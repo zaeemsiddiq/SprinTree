@@ -3,9 +3,9 @@
     <color name="colorPrimary">@android:color/holo_green_light</color>
     <color name="colorPrimaryDark">@android:color/holo_green_light</color>
     <color name="colorAccent">#FF4081</color> <!-- FF4081 was original -->
-    <color name="steel">#23B665</color>
+    <color name="steel">@android:color/holo_green_light</color>
     <color name="olive_light">#E6F3EC</color>
-    <color name="olive_dark">#088040</color>
+    <color name="olive_dark">#FFFFFF</color>
     <color name="coal">#545454</color>
     <color name="green_light">#23B665</color>
     <color name="green_dark">#088040</color>

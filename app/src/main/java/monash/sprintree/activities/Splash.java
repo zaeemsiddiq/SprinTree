@@ -1,36 +1,25 @@
 package monash.sprintree.activities;
 
+import monash.sprintree.data.Journey;
+import monash.sprintree.data.JourneyPath;
 import monash.sprintree.data.Tree;
 
-import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.firebase.FirebaseApp;
-import com.orm.SugarRecord;
 
 
-import org.json.JSONException;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.List;
 
 import monash.sprintree.R;
 import monash.sprintree.data.Constants;
-import monash.sprintree.data.Tree;
 import monash.sprintree.service.SyncService;
 import monash.sprintree.service.SyncServiceComplete;
 import monash.sprintree.utils.Utils;
@@ -58,15 +47,39 @@ public class Splash extends AppCompatActivity implements SyncServiceComplete {
             finish();
         }
         initiateLayout();
-        /*
-        try {
-            Utils.deleteDB(getApplicationContext());
-            Utils.openRenderer(getApplicationContext(), "structured.json");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }*/
+        //deleteDB();
+        startLoading();
+        //test();
+    }
+    private void test() {
+        Journey journey = new Journey();
+        journey.timestamp = Utils.getCurrentTimeStamp();
+        journey.date = Utils.getTodaysDate();
+        journey.score = 100;
 
+        journey.save();
 
+        List<JourneyPath> journeyPaths = new ArrayList<>();
+        JourneyPath journeyPath = new JourneyPath();
+        journeyPath.latitude = 11.11;
+        journeyPath.longitude = 12.11;
+        journeyPath.timestamp = Utils.getCurrentTimeStamp();
+        journeyPath.journey = journey;
+        journeyPath.save();
+
+        JourneyPath journeyPath1 = new JourneyPath();
+        journeyPath1.latitude = 11.22;
+        journeyPath1.longitude = 12.22;
+        journeyPath1.timestamp = Utils.getCurrentTimeStamp();
+        journeyPath1.journey = journey;
+        journeyPath1.save();
+
+        journeyPaths = journey.getPath();
+
+        System.out.println("asd");
+    }
+
+    private void startLoading() {
         new Thread() {
             @Override
             public void run() {
@@ -78,8 +91,13 @@ public class Splash extends AppCompatActivity implements SyncServiceComplete {
                         @Override
                         public void run() {
                             if (trees.size() == 0) { // if the database is empty, load the trees from firebase
-                                SyncService service = new SyncService(Splash.this);
-                                service.firebaseStart();
+                                //SyncService service = new SyncService(Splash.this);
+                                //service.firebaseStart();
+                                try {
+                                    Utils.openRenderer(getApplicationContext(), "structured.json");
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
                             } else {
                                 startMapsActivity();
                             }
@@ -90,6 +108,15 @@ public class Splash extends AppCompatActivity implements SyncServiceComplete {
                 }
             }
         }.start();
+    }
+
+    private void deleteDB() {
+        try {
+            Utils.deleteDB(getApplicationContext());
+            Utils.openRenderer(getApplicationContext(), "structured.json");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void startMapsActivity() {

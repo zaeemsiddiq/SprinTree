@@ -13,14 +13,10 @@ import monash.sprintree.fragments.HistoryFragment;
 
 public class Constants {
 
+
+
+
     public static int REQUEST_EXIT = 0;
-
-    /* Fragment instances */
-    public static GMapFragment mapFragment;
-    public static HistoryFragment historyFragment;
-
-    public static int FRAGMENT_MAP = 0; // used to map tab positions
-    public static int FRAGMENT_HISTORY = 1;
 
     //public static int TOTAL_TREES = 66949;
     public static int TOTAL_TREES = 3000;
@@ -38,4 +34,9 @@ public class Constants {
 
     /* Data Objects */
     public static List<Tree> trees;
+
+    public static final int FRAGMENT_BUTTON_START     = 1;
+    public static final int FRAGMENT_BUTTON_PAUSE     = 2;
+    public static final int FRAGMENT_BUTTON_RESUME    = 3;
+    public static final int FRAGMENT_BUTTON_STOP      = 4;
 }

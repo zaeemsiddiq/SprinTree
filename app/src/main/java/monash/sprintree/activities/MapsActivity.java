@@ -17,10 +17,12 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.NotificationCompatBase;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
@@ -28,6 +30,9 @@ import java.util.List;
 
 import monash.sprintree.R;
 import monash.sprintree.data.Constants;
+import monash.sprintree.data.Journey;
+import monash.sprintree.data.JourneyPath;
+import monash.sprintree.data.JourneyTree;
 import monash.sprintree.data.Marker;
 import monash.sprintree.data.Tree;
 import monash.sprintree.fragments.FragmentListener;
@@ -36,6 +41,14 @@ import monash.sprintree.fragments.HistoryFragment;
 import monash.sprintree.utils.Utils;
 
 public class MapsActivity extends FragmentActivity implements LocationListener, FragmentListener {
+
+    /*
+    Fragment objects
+     */
+    private GMapFragment mapFragment;
+    private HistoryFragment historyFragment;
+    public static int FRAGMENT_MAP = 0; // used to map tab positions
+    public static int FRAGMENT_HISTORY = 1;
 
     /*
     View Objects
@@ -51,6 +64,16 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
      */
     List<Marker> nonUniqueMarkers;
     List<Marker> uniqueMarkers;
+
+    /*
+    Journey Objects
+     */
+    boolean JOURNEY_STARTED;
+    Journey journey;
+    int journeyScore;
+    List<JourneyPath> journeyPathList;
+    List<JourneyTree> journeyTreeList;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,9 +91,12 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
 
     }
 
-
-
     private void loadData() {
+        JOURNEY_STARTED = false;
+        journey = new Journey();
+        journeyScore = 0;
+        journeyPathList = new ArrayList<>();
+        journeyTreeList = new ArrayList<>();
 
         uniqueMarkers = new ArrayList<>();
         nonUniqueMarkers = new ArrayList<>();
@@ -80,10 +106,10 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
                         tree.commonName.equals("UNKNOWN") ||
                         tree.commonName.equals("Eucalyptus") ||
                         tree.commonName.equals("Ulmus") ) {
-                    uniqueMarkers.add( new Marker(new LatLng(tree.latitude, tree.longitude), tree.commonName, tree.commonName, R.mipmap.unique_tree, tree.comId));
+                    uniqueMarkers.add( new Marker(new LatLng(tree.latitude, tree.longitude), tree.commonName, tree.scientificName, R.mipmap.unique_tree, tree.comId));
                 }
                 else {
-                    nonUniqueMarkers.add( new Marker(new LatLng(tree.latitude, tree.longitude), tree.commonName, tree.commonName, R.drawable.tree, tree.comId));
+                    nonUniqueMarkers.add( new Marker(new LatLng(tree.latitude, tree.longitude), tree.commonName, tree.scientificName, R.drawable.tree, tree.comId));
                 }
             } else {
                 System.out.println("");
@@ -94,9 +120,9 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
 
     private void initLayout() {
         initiateTabsLayout();
-        Constants.mapFragment = GMapFragment.newInstance(MapsActivity.this, nonUniqueMarkers, uniqueMarkers);
-        Constants.historyFragment = HistoryFragment.newInstance(this);
-        selectTab(Constants.FRAGMENT_MAP);
+        mapFragment = GMapFragment.newInstance(MapsActivity.this, nonUniqueMarkers, uniqueMarkers);
+        historyFragment = HistoryFragment.newInstance(this);
+        selectTab(FRAGMENT_MAP);
     }
 
     private void initiateTabsLayout() { // adding the tabs dynamically
@@ -111,25 +137,25 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
             public void onTabSelected(TabLayout.Tab tab) {
                 System.out.println(tab.getPosition());
                 if(tab.getPosition() == 0) {
-                    if(Constants.mapFragment != null) {
+                    if(mapFragment != null) {
                         // hide the current fragment first
                         hideFragment(currentFragment);
                         // add/show the fragment
-                        showFragment(Constants.mapFragment);
+                        showFragment(mapFragment);
                         // set the current fragment to this one
-                        currentFragment = Constants.mapFragment;
+                        currentFragment = mapFragment;
                     }
                 }
                 if(tab.getPosition() == 1) {
                     Toast.makeText(MapsActivity.this, "This feature will be added in upcoming versions", Toast.LENGTH_SHORT).show();
                     /*
-                    if(Constants.historyFragment != null) {
+                    if(historyFragment != null) {
                         // hide the current fragment first
                         hideFragment(currentFragment);
                         // add/show the fragment
-                        showFragment(Constants.historyFragment);
+                        showFragment(historyFragment);
                         // set the current fragment to this one
-                        currentFragment = Constants.historyFragment;
+                        currentFragment = historyFragment;
                     }*/
                 }
                 if(tab.getPosition() == 2) {
@@ -178,20 +204,52 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
 
     @Override
     public void onLocationChanged(Location location) {
+        List<Journey> journeyList = Journey.find(Journey.class, "1");
+        Journey journey;
+        if(journeyList.size() > 0 ) {
+            journey = journeyList.get(0);
+        } else {
+            journey = new Journey();
+            journey.score = 100;
+            journey.date = Utils.getTodaysDate();
+            journey.save();
+        }
+
         Constants.LAST_LOCATION = location;
+
+
         float lat = (float) (location.getLatitude());
         float lng = (float) (location.getLongitude());
-        System.out.println("Location Changed");
-        if(Constants.mapFragment != null) {
-            /*float[] results = new float[1]; // initialising a 1d result array to pass into distanceBetween method (source: developers.google.com)
-            Location.distanceBetween(lat,lng, previousStop.getStopLatitude(), previousStop.getStopLongitude(),results); // in case of 0 previous stop is the starting stop
-            System.out.println("*******StopsWalker" + results[0]);
 
-            if(results[0] < 500 ) {
-
-            }*/
-            Constants.mapFragment.moveCamera(location);
+        if(JOURNEY_STARTED) {
+            addJourneyPathToList(lat, lng);
+            calculateAndAddNearestTree(lat, lng);
+            mapFragment.moveCamera(location);
         }
+        System.out.println("Location Changed");
+
+    }
+
+    private void calculateAndAddNearestTree(float lat, float lng) {
+        if(mapFragment != null) {
+            //float[] results = new float[1]; // initialising a 1d result array to pass into distanceBetween method (source: developers.google.com)
+            for(Marker marker : nonUniqueMarkers) {
+                float[] results = new float[1];
+                Location.distanceBetween(lat,lng, marker.getPosition().latitude, marker.getPosition().longitude, results); // in case of 0 previous stop is the starting stop
+                if(results[0] < 5.00 ) {
+                    System.out.println("tree found" + marker.getTitle());
+                    Toast.makeText(this, "tree found" + marker.getTitle(), Toast.LENGTH_SHORT).show();
+                }
+            }
+        }
+    }
+
+    private void addJourneyPathToList(float lat, float lng) {
+        JourneyPath journeyPath = new JourneyPath();
+        journeyPath.latitude = lat;
+        journeyPath.longitude = lng;
+        journeyPath.timestamp = Utils.getCurrentTimeStamp();
+        journeyPathList.add(journeyPath);
     }
 
     @Override
@@ -248,14 +306,14 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
         ft.commit();
     }
     public void selectTab(int fragmentNumber) {
-        if(fragmentNumber == Constants.FRAGMENT_MAP) {
+        if(fragmentNumber == FRAGMENT_MAP) {
             hideFragment(currentFragment);
-            showFragment(Constants.mapFragment);
-            currentFragment = Constants.mapFragment;
-        } else  if(fragmentNumber == Constants.FRAGMENT_HISTORY) {
+            showFragment(mapFragment);
+            currentFragment = mapFragment;
+        } else  if(fragmentNumber == FRAGMENT_HISTORY) {
             hideFragment(currentFragment);
-            showFragment(Constants.historyFragment);
-            currentFragment = Constants.historyFragment;
+            showFragment(historyFragment);
+            currentFragment = historyFragment;
         }
         TabLayout.Tab tab = tabLayoutDashboard.getTabAt(fragmentNumber);
         tab.select();
@@ -263,14 +321,51 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
 
     @Override
     public void mapReady() {
-        Constants.mapFragment.moveCamera(Constants.LAST_LOCATION);
+        mapFragment.moveCamera(Constants.LAST_LOCATION);
         findViewById(R.id.loadingProgressBar).setVisibility(View.GONE);
         findViewById(R.id.mainFrame).setVisibility(View.VISIBLE);
     }
 
     @Override
     public void mapButtonPressed(int buttonIdentifier) {
+        switch (buttonIdentifier) {
+            case Constants.FRAGMENT_BUTTON_START:
+                JOURNEY_STARTED = true;
+                break;
 
+            case Constants.FRAGMENT_BUTTON_PAUSE:
+                JOURNEY_STARTED = false;
+                break;
+
+            case Constants.FRAGMENT_BUTTON_RESUME:
+                JOURNEY_STARTED = true;
+                break;
+
+            case Constants.FRAGMENT_BUTTON_STOP:
+                JOURNEY_STARTED = false;
+                new AlertDialog.Builder(this)
+                        .setTitle("Caution")
+                        .setMessage("Do you want to save your journey ?")
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                saveJourney();
+                            }
+                        })
+                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                            }
+                        })
+                        .setIcon(android.R.drawable.ic_menu_help)
+                        .show();
+                break;
+        }
+    }
+
+    private void saveJourney() {
+        journey.score = journeyScore;
+        journey.date = Utils.getTodaysDate();
+        journey.timestamp = Utils.getCurrentTimeStamp();
+        journey.save();
     }
 
     @Override
@@ -296,7 +391,6 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
     }
 
     protected void stopLocationUpdates() {
-        System.out.println("Stoping location updates");
         locationManager.removeUpdates(this);
     }
 }
