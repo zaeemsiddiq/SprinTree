@@ -36,6 +36,8 @@ dependencies {
     // https://mvnrepository.com/artifact/com.google.code.gson/gson
     compile group: 'com.google.code.gson', name: 'gson', version: '1.7.2'
     compile 'com.squareup.picasso:picasso:2.5.2'
+    //https://github.com/robinhood/ticker
+    compile 'com.robinhood.ticker:ticker:1.1.1'
 }
 // ADD THIS AT THE BOTTOM
 apply plugin: 'com.google.gms.google-services'

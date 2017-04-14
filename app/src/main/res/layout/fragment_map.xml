@@ -7,22 +7,83 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:weightSum="100">
-            <TextView
-                android:id="@+id/timerValue"
+            <LinearLayout
+                android:layout_width="0px"
+                android:layout_weight="20"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_height="wrap_content"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/tree"/>
+                <com.robinhood.ticker.TickerView
+                    android:id="@+id/treeCounter"
+                    android:layout_gravity="center"
+                    android:textSize="30sp"
+                    android:gravity="center"
+                    android:textColor="@color/colorPrimary"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+            <LinearLayout
                 android:layout_width="0px"
                 android:layout_weight="50"
-                android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:textSize="40sp"
-                android:gravity="center"
-                android:textColor="#000000"
-                android:text="00:00:00" />
+                android:layout_gravity="center"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <com.robinhood.ticker.TickerView
+                    android:id="@+id/timerHours"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="40sp"
+                    android:gravity="center"
+                    android:layout_gravity="center"
+                    android:textColor="#000000" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_height="wrap_content"
+                    android:textSize="40sp"
+                    android:gravity="center"
+                    android:textColor="#000000"
+                    android:text=":"/>
+                <com.robinhood.ticker.TickerView
+                    android:id="@+id/timerMins"
+                    android:layout_gravity="center"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="40sp"
+                    android:gravity="center"
+                    android:textColor="#000000" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_height="wrap_content"
+                    android:textSize="40sp"
+                    android:gravity="center"
+                    android:textColor="#000000"
+                    android:text=":"/>
+                <com.robinhood.ticker.TickerView
+                    android:id="@+id/timerSecs"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:textSize="40sp"
+                    android:gravity="center"
+                    android:textColor="#000000" />
+            </LinearLayout>
+
             <Spinner
                 android:layout_width="0px"
                 android:layout_weight="30"
@@ -47,8 +108,9 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="60sp"
-                    android:textColor="@color/colorPrimary"
+                    android:textSize="90sp"
+                    android:textColor="@color/coal"
+                    android:textStyle="bold"
                     android:id="@+id/countdown"
                     android:layout_centerInParent="true"/>
             </RelativeLayout>

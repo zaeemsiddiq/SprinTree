@@ -11,6 +11,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
 import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -102,7 +103,8 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
 
         uniqueMarkers = new ArrayList<>();
         nonUniqueMarkers = new ArrayList<>();
-        for( Tree tree : Constants.trees ) {
+
+        for( Tree tree : radiusBoundedTrees(500) ) {
             if(tree.commonName != null) {
                 if( tree.commonName.equals("Ulmus") ||
                         tree.commonName.equals("UNKNOWN") ||
@@ -119,6 +121,18 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
         }
     }
 
+    private List<Tree> radiusBoundedTrees( float radius_meters ) {
+        List<Tree> nearestTrees = new ArrayList<>();
+        Location myLocation = Constants.LAST_LOCATION;
+        for( Tree tree : Constants.trees ) {
+            float[] results = new float[1];
+            Location.distanceBetween(myLocation.getLatitude(), myLocation.getLongitude(), tree.latitude, tree.longitude, results); // in case of 0 previous stop is the starting stop
+            if(results[0] < radius_meters ) {
+                nearestTrees.add(tree);
+            }
+        }
+        return nearestTrees;
+    }
 
     private void initLayout() {
         initiateTabsLayout();
@@ -254,8 +268,9 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
                         JourneyTree journeyTree = new JourneyTree();
                         journeyTree.tree = nearestTree;
                         journeyTreeList.add( journeyTree );
-                        System.out.println("tree found" + marker.getTitle());
-                        Toast.makeText(this, "tree found" + marker.getTitle(), Toast.LENGTH_SHORT).show();
+                        journeyScore += 10;
+                        mapFragment.updateViews(journeyScore);
+                        Snackbar.make(getWindow().getDecorView().getRootView(), "Tree Unlocked - " + marker.getTitle(), Snackbar.LENGTH_LONG).show();
                     }
                 }
             }

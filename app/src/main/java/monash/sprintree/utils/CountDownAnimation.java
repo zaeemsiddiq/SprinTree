@@ -28,6 +28,7 @@ import android.widget.TextView;
  * @author Ivan Ridao Freitas
  * 
  */
+//https://github.com/IvanRF/CountDownAnimation
 public class CountDownAnimation {
 
 	private TextView mTextView;

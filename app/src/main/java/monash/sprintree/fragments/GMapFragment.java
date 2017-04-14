@@ -36,12 +36,15 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterManager;
 import com.google.maps.android.clustering.view.DefaultClusterRenderer;
 import com.google.maps.android.ui.IconGenerator;
+import com.robinhood.ticker.TickerUtils;
+import com.robinhood.ticker.TickerView;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONException;
@@ -95,8 +98,11 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
 
     MapWrapperLayout mapWrapperLayout;
 
+    TickerView treeScore;
     private Button startButton, pauseButton, resumeButton, stopButton;
-    private TextView timerValue;
+    private TickerView timerValueHours;
+    private TickerView timerValueMins;
+    private TickerView timerValueSecs;
     private TextView countdown;
     CountDownAnimation countDownAnimation;
     Spinner treeView;
@@ -148,7 +154,22 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
     }
 
     private void initiateLayout(View view) {
-        timerValue = (TextView) view.findViewById(R.id.timerValue);
+        treeScore = (TickerView) view.findViewById(R.id.treeCounter);
+        treeScore.setCharacterList(TickerUtils.getDefaultNumberList());
+        treeScore.setText("0");
+
+        timerValueHours = (TickerView) view.findViewById(R.id.timerHours);
+        timerValueHours.setCharacterList(TickerUtils.getDefaultNumberList());
+        timerValueHours.setText("00");
+
+        timerValueMins = (TickerView) view.findViewById(R.id.timerMins);
+        timerValueMins.setCharacterList(TickerUtils.getDefaultNumberList());
+        timerValueMins.setText("00");
+
+        timerValueSecs = (TickerView) view.findViewById(R.id.timerSecs);
+        timerValueSecs.setCharacterList(TickerUtils.getDefaultNumberList());
+        timerValueSecs.setText("00");
+
         countdown = (TextView) view.findViewById(R.id.countdown);
         startButton = (Button) view.findViewById(R.id.startButton);
         pauseButton = (Button) view.findViewById(R.id.pauseButton);
@@ -229,7 +250,9 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
                 secs = 0;
                 mins = 0;
                 hrs = 0;
-                timerValue.setText("00:00:00");
+                timerValueHours.setText("00");
+                timerValueMins.setText("00");
+                timerValueSecs.setText("00");
                 startButton.setVisibility(View.VISIBLE);
                 stopButton.setVisibility(View.GONE);
                 resumeButton.setVisibility(View.GONE);
@@ -239,6 +262,10 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
 
             }
         });
+    }
+
+    public void updateViews(int score) {
+        treeScore.setText(String.valueOf(score));
     }
 
     private Runnable updateTimerThread = new Runnable() {
@@ -254,8 +281,10 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
             hrs = mins / 60;
             secs = secs % 60;
             int milliseconds = (int) (updatedTime % 1000);
-            timerValue.setText(String.format("%02d", hrs) + ":" + String.format("%02d", mins) + ":"
-                    + String.format("%02d", secs));
+            timerValueHours.setText(String.format("%02d", hrs));
+            timerValueMins.setText(String.format("%02d", mins));
+            timerValueSecs.setText(String.format("%02d", secs));
+
             customHandler.postDelayed(this, 0);
         }
 
@@ -330,7 +359,7 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
         if(mMap == null) {
             return;
         } else {
-            CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, Constants.MAP_ZOOM);
+            CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLng(latLng);
             mMap.animateCamera(cameraUpdate);
             Constants.LAST_LOCATION = location;
         }
@@ -429,7 +458,7 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
         private final IconGenerator mClusterIconGenerator;
         Context context;
 
-        public OwnIconRendered(Context context) {
+        OwnIconRendered(Context context) {
             super(context, mMap, mClusterManager);
             this.context = context;
             mClusterIconGenerator = new IconGenerator(context);
