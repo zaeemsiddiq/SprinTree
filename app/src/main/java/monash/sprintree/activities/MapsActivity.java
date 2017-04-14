@@ -38,6 +38,7 @@ import monash.sprintree.data.Tree;
 import monash.sprintree.fragments.FragmentListener;
 import monash.sprintree.fragments.GMapFragment;
 import monash.sprintree.fragments.HistoryFragment;
+import monash.sprintree.service.TreeService;
 import monash.sprintree.utils.Utils;
 
 public class MapsActivity extends FragmentActivity implements LocationListener, FragmentListener {
@@ -73,6 +74,7 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
     int journeyScore;
     List<JourneyPath> journeyPathList;
     List<JourneyTree> journeyTreeList;
+
 
 
     @Override
@@ -204,7 +206,7 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
 
     @Override
     public void onLocationChanged(Location location) {
-        List<Journey> journeyList = Journey.find(Journey.class, "1");
+        List<Journey> journeyList = Journey.find(Journey.class, "1");   // create a journey first
         Journey journey;
         if(journeyList.size() > 0 ) {
             journey = journeyList.get(0);
@@ -216,8 +218,6 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
         }
 
         Constants.LAST_LOCATION = location;
-
-
         float lat = (float) (location.getLatitude());
         float lng = (float) (location.getLongitude());
 
@@ -230,15 +230,33 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
 
     }
 
+    @Override
+    public boolean isTreeVisited(Tree tree) {
+        boolean treeVisited = false;
+        for( JourneyTree journeyTree : journeyTreeList) {
+            if(journeyTree.tree.comId.equals(tree.comId) ){
+                treeVisited = true;
+                break;
+            }
+        }
+        return treeVisited;
+    }
+
     private void calculateAndAddNearestTree(float lat, float lng) {
         if(mapFragment != null) {
             //float[] results = new float[1]; // initialising a 1d result array to pass into distanceBetween method (source: developers.google.com)
             for(Marker marker : nonUniqueMarkers) {
                 float[] results = new float[1];
                 Location.distanceBetween(lat,lng, marker.getPosition().latitude, marker.getPosition().longitude, results); // in case of 0 previous stop is the starting stop
-                if(results[0] < 5.00 ) {
-                    System.out.println("tree found" + marker.getTitle());
-                    Toast.makeText(this, "tree found" + marker.getTitle(), Toast.LENGTH_SHORT).show();
+                if(results[0] < 10.00 ) {
+                    Tree nearestTree = TreeService.findTreeByPosition(marker.getPosition());
+                    if(!isTreeVisited(nearestTree)) {  // tree not visited before, add tree now
+                        JourneyTree journeyTree = new JourneyTree();
+                        journeyTree.tree = nearestTree;
+                        journeyTreeList.add( journeyTree );
+                        System.out.println("tree found" + marker.getTitle());
+                        Toast.makeText(this, "tree found" + marker.getTitle(), Toast.LENGTH_SHORT).show();
+                    }
                 }
             }
         }
@@ -367,6 +385,8 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
         journey.timestamp = Utils.getCurrentTimeStamp();
         journey.save();
     }
+
+
 
     @Override
     public void onBackPressed() {   // this is fired if user presses the back button. its a good idea to ask the user before quitting the app

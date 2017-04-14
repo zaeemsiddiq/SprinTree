@@ -7,6 +7,9 @@ import android.content.res.AssetManager;
 import android.os.ParcelFileDescriptor;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.ScaleAnimation;
+import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -145,4 +148,5 @@ public class Utils {
         SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
         return sdf.format(new Date());
     }
+
 }

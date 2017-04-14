@@ -1,5 +1,7 @@
 package monash.sprintree.fragments;
 
+import monash.sprintree.data.Tree;
+
 /**
  * Created by Zaeem on 4/2/2017.
  */
@@ -7,4 +9,5 @@ package monash.sprintree.fragments;
 public interface FragmentListener {
     public void mapReady();
     public void mapButtonPressed( int buttonIdentifier );
+    public boolean isTreeVisited(Tree tree);
 }

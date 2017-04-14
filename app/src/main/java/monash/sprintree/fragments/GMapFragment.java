@@ -19,6 +19,9 @@ import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.DecelerateInterpolator;
+import android.view.animation.ScaleAnimation;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -55,8 +58,10 @@ import monash.sprintree.data.Tree;
 import monash.sprintree.service.WikimediaService;
 import monash.sprintree.service.WikimediaServiceComplete;
 import monash.sprintree.service.TreeService;
+import monash.sprintree.utils.CountDownAnimation;
 import monash.sprintree.utils.MapWrapperLayout;
 import monash.sprintree.utils.MultiDrawable;
+import monash.sprintree.utils.Utils;
 
 public class GMapFragment extends Fragment implements OnMapReadyCallback,
         ClusterManager.OnClusterClickListener<Marker>,
@@ -92,6 +97,8 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
 
     private Button startButton, pauseButton, resumeButton, stopButton;
     private TextView timerValue;
+    private TextView countdown;
+    CountDownAnimation countDownAnimation;
     Spinner treeView;
 
     private long startTime = 0L;
@@ -142,6 +149,7 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
 
     private void initiateLayout(View view) {
         timerValue = (TextView) view.findViewById(R.id.timerValue);
+        countdown = (TextView) view.findViewById(R.id.countdown);
         startButton = (Button) view.findViewById(R.id.startButton);
         pauseButton = (Button) view.findViewById(R.id.pauseButton);
         resumeButton = (Button) view.findViewById(R.id.resumeButton);
@@ -175,15 +183,14 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
 
         startButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-                Toast.makeText(getActivity(), "Your journey has started", Toast.LENGTH_SHORT).show();
-                treeView.setSelection(0,true);
-                moveCamera(Constants.LAST_LOCATION);
-                startTime = SystemClock.uptimeMillis();
-                customHandler.postDelayed(updateTimerThread, 0);
-                startButton.setVisibility(View.GONE);
-                pauseButton.setVisibility(View.VISIBLE);
-                stopButton.setVisibility(View.VISIBLE);
-                listener.mapButtonPressed(Constants.FRAGMENT_BUTTON_START);
+                if (startButton.getText().equals("START")) {
+                    startButton.setText("CANCEL");
+                    countdownTimer(countdown, 3);   // initiate countdown timer, when its done, start the journey procedure
+                } else {
+                    startButton.setText("START");
+                    countdown.cancelLongPress();
+                    countDownAnimation.cancel();
+                }
             }
         });
 
@@ -299,10 +306,9 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-
         mMap = googleMap;
         /* for custom info window clusters */
-
+        //mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
 
         addMarkers(true);
 
@@ -328,11 +334,11 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
             mMap.animateCamera(cameraUpdate);
             Constants.LAST_LOCATION = location;
         }
-
     }
 
     @Override
     public boolean onClusterClick(Cluster<Marker> cluster) {
+        System.out.println("");
         return false;
     }
 
@@ -498,7 +504,18 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
                     .findViewById(R.id.txtSnippet));
             ImageView imageView = ((ImageView) myContentsView
                     .findViewById(R.id.wikiImage));
+
+
             Tree tree = TreeService.findTreeByPosition(marker.getPosition());
+            if(listener.isTreeVisited(tree)) {
+                myContentsView.findViewById(R.id.layoutLock).setVisibility(View.GONE);
+                myContentsView.findViewById(R.id.layoutInfo).setVisibility(View.VISIBLE);
+                tvTitle.setText(marker.getTitle());
+                tvSnippet.setText(marker.getSnippet());
+            } else {
+                myContentsView.findViewById(R.id.layoutInfo).setVisibility(View.GONE);
+                myContentsView.findViewById(R.id.layoutLock).setVisibility(View.VISIBLE);
+            }
 
             /*if( lastTree == null ) {
                 if (!hasImage(imageView)) {
@@ -514,8 +531,7 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
             }*/
             lastTree = tree;
 
-            tvTitle.setText(marker.getTitle());
-            tvSnippet.setText(marker.getSnippet());
+
             return myContentsView;
         }
 
@@ -576,5 +592,28 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
             }
             return hasImage;
         }
+    }
+
+    public void countdownTimer(TextView textView, int timerValue) {
+        countDownAnimation = new CountDownAnimation(textView, timerValue);
+        Animation scaleAnimation = new ScaleAnimation(1.0f, 0.0f, 1.0f, 0.0f,
+                Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+        countDownAnimation.setAnimation(scaleAnimation);
+        countDownAnimation.setCountDownListener(new CountDownAnimation.CountDownListener() {
+            @Override
+            public void onCountDownEnd(CountDownAnimation animation) {
+                startButton.setText("START");
+                Toast.makeText(getActivity(), "Your journey has started", Toast.LENGTH_SHORT).show();
+                treeView.setSelection(0,true);
+                moveCamera(Constants.LAST_LOCATION);
+                startTime = SystemClock.uptimeMillis();
+                customHandler.postDelayed(updateTimerThread, 0);
+                startButton.setVisibility(View.GONE);
+                pauseButton.setVisibility(View.VISIBLE);
+                stopButton.setVisibility(View.VISIBLE);
+                listener.mapButtonPressed(Constants.FRAGMENT_BUTTON_START);
+            }
+        });
+        countDownAnimation.start();
     }
 }
