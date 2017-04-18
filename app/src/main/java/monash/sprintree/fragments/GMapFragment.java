@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
@@ -39,6 +40,8 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterManager;
 import com.google.maps.android.clustering.view.DefaultClusterRenderer;
@@ -308,6 +311,12 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
         return resizedBitmap;
     }
 
+    public Polyline addPolyLine( LatLng from, LatLng to ) {
+        return mMap.addPolyline( new PolylineOptions()
+                .add( from, to )
+                .width(4)
+                .color(Color.RED));
+    }
     private void addMarkers(boolean displayAll ) {
 
         if(isAdded()) {

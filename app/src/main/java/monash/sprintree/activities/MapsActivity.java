@@ -25,6 +25,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Polyline;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -75,6 +76,7 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
     int journeyScore;
     List<JourneyPath> journeyPathList;
     List<JourneyTree> journeyTreeList;
+    List<Polyline> polyLines;
 
 
 
@@ -103,8 +105,9 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
 
         uniqueMarkers = new ArrayList<>();
         nonUniqueMarkers = new ArrayList<>();
+        polyLines= new ArrayList<Polyline>();
 
-        for( Tree tree : radiusBoundedTrees(500) ) {
+        for( Tree tree : radiusBoundedTrees() ) {
             if(tree.commonName != null) {
                 if( tree.commonName.equals("Ulmus") ||
                         tree.commonName.equals("UNKNOWN") ||
@@ -121,13 +124,14 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
         }
     }
 
-    private List<Tree> radiusBoundedTrees( float radius_meters ) {
+    // function to get all trees within the specified radius
+    private List<Tree> radiusBoundedTrees() {
         List<Tree> nearestTrees = new ArrayList<>();
         Location myLocation = Constants.LAST_LOCATION;
         for( Tree tree : Constants.trees ) {
             float[] results = new float[1];
             Location.distanceBetween(myLocation.getLatitude(), myLocation.getLongitude(), tree.latitude, tree.longitude, results); // in case of 0 previous stop is the starting stop
-            if(results[0] < radius_meters ) {
+            if(results[0] < Constants.TREES_RADIUS ) {
                 nearestTrees.add(tree);
             }
         }
@@ -231,17 +235,34 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
             journey.save();
         }
 
-        Constants.LAST_LOCATION = location;
         float lat = (float) (location.getLatitude());
         float lng = (float) (location.getLongitude());
 
         if(JOURNEY_STARTED) {
             addJourneyPathToList(lat, lng);
+            drawLineOnMap( location );
             calculateAndAddNearestTree(lat, lng);
             mapFragment.moveCamera(location);
         }
-        System.out.println("Location Changed");
+        Constants.LAST_LOCATION = location;
+    }
 
+    private void drawLineOnMap( Location location) {
+        LatLng from = new LatLng( Constants.LAST_LOCATION.getLatitude(), Constants.LAST_LOCATION.getLongitude() );
+        LatLng to = new LatLng( location.getLatitude() , location.getLongitude() );
+        polyLines.add( mapFragment.addPolyLine( from, to ) );
+        /*
+        if(journeyPathList.size() > 1) {
+            for (int index = 0; index < journeyPathList.size(); index++) {
+                if( index + 1 == journeyPathList.size() ) {
+                    break;
+                }
+                LatLng from = new LatLng( journeyPathList.get(index).latitude, journeyPathList.get(index).longitude);
+                LatLng to = new LatLng( journeyPathList.get( index + 1 ).latitude, journeyPathList.get( index + 1).longitude);
+                polyLines.add( mapFragment.addPolyLine( from, to ) );
+                index ++;
+            }
+        }*/
     }
 
     @Override
@@ -262,13 +283,13 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
             for(Marker marker : nonUniqueMarkers) {
                 float[] results = new float[1];
                 Location.distanceBetween(lat,lng, marker.getPosition().latitude, marker.getPosition().longitude, results); // in case of 0 previous stop is the starting stop
-                if(results[0] < 10.00 ) {
+                if(results[0] < Constants.NEAREST_TREE_DISTANCE ) {
                     Tree nearestTree = TreeService.findTreeByPosition(marker.getPosition());
                     if(!isTreeVisited(nearestTree)) {  // tree not visited before, add tree now
                         JourneyTree journeyTree = new JourneyTree();
                         journeyTree.tree = nearestTree;
                         journeyTreeList.add( journeyTree );
-                        journeyScore += 10;
+                        journeyScore += Constants.TREE_NORMAL_SCORE;
                         mapFragment.updateViews(journeyScore);
                         Snackbar.make(getWindow().getDecorView().getRootView(), "Tree Unlocked - " + marker.getTitle(), Snackbar.LENGTH_LONG).show();
                     }
@@ -304,7 +325,6 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        System.out.println("on permission");
         switch (requestCode) {
             case REQUEST_PERMISSION_CODE:
                 if( grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -382,16 +402,25 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
                         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
                                 saveJourney();
+                                removePolyLines();
                             }
                         })
                         .setNegativeButton("No", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
+                                removePolyLines();
                             }
                         })
                         .setIcon(android.R.drawable.ic_menu_help)
                         .show();
                 break;
         }
+    }
+
+    private void removePolyLines() {
+        for(Polyline polyline: polyLines) {
+            polyline.remove();
+        }
+        polyLines.clear();
     }
 
     private void saveJourney() {

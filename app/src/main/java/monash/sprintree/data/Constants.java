@@ -39,4 +39,9 @@ public class Constants {
     public static final int FRAGMENT_BUTTON_PAUSE     = 2;
     public static final int FRAGMENT_BUTTON_RESUME    = 3;
     public static final int FRAGMENT_BUTTON_STOP      = 4;
+
+    /* Journey Constants */
+    public static int TREES_RADIUS = 1000;   // meters to load trees
+    public static float NEAREST_TREE_DISTANCE = (float) 10.00; // distance identifier to get the nearest tree
+    public static int TREE_NORMAL_SCORE = 10;   // tree score
 }
