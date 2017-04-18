@@ -1,5 +1,6 @@
 package monash.sprintree.listAdapters;
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,28 +13,28 @@ import java.util.ArrayList;
 import java.util.List;
 import monash.sprintree.R;
 import monash.sprintree.data.History;
+import monash.sprintree.data.Journey;
 
 /**
  * Created by Zaeem on 6/1/2016.
  */
 public class HistoryListAdapter extends ArrayAdapter implements Filterable {
-    List<History> historyList;
-    List<History> originalHistoryList;
+    List<Journey> historyList;
+    List<Journey> originalHistoryList;
     private Context context;
-    private SearchFilter searchFilter;
 
     private class ViewHolder {
         TextView HistoryID;
         TextView HistoryName;
     }
-    public HistoryListAdapter(Context context, List<History> list) {
+    public HistoryListAdapter(Context context, List<Journey> list) {
         super(context, android.R.layout.simple_dropdown_item_1line, list);
         this.historyList = list;
         this.originalHistoryList = list;
         this.context = context;
     }
 
-    public History getItem(int position)
+    public Journey getItem(int position)
     {
         return historyList.get(position);
     }
@@ -46,13 +47,6 @@ public class HistoryListAdapter extends ArrayAdapter implements Filterable {
 
     public void resetData() {   // calling this method to reset the filterable data to original list which was initialised at start
         historyList = originalHistoryList;
-    }
-
-    @Override
-    public Filter getFilter() {
-        if (searchFilter == null)
-            searchFilter = new SearchFilter();
-        return searchFilter;
     }
 
     @Override
@@ -72,37 +66,9 @@ public class HistoryListAdapter extends ArrayAdapter implements Filterable {
         else
             viewHolder = (ViewHolder) v.getTag();
 
-        History d = getItem(position);
-        viewHolder.HistoryID.setText(Integer.toString(d.historyId));
-        viewHolder.HistoryName.setText(d.historyName);
+        Journey d = getItem(position);
+        viewHolder.HistoryID.setText(d.timestamp.toString());
+        viewHolder.HistoryName.setText(Long.toString(d.score));
         return v;
-    }
-
-    private class SearchFilter extends Filter {
-        @Override
-        protected FilterResults performFiltering(CharSequence constraint) {
-            FilterResults results = new FilterResults();
-            if (constraint == null || constraint.length() == 0) {
-                results.values = historyList;
-                results.count = historyList.size();
-            }
-            else {
-                List<History> filteredList = new ArrayList<History>();
-                for (History c : historyList) {
-                    if (c.historyName.toUpperCase().contains(constraint.toString().toUpperCase()))
-                        filteredList.add(c);
-                }
-                results.values = filteredList;
-                results.count = filteredList.size();
-            }
-            return results;
-        }
-
-        @Override
-        protected void publishResults(CharSequence constraint, FilterResults results) {
-            historyList = (List<History>) results.values;
-            notifyDataSetChanged();
-        }
-
     }
 }

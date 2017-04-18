@@ -19,6 +19,9 @@ import java.util.List;
 import monash.sprintree.R;
 import monash.sprintree.activities.MapsActivity;
 import monash.sprintree.data.History;
+import monash.sprintree.data.Journey;
+import monash.sprintree.data.JourneyPath;
+import monash.sprintree.data.JourneyTree;
 import monash.sprintree.listAdapters.HistoryListAdapter;
 
 public class HistoryFragment extends Fragment {
@@ -68,23 +71,7 @@ public class HistoryFragment extends Fragment {
         errorMessageText.setVisibility(View.GONE);
         listView = (ListView) view.findViewById(R.id.favoritesListView);
 
-        List<History> histories = new ArrayList<>();
-        History history1 = new History();
-        history1.historyId = 1;
-        history1.historyName = "This is 1";
-        histories.add(history1);
-
-        History history2 = new History();
-        history2.historyId = 1;
-        history2.historyName = "This is 2";
-        histories.add(history2);
-
-        History history3 = new History();
-        history3.historyId = 1;
-        history3.historyName = "This is 3";
-        histories.add(history3);
-
-        historyListAdapter = new HistoryListAdapter(getActivity(), histories);
+        historyListAdapter = new HistoryListAdapter(getActivity(), Journey.listAll(Journey.class));
         listView.setAdapter(historyListAdapter);
         if(historyListAdapter.getCount()==0) { // hide/ show the error message
             listView.setVisibility(View.GONE);
@@ -96,7 +83,10 @@ public class HistoryFragment extends Fragment {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {    // preplan
-                Toast.makeText(getActivity(), position + "clicked", Toast.LENGTH_SHORT).show();
+                Journey journey = historyListAdapter.getItem(position);
+                List<JourneyPath> journeyPaths = journey.getPath();
+                List<JourneyTree> journeyTrees = journey.getTrees();
+                System.out.println(journeyPaths.size());
                 /*new AlertDialog.Builder(getActivity())
                         .setTitle("Confirm")
                         .setMessage("Are you sure you want to travel this route ?")

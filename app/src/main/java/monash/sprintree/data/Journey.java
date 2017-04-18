@@ -18,7 +18,7 @@ public class Journey extends SugarRecord<Journey> {
         return JourneyPath.find(JourneyPath.class, "journey = ?",  getId().toString());
     }
 
-    List<JourneyTree> getTrees() {
+    public List<JourneyTree> getTrees() {
         return JourneyTree.find(JourneyTree.class, "journey = ?",  getId().toString());
     }
 }

@@ -72,7 +72,6 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
     Journey Objects
      */
     boolean JOURNEY_STARTED;
-    Journey journey;
     int journeyScore;
     List<JourneyPath> journeyPathList;
     List<JourneyTree> journeyTreeList;
@@ -98,7 +97,6 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
 
     private void loadData() {
         JOURNEY_STARTED = false;
-        journey = new Journey();
         journeyScore = 0;
         journeyPathList = new ArrayList<>();
         journeyTreeList = new ArrayList<>();
@@ -141,7 +139,6 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
     private void initLayout() {
         initiateTabsLayout();
         mapFragment = GMapFragment.newInstance(MapsActivity.this, nonUniqueMarkers, uniqueMarkers);
-        historyFragment = HistoryFragment.newInstance(this);
         selectTab(FRAGMENT_MAP);
     }
 
@@ -167,16 +164,14 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
                     }
                 }
                 if(tab.getPosition() == 1) {
-                    Toast.makeText(MapsActivity.this, "This feature will be added in upcoming versions", Toast.LENGTH_SHORT).show();
-                    /*
-                    if(historyFragment != null) {
-                        // hide the current fragment first
-                        hideFragment(currentFragment);
-                        // add/show the fragment
-                        showFragment(historyFragment);
-                        // set the current fragment to this one
-                        currentFragment = historyFragment;
-                    }*/
+                    //Toast.makeText(MapsActivity.this, "This feature will be added in upcoming versions", Toast.LENGTH_SHORT).show();
+                    historyFragment = HistoryFragment.newInstance(MapsActivity.this);
+                    // hide the current fragment first
+                    hideFragment(currentFragment);
+                    // add/show the fragment
+                    showFragment(historyFragment);
+                    // set the current fragment to this one
+                    currentFragment = historyFragment;
                 }
                 if(tab.getPosition() == 2) {
                     Toast.makeText(MapsActivity.this, "This feature will be added in upcoming versions", Toast.LENGTH_SHORT).show();
@@ -224,16 +219,6 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
 
     @Override
     public void onLocationChanged(Location location) {
-        List<Journey> journeyList = Journey.find(Journey.class, "1");   // create a journey first
-        Journey journey;
-        if(journeyList.size() > 0 ) {
-            journey = journeyList.get(0);
-        } else {
-            journey = new Journey();
-            journey.score = 100;
-            journey.date = Utils.getTodaysDate();
-            journey.save();
-        }
 
         float lat = (float) (location.getLatitude());
         float lng = (float) (location.getLongitude());
@@ -251,18 +236,6 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
         LatLng from = new LatLng( Constants.LAST_LOCATION.getLatitude(), Constants.LAST_LOCATION.getLongitude() );
         LatLng to = new LatLng( location.getLatitude() , location.getLongitude() );
         polyLines.add( mapFragment.addPolyLine( from, to ) );
-        /*
-        if(journeyPathList.size() > 1) {
-            for (int index = 0; index < journeyPathList.size(); index++) {
-                if( index + 1 == journeyPathList.size() ) {
-                    break;
-                }
-                LatLng from = new LatLng( journeyPathList.get(index).latitude, journeyPathList.get(index).longitude);
-                LatLng to = new LatLng( journeyPathList.get( index + 1 ).latitude, journeyPathList.get( index + 1).longitude);
-                polyLines.add( mapFragment.addPolyLine( from, to ) );
-                index ++;
-            }
-        }*/
     }
 
     @Override
@@ -424,10 +397,23 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
     }
 
     private void saveJourney() {
+        Journey journey = new Journey();
         journey.score = journeyScore;
         journey.date = Utils.getTodaysDate();
         journey.timestamp = Utils.getCurrentTimeStamp();
         journey.save();
+
+        for( JourneyPath journeyPath : journeyPathList ) {
+            journeyPath.journey = journey;
+            journeyPath.save();
+        }
+        journeyPathList.clear();
+
+        for( JourneyTree journeyTree : journeyTreeList ) {
+            journeyTree.journey = journey;
+            journeyTree.save();
+        }
+        journeyTreeList.clear();
     }
 
 

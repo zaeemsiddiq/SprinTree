@@ -52,31 +52,9 @@ public class Splash extends AppCompatActivity implements SyncServiceComplete {
         //test();
     }
     private void test() {
-        Journey journey = new Journey();
-        journey.timestamp = Utils.getCurrentTimeStamp();
-        journey.date = Utils.getTodaysDate();
-        journey.score = 100;
-
-        journey.save();
-
-        List<JourneyPath> journeyPaths = new ArrayList<>();
-        JourneyPath journeyPath = new JourneyPath();
-        journeyPath.latitude = 11.11;
-        journeyPath.longitude = 12.11;
-        journeyPath.timestamp = Utils.getCurrentTimeStamp();
-        journeyPath.journey = journey;
-        journeyPath.save();
-
-        JourneyPath journeyPath1 = new JourneyPath();
-        journeyPath1.latitude = 11.22;
-        journeyPath1.longitude = 12.22;
-        journeyPath1.timestamp = Utils.getCurrentTimeStamp();
-        journeyPath1.journey = journey;
-        journeyPath1.save();
-
-        journeyPaths = journey.getPath();
-
-        System.out.println("asd");
+        List<Journey> journeys = Journey.listAll(Journey.class);
+        List<JourneyPath> journeyPaths = journeys.get(0).getPath();
+        System.out.println(journeys.size());
     }
 
     private void startLoading() {
