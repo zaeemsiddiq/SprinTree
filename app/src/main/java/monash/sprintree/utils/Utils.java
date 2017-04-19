@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import monash.sprintree.data.Constants;
 import monash.sprintree.data.Tree;
 
 /**
@@ -51,6 +52,7 @@ public class Utils {
             Type listType = new TypeToken<List<Tree>>(){}.getType();
             List<Tree> posts = (List<Tree>) gson.fromJson(reader, listType);
             SugarRecord.saveInTx(posts);
+            Constants.trees = posts;
             reader.close();
         } catch (FileNotFoundException e) {
             e.printStackTrace();

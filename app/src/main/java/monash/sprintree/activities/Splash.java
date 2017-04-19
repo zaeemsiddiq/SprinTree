@@ -70,7 +70,7 @@ public class Splash extends AppCompatActivity implements SyncServiceComplete {
                         public void run() {
                             if (trees.size() == 0) { // if the database is empty, load the trees from firebase
                                 try {
-                                    Utils.openRenderer(getApplicationContext(), "structured.json");
+                                    Utils.openRenderer(getApplicationContext(), "structured2.json");
                                     startMapsActivity();
                                 } catch (IOException e) {
                                     e.printStackTrace();
