@@ -126,13 +126,16 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
     private List<Tree> radiusBoundedTrees() {
         List<Tree> nearestTrees = new ArrayList<>();
         Location myLocation = Constants.LAST_LOCATION;
-        for( Tree tree : Constants.trees ) {
-            float[] results = new float[1];
-            Location.distanceBetween(myLocation.getLatitude(), myLocation.getLongitude(), tree.latitude, tree.longitude, results); // in case of 0 previous stop is the starting stop
-            if(results[0] < Constants.TREES_RADIUS ) {
-                nearestTrees.add(tree);
+        if( myLocation != null ) {
+            for( Tree tree : Constants.trees ) {
+                float[] results = new float[1];
+                Location.distanceBetween(myLocation.getLatitude(), myLocation.getLongitude(), tree.latitude, tree.longitude, results); // in case of 0 previous stop is the starting stop
+                if(results[0] < Constants.TREES_RADIUS ) {
+                    nearestTrees.add(tree);
+                }
             }
         }
+
         return nearestTrees;
     }
 
@@ -213,6 +216,7 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
         // Initialize the location fields
         if (location != null) {
             System.out.println("Provider " + provider + " has been selected.");
+            Constants.LAST_LOCATION = location;
             onLocationChanged(location);
         }
     }

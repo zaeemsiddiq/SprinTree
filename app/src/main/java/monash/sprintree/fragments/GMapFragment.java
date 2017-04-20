@@ -364,13 +364,15 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
     }
 
     public void moveCamera(Location location) {
-        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-        if(mMap == null) {
-            return;
-        } else {
-            CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLng(latLng);
-            mMap.animateCamera(cameraUpdate);
-            Constants.LAST_LOCATION = location;
+        if(location != null) {
+            LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+            if(mMap == null) {
+                return;
+            } else {
+                CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLng(latLng);
+                mMap.animateCamera(cameraUpdate);
+                Constants.LAST_LOCATION = location;
+            }
         }
     }
 
