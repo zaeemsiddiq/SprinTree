@@ -61,7 +61,6 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
     Fragment currentFragment;
     LocationManager locationManager;
 
-
     /*
     Data objects
      */
@@ -73,11 +72,12 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
      */
     boolean JOURNEY_STARTED;
     int journeyScore;
+    int journeyDistance;
     List<JourneyPath> journeyPathList;
     List<JourneyTree> journeyTreeList;
     List<Polyline> polyLines;
 
-
+    private Location lastLocationMilestone;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,13 +98,20 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
     private void loadData() {
         JOURNEY_STARTED = false;
         journeyScore = 0;
+        journeyDistance = 0;
         journeyPathList = new ArrayList<>();
         journeyTreeList = new ArrayList<>();
 
         uniqueMarkers = new ArrayList<>();
         nonUniqueMarkers = new ArrayList<>();
         polyLines= new ArrayList<Polyline>();
+        lastLocationMilestone = null;
+        loadTrees();
+    }
 
+    private void loadTrees() {
+        uniqueMarkers.clear();
+        nonUniqueMarkers.clear();
         for( Tree tree : radiusBoundedTrees() ) {
             if(tree.commonName != null) {
                 if( tree.commonName.equals("Ulmus") ||
@@ -135,7 +142,6 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
                 }
             }
         }
-
         return nearestTrees;
     }
 
@@ -223,7 +229,9 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
 
     @Override
     public void onLocationChanged(Location location) {
-
+        if( lastLocationMilestone == null) {
+            lastLocationMilestone = location;
+        }
         float lat = (float) (location.getLatitude());
         float lng = (float) (location.getLongitude());
 
@@ -234,6 +242,18 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
             mapFragment.moveCamera(location);
         }
         Constants.LAST_LOCATION = location;
+        Toast.makeText(this, "asd"+distanceTravelled(), Toast.LENGTH_SHORT).show();
+        if(distanceTravelled() >= Constants.MILESTONE_DISTANCE) {   // load nearest trees
+            lastLocationMilestone = location;
+            loadTrees();
+            mapFragment.reloadTrees(nonUniqueMarkers, uniqueMarkers);
+        }
+    }
+
+    private float distanceTravelled() {
+        float[] results = new float[1];
+        Location.distanceBetween(lastLocationMilestone.getLatitude(), lastLocationMilestone.getLongitude(), Constants.LAST_LOCATION.getLatitude(), Constants.LAST_LOCATION.getLongitude(), results);
+        return results[0];
     }
 
     private void drawLineOnMap( Location location) {
@@ -418,6 +438,10 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
             journeyTree.save();
         }
         journeyTreeList.clear();
+
+        journeyDistance = 0;
+        journeyScore = 0;
+        mapFragment.updateViews( 0 );
     }
 
 

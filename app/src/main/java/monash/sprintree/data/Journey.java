@@ -13,6 +13,8 @@ public class Journey extends SugarRecord<Journey> {
     public Long timestamp;
     public String date;
     public long score;
+    public long distance;   //meters
+    public long duration;   //seconds
 
     public List<JourneyPath> getPath() {
         return JourneyPath.find(JourneyPath.class, "journey = ?",  getId().toString());

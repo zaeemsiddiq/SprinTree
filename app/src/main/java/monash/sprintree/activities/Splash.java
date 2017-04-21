@@ -48,6 +48,7 @@ public class Splash extends AppCompatActivity implements SyncServiceComplete {
         }
         initiateLayout();
         //deleteDB();
+        //Utils.exportDatabse( this );
         startLoading();
         //test();
     }
@@ -61,7 +62,7 @@ public class Splash extends AppCompatActivity implements SyncServiceComplete {
         new Thread() {
             @Override
             public void run() {
-                final List<Tree> trees = Tree.findWithQuery(Tree.class, "SELECT * FROM TREE");
+                final List<Tree> trees = Tree.findWithQuery(Tree.class, "SELECT * FROM TREE LIMIT 1000");
                 Constants.trees = trees;
                 try {
                     // code runs in a thread
@@ -70,7 +71,7 @@ public class Splash extends AppCompatActivity implements SyncServiceComplete {
                         public void run() {
                             if (trees.size() == 0) { // if the database is empty, load the trees from firebase
                                 try {
-                                    Utils.openRenderer(getApplicationContext(), "structured1.json");
+                                    Utils.openRenderer(getApplicationContext(), "structured2.json");
                                     startMapsActivity();
                                 } catch (IOException e) {
                                     e.printStackTrace();

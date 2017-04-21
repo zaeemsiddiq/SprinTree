@@ -58,6 +58,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import monash.sprintree.R;
+import monash.sprintree.activities.MapsActivity;
 import monash.sprintree.data.Constants;
 import monash.sprintree.data.Marker;
 import monash.sprintree.data.Tree;
@@ -123,7 +124,6 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
     /*
     Data Objects
      */
-
     List<Marker> nonUniqueTrees;
     List<Marker> uniqueTrees;
     boolean displayAll = true;
@@ -327,7 +327,10 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
             mMap.setOnCameraIdleListener(mClusterManager);
             mClusterManager.setRenderer(new OwnIconRendered(getActivity()));
             mClusterManager.getMarkerCollection().setOnInfoWindowAdapter(new MyCustomAdapterForItems());
-            mClusterManager.setOnClusterItemClickListener(this);
+            mClusterManager.setOnClusterItemClickListener(GMapFragment.this);
+            mClusterManager.setOnClusterClickListener(GMapFragment.this);
+            mMap.setOnMarkerClickListener(mClusterManager);
+
 
             mClusterManager.clearItems();
             /* end custom info window clusters */
@@ -340,6 +343,12 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
             }
             mClusterManager.cluster();
         }
+    }
+
+    public void reloadTrees( List<Marker> nonUniqueTrees, List<Marker> uniqueTrees ) {
+        this.uniqueTrees = uniqueTrees;
+        this.nonUniqueTrees = nonUniqueTrees;
+        addMarkers(displayAll);
     }
 
     @Override
@@ -378,90 +387,22 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
 
     @Override
     public boolean onClusterClick(Cluster<Marker> cluster) {
-        System.out.println("");
+        Toast.makeText(getActivity(), "Zoom in to view trees", Toast.LENGTH_SHORT).show();
         return false;
     }
 
     @Override
     public void onClusterInfoWindowClick(Cluster<Marker> cluster) {
-        System.out.println("");
+        System.out.println("on cluster window click");
     }
 
     @Override
     public boolean onClusterItemClick(Marker marker) {
-        System.out.println("");
         return false;
     }
 
     @Override
     public void onClusterItemInfoWindowClick(Marker marker) {
-    }
-
-    /**
-     * Draws profile photos inside markers (using IconGenerator).
-     * When there are multiple people in the cluster, draw multiple photos (using MultiDrawable).
-     */
-    private class MarkerRenderer extends DefaultClusterRenderer<Marker> {
-        private final IconGenerator mIconGenerator = new IconGenerator(getActivity());
-        private final IconGenerator mClusterIconGenerator = new IconGenerator(getActivity());
-        private final ImageView mImageView;
-        private final ImageView mClusterImageView;
-        private final int mDimension;
-
-        public MarkerRenderer(Context context) {
-            super(context, mMap, mClusterManager);
-
-            View multiProfile = getActivity().getLayoutInflater().inflate(R.layout.marker_layout, null);
-            mClusterIconGenerator.setContentView(multiProfile);
-            mClusterImageView = (ImageView) multiProfile.findViewById(R.id.image);
-
-            mImageView = new ImageView(getActivity());
-            mDimension = 20;
-            mImageView.setLayoutParams(new ViewGroup.LayoutParams(mDimension, mDimension));
-            int padding = 10;
-            mImageView.setPadding(padding, padding, padding, padding);
-            mIconGenerator.setContentView(mImageView);
-        }
-
-        @Override
-        protected void onBeforeClusterItemRendered(Marker marker, MarkerOptions markerOptions) {
-            // Draw a single person.
-            // Set the info window to show their name.
-            mImageView.setImageResource(marker.image);
-            Bitmap icon = mIconGenerator.makeIcon();
-            markerOptions
-                    .icon(BitmapDescriptorFactory.fromBitmap(icon))
-                    .title(marker.getTitle());
-        }
-
-        @Override
-        protected void onBeforeClusterRendered(Cluster<Marker> cluster, MarkerOptions markerOptions) {
-            // Draw multiple people.
-            // Note: this method runs on the UI thread. Don't spend too much time in here (like in this example).
-            List<Drawable> profilePhotos = new ArrayList<Drawable>(Math.min(4, cluster.getSize()));
-            int width = mDimension;
-            int height = mDimension;
-
-            for (Marker p : cluster.getItems()) {
-                // Draw 4 at most.
-                if (profilePhotos.size() == 4) break;
-                Drawable drawable = getResources().getDrawable(p.image);
-                drawable.setBounds(0, 0, width, height);
-                profilePhotos.add(drawable);
-            }
-            MultiDrawable multiDrawable = new MultiDrawable(profilePhotos);
-            multiDrawable.setBounds(0, 0, width, height);
-
-            mClusterImageView.setImageDrawable(multiDrawable);
-            Bitmap icon = mClusterIconGenerator.makeIcon(String.valueOf(cluster.getSize()));
-            markerOptions.icon(BitmapDescriptorFactory.fromBitmap(icon));
-        }
-
-        @Override
-        protected boolean shouldRenderAsCluster(Cluster cluster) {
-            // Always render clusters.
-            return cluster.getSize() > 1;
-        }
     }
 
     private class OwnIconRendered extends DefaultClusterRenderer<Marker> {
@@ -471,7 +412,7 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
 
         OwnIconRendered(Context context) {
             super(context, mMap, mClusterManager);
-            this.context = context;
+            this.context = context.getApplicationContext();
             mClusterIconGenerator = new IconGenerator(context);
         }
 
@@ -483,7 +424,6 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
                 markerOptions.title(item.getTitle());
                 super.onBeforeClusterItemRendered(item, markerOptions);
             }
-
         }
 
         @Override
