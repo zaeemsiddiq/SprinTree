@@ -71,7 +71,7 @@ public class HistoryFragment extends Fragment {
     private void initialiseListView(View view) {
         errorMessageText = (TextView) view.findViewById(R.id.favoritesTextEmptyMessage);
         errorMessageText.setVisibility(View.GONE);
-        listView = (ListView) view.findViewById(R.id.favoritesListView);
+        listView = (ListView) view.findViewById(R.id.journeyHistory);
 
         historyListAdapter = new HistoryListAdapter(getActivity(), Journey.listAll(Journey.class));
         listView.setAdapter(historyListAdapter);
@@ -115,24 +115,7 @@ public class HistoryFragment extends Fragment {
        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
            @Override
            public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
-               /*
-               new AlertDialog.Builder(getActivity())
-                       .setTitle("Confirm")
-                       .setMessage("Are you sure you want to delete this route ?")
-                       .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                           public void onClick(DialogInterface dialog, int which) { // delete
-                               Constants.dbContext.deleteFavorite(favoriteListAdapter.getItem(position).getFavouriteID());
-                               Toast.makeText(getActivity(), "Deleted Successfully", Toast.LENGTH_SHORT).show();
-                               refresh();
-                           }
-                       })
-                       .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                           public void onClick(DialogInterface dialog, int which) {
-                               // do nothing
-                           }
-                       })
-                       .setIcon(android.R.drawable.ic_dialog_alert)
-                       .show();*/
+
                return true;
            }
        });
