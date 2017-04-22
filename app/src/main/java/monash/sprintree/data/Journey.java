@@ -15,6 +15,7 @@ public class Journey extends SugarRecord<Journey> {
     public long score;
     public long distance;   //meters
     public long duration;   //seconds
+    public String journeyImagePath; // path of image in local database
 
     public List<JourneyPath> getPath() {
         return JourneyPath.find(JourneyPath.class, "journey = ?",  getId().toString());

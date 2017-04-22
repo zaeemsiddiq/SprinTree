@@ -104,7 +104,7 @@ public class Splash extends AppCompatActivity implements SyncServiceComplete {
     }
 
     public void launchHistory(View view) {
-        //Intent home = new Intent(this, Home.class);
+        //Intent home = new Intent(this, Statistics.class);
         //startActivity(home);
     }
 

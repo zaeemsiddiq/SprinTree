@@ -4,6 +4,7 @@ import android.Manifest;
 import android.animation.Animator;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Criteria;
 import android.location.Location;
@@ -437,14 +438,17 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
             journeyTree.journey = journey;
             journeyTree.save();
         }
-        journeyTreeList.clear();
 
+
+        journeyTreeList.clear();
         journeyDistance = 0;
         journeyScore = 0;
         mapFragment.updateViews( 0 );
+
+        Intent intent = new Intent(this, Statistics.class);
+        intent.putExtra( "journeyId", journey.getId() );
+        startActivityForResult(intent, 0);
     }
-
-
 
     @Override
     public void onBackPressed() {   // this is fired if user presses the back button. its a good idea to ask the user before quitting the app

@@ -2,6 +2,7 @@ package monash.sprintree.fragments;
 
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
@@ -18,6 +19,7 @@ import java.util.List;
 
 import monash.sprintree.R;
 import monash.sprintree.activities.MapsActivity;
+import monash.sprintree.activities.Statistics;
 import monash.sprintree.data.History;
 import monash.sprintree.data.Journey;
 import monash.sprintree.data.JourneyPath;
@@ -86,7 +88,11 @@ public class HistoryFragment extends Fragment {
                 Journey journey = historyListAdapter.getItem(position);
                 List<JourneyPath> journeyPaths = journey.getPath();
                 List<JourneyTree> journeyTrees = journey.getTrees();
-                System.out.println(journeyPaths.size());
+
+                Intent intent = new Intent(getActivity(), Statistics.class);
+                intent.putExtra( "journeyId", journey.getId() );
+                startActivityForResult(intent, 0);
+
                 /*new AlertDialog.Builder(getActivity())
                         .setTitle("Confirm")
                         .setMessage("Are you sure you want to travel this route ?")

@@ -13,7 +13,7 @@
             android:layout_width="wrap_content"
             android:layout_height="650px"
             android:scaleType="fitXY"
-            android:src="@drawable/logo" />
+            android:src="@drawable/applogo" />
 
     <TextView
         android:layout_width="match_parent"

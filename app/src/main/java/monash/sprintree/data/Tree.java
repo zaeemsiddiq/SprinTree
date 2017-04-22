@@ -24,20 +24,8 @@ public class Tree extends SugarRecord<Tree> {
     @SerializedName("family")
     public String family;
 
-    @SerializedName("diameter")
-    public long diameter;
-
     @SerializedName("year_planted")
     public long yearPlanted;
-
-    @SerializedName("date_planted")
-    public String datePlanted;
-
-    @SerializedName("age_description")
-    public String ageDescription;
-
-    @SerializedName("useful_life_expectency")
-    public String usefulLifeExpectency;
 
     @SerializedName("useful_life_expectency_value")
     public long usefulLifeExpectencyValue;
@@ -53,10 +41,4 @@ public class Tree extends SugarRecord<Tree> {
 
     @SerializedName("longitude")
     public double longitude;
-
-    @SerializedName("easting")
-    public double easting;
-
-    @SerializedName("northing")
-    public double northing;
 }

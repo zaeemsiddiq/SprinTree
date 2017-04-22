@@ -102,30 +102,6 @@ public class Utils {
         }
     }
 
-    public static String loadJSONFromAsset( Context context ) throws JSONException {
-        String json = null;
-        try {
-            InputStream is = context.getAssets().open("treeglossary.json");
-            int size = is.available();
-            byte[] buffer = new byte[size];
-            is.read(buffer);
-            is.close();
-            json = new String(buffer, "UTF-8");
-            System.out.println(json);
-        } catch (IOException ex) {
-            ex.printStackTrace();
-            return null;
-        }
-        JSONObject test = new JSONObject(json);
-        JSONArray data = test.getJSONArray("data");
-        for (int i = 0; i < data.length(); i++) {
-            JSONArray tree = data.getJSONArray(i);
-            String name = tree.get(9).toString();
-            System.out.println(name);
-        }
-        return json;
-    }
-
     public static void deleteDB(Context context) {
         String currentDBPath = "/data/data/" + context.getPackageName() + "/databases/tree.db";
         File currentDB = new File(currentDBPath);

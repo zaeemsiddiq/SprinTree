@@ -30,22 +30,8 @@ public class TreeService {
             for (DataSnapshot columns : tree.getChildren()) {
                 String attribute = columns.getKey();
                 Object data = (Object) columns.getValue();
-                if (attribute.equals("Age Description"))
-                    t.ageDescription = (String) data;
                 if (attribute.equals("Common Name"))
                     t.commonName = (String) data;
-                if (attribute.equals("Date Planted"))
-                    t.datePlanted = (String) data;
-                if (attribute.equals("Diameter Breast Height"))
-                    t.diameter = (Long) data;
-                if (attribute.equals("Easting")){
-                    if(data instanceof Double) {
-                        t.easting = (Double) data;
-                    } else {
-                        Long l = new Long((Long)data);
-                        t.easting = l.doubleValue();
-                    }
-                }
                 if (attribute.equals("Family"))
                     t.family = (String) data;
                 if (attribute.equals("Genus"))
@@ -56,14 +42,6 @@ public class TreeService {
                     t.locatedIn = (String) data;
                 if (attribute.equals("Longitude"))
                     t.longitude = (Double) data;
-                if (attribute.equals("Northing")) {
-                    if(data instanceof Double) {
-                        t.northing = (Double) data;
-                    } else {
-                        Long l = new Long((Long)data);
-                        t.northing = l.doubleValue();
-                    }
-                }
                 if (attribute.equals("Precinct")){
                     if(data instanceof String) {
                         t.precinct = (String) data;
@@ -71,8 +49,6 @@ public class TreeService {
                 }
                 if (attribute.equals("Scientific Name"))
                     t.scientificName = (String) data;
-                if (attribute.equals("Useful Life Expectancy"))
-                    t.usefulLifeExpectency = (String) data;
                 if (attribute.equals("Useful Life Expectancy Value"))
                     t.usefulLifeExpectencyValue = (Long) data;
                 if (attribute.equals("Year Planted"))

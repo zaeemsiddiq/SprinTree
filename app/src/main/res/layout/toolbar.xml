@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.Toolbar
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/my_toolbar"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#A9A9A9"
+    app:elevation="0dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="100"
+        app:elevation="0dp"
+        android:gravity="center">
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="84"
+            android:text="Title"
+            android:id="@+id/toolbarTitle"
+            android:textSize="18dp"
+            android:gravity="left"
+            android:paddingLeft="10px"
+            android:textColor="#ffffff"/>
+        <ImageButton
+            android:layout_width="0dp"
+            android:layout_weight="8"
+            android:layout_height="wrap_content"
+            android:id="@+id/toolbarShare"
+            android:background="@android:drawable/ic_menu_share"/>
+
+        <ImageButton
+            android:layout_width="0dp"
+            android:layout_weight="8"
+            android:layout_height="wrap_content"
+            android:id="@+id/toolbarDelete"
+            android:background="@android:drawable/ic_menu_delete"/>
+    </LinearLayout>
+</android.support.v7.widget.Toolbar>

@@ -38,6 +38,8 @@ dependencies {
     compile 'com.squareup.picasso:picasso:2.5.2'
     //https://github.com/robinhood/ticker
     compile 'com.robinhood.ticker:ticker:1.1.1'
+    compile 'com.android.support:design:24.0.0'
+    compile 'com.github.PhilJay:MPAndroidChart:v3.0.2'
 }
 // ADD THIS AT THE BOTTOM
 apply plugin: 'com.google.gms.google-services'
