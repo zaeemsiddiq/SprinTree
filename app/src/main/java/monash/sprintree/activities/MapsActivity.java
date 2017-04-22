@@ -113,21 +113,19 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
         uniqueMarkers.clear();
         nonUniqueMarkers.clear();
         for( Tree tree : radiusBoundedTrees() ) {
-            if(tree.commonName != null) {
-                if( tree.commonName.equals("Ulmus") ||
-                        tree.commonName.equals("UNKNOWN") ||
-                        tree.commonName.equals("Eucalyptus") ||
-                        tree.commonName.equals("Ulmus") ) {
-                    uniqueMarkers.add( new Marker(new LatLng(tree.latitude, tree.longitude), tree.commonName, tree.scientificName, R.mipmap.unique_tree, tree.comId));
+
+                if( (tree.genus.equals("Ulmus")) || (tree.genus.equals("Eucalyptus")) || (tree.genus.equals("Platanus"))
+                        || (tree.genus.equals("Corymbia")) || (tree.genus.equals("Angophora")) || (tree.genus.equals("Allocasuarina"))
+                        || (tree.genus.equals("Acacia")) || (tree.genus.equals("Quercus")) || (tree.genus.equals("Ficus"))
+                        || (tree.genus.equals("Melaleuca"))
+                        ) {
+                    nonUniqueMarkers.add( new Marker(new LatLng(tree.latitude, tree.longitude), tree.commonName, tree.genus, R.drawable.tree , tree.comId));
                 }
                 else {
-                    nonUniqueMarkers.add( new Marker(new LatLng(tree.latitude, tree.longitude), tree.commonName, tree.scientificName, R.drawable.tree, tree.comId));
+                    uniqueMarkers.add( new Marker(new LatLng(tree.latitude, tree.longitude), tree.commonName, tree.genus, R.mipmap.unique_tree, tree.comId));
                 }
-            } else {
-                System.out.println("");
             }
         }
-    }
 
     // function to get all trees within the specified radius
     private List<Tree> radiusBoundedTrees() {
@@ -262,6 +260,15 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
         polyLines.add( mapFragment.addPolyLine( from, to ) );
     }
 
+    public void hideTab()
+    {
+        tabLayoutDashboard.setVisibility(View.GONE);
+    }
+
+    public void showTab()
+    {
+        tabLayoutDashboard.setVisibility(View.VISIBLE);
+    }
     @Override
     public boolean isTreeVisited(Tree tree) {
         boolean treeVisited = false;
@@ -380,11 +387,14 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
     public void mapButtonPressed(int buttonIdentifier) {
         switch (buttonIdentifier) {
             case Constants.FRAGMENT_BUTTON_START:
+                tabLayoutDashboard.setVisibility(View.GONE);
                 JOURNEY_STARTED = true;
                 break;
 
             case Constants.FRAGMENT_BUTTON_PAUSE:
                 JOURNEY_STARTED = false;
+                tabLayoutDashboard.setVisibility(View.VISIBLE);
+
                 break;
 
             case Constants.FRAGMENT_BUTTON_RESUME:

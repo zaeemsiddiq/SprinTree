@@ -61,7 +61,10 @@ import monash.sprintree.R;
 import monash.sprintree.activities.MapsActivity;
 import monash.sprintree.data.Constants;
 import monash.sprintree.data.Marker;
+import monash.sprintree.data.SpinnerItem;
 import monash.sprintree.data.Tree;
+import monash.sprintree.listAdapters.HistoryListAdapter;
+import monash.sprintree.listAdapters.SpinnerAdapter;
 import monash.sprintree.service.WikimediaService;
 import monash.sprintree.service.WikimediaServiceComplete;
 import monash.sprintree.service.TreeService;
@@ -99,7 +102,7 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
     View v;
     private GoogleMap mMap;
     private FragmentListener listener;
-
+    private SpinnerAdapter spinnerAdapter;
     MapWrapperLayout mapWrapperLayout;
 
     TickerView treeScore;
@@ -179,14 +182,15 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
         resumeButton = (Button) view.findViewById(R.id.resumeButton);
         stopButton = (Button) view.findViewById(R.id.stopButton);
 
-        List<String> list = new ArrayList<String>();
-        list.add("All trees");
-        list.add("Unique");
+        //List<String> list = new ArrayList<String>();
+        ArrayList<SpinnerItem> list=new ArrayList<>();
+        list.add(new SpinnerItem("All trees",R.drawable.tree));
+        list.add(new SpinnerItem("Uncommon",R.mipmap.unique_tree));
+
         treeView = (Spinner) view.findViewById(R.id.treeViewSpinner);
-        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(getActivity(),
-                android.R.layout.simple_spinner_item, list);
-        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        treeView.setAdapter(dataAdapter);
+
+        spinnerAdapter= new SpinnerAdapter(getActivity(), R.layout.spinner_layout,R.id.txt,list);
+        treeView.setAdapter(spinnerAdapter);
         treeView.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -208,8 +212,11 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
         startButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 if (startButton.getText().equals("START")) {
+                    //((MapsActivity)getActivity()).hideTab();
                     startButton.setText("CANCEL");
-                    countdownTimer(countdown, 3);   // initiate countdown timer, when its done, start the journey procedure
+
+                    countdownTimer(countdown, 3);
+                    // initiate countdown timer, when its done, start the journey procedure
                 } else {
                     startButton.setText("START");
                     countdown.cancelLongPress();
@@ -226,7 +233,7 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
                 customHandler.postDelayed(updateTimerThread, 0);
                 resumeButton.setVisibility(View.GONE);
                 pauseButton.setVisibility(View.VISIBLE);
-                //timerValue.setVisibility(View.VISIBLE);
+                ((MapsActivity)getActivity()).hideTab();
                 listener.mapButtonPressed(Constants.FRAGMENT_BUTTON_RESUME);
             }
         });
@@ -238,6 +245,7 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
                 customHandler.removeCallbacks(updateTimerThread);
                 pauseButton.setVisibility(View.GONE);
                 resumeButton.setVisibility(View.VISIBLE);
+                ((MapsActivity)getActivity()).showTab();
                 listener.mapButtonPressed(Constants.FRAGMENT_BUTTON_PAUSE);
             }
         });
@@ -260,7 +268,7 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
                 stopButton.setVisibility(View.GONE);
                 resumeButton.setVisibility(View.GONE);
                 pauseButton.setVisibility(View.GONE);
-
+                ((MapsActivity)getActivity()).showTab();
                 listener.mapButtonPressed(Constants.FRAGMENT_BUTTON_STOP);
 
             }
@@ -482,20 +490,40 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
                     .findViewById(R.id.txtTitle));
             TextView tvSnippet = ((TextView) myContentsView
                     .findViewById(R.id.txtSnippet));
-            ImageView imageView = ((ImageView) myContentsView
-                    .findViewById(R.id.wikiImage));
+            TextView details = ((TextView) myContentsView
+                    .findViewById(R.id.details));
+            TextView life = ((TextView) myContentsView
+                    .findViewById(R.id.life));
+
+
 
 
             Tree tree = TreeService.findTreeByPosition(marker.getPosition());
-            if(listener.isTreeVisited(tree)) {
+           // if(listener.isTreeVisited(tree)) {
                 myContentsView.findViewById(R.id.layoutLock).setVisibility(View.GONE);
                 myContentsView.findViewById(R.id.layoutInfo).setVisibility(View.VISIBLE);
-                tvTitle.setText(marker.getTitle());
-                tvSnippet.setText(marker.getSnippet());
-            } else {
-                myContentsView.findViewById(R.id.layoutInfo).setVisibility(View.GONE);
-                myContentsView.findViewById(R.id.layoutLock).setVisibility(View.VISIBLE);
+            if(tree.commonName.equals("tba")){
+                tvTitle.setText(tree.scientificName);
             }
+            else{
+                tvTitle.setText(tree.commonName);
+            }
+                tvSnippet.setText("Genus: "+tree.genus);
+            details.setText("Year Planted: "+String.valueOf(tree.yearPlanted));
+            if((tree.usefulLifeExpectencyValue==0)) {
+                life.setVisibility(View.GONE);
+            }
+            else {
+                life.setVisibility(View.VISIBLE);
+                life.setText("Life Expectancy: " + String.valueOf(tree.usefulLifeExpectencyValue) + " yrs");
+            }
+
+
+
+            //} else {
+                //myContentsView.findViewById(R.id.layoutInfo).setVisibility(View.GONE);
+               // myContentsView.findViewById(R.id.layoutLock).setVisibility(View.VISIBLE);
+           // }
 
             /*if( lastTree == null ) {
                 if (!hasImage(imageView)) {

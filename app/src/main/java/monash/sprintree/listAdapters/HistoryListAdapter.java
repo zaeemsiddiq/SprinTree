@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Filter;
 import android.widget.Filterable;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -18,17 +19,19 @@ import monash.sprintree.data.Journey;
 /**
  * Created by Zaeem on 6/1/2016.
  */
-public class HistoryListAdapter extends ArrayAdapter implements Filterable {
+public class HistoryListAdapter extends ArrayAdapter<Journey> implements Filterable {
     List<Journey> historyList;
-    List<Journey> originalHistoryList;
+   List<Journey> originalHistoryList;
     private Context context;
 
     private class ViewHolder {
-        TextView HistoryID;
-        TextView HistoryName;
+        TextView TreeScore;
+        TextView JourneyDate;
+        TextView JourneyTime;
+        ImageView WalkLogo;
     }
     public HistoryListAdapter(Context context, List<Journey> list) {
-        super(context, android.R.layout.simple_dropdown_item_1line, list);
+        super(context, R.layout.list_history_item, list);
         this.historyList = list;
         this.originalHistoryList = list;
         this.context = context;
@@ -51,24 +54,30 @@ public class HistoryListAdapter extends ArrayAdapter implements Filterable {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+
         View v = convertView;
         ViewHolder viewHolder = new ViewHolder();
         if (convertView == null) {
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             v = inflater.inflate(R.layout.list_history_item, null);
-            TextView HistoryId = (TextView) v.findViewById(R.id.textViewFavoriteID);
-            TextView HistoryName = (TextView) v.findViewById(R.id.textViewFavoriteName);
+            TextView TreeScore = (TextView) v.findViewById(R.id.score);
+            TextView JourneyDate = (TextView) v.findViewById(R.id.journeyDate);
+            TextView JourneyTime = (TextView) v.findViewById(R.id.duration);
+            ImageView WalkLogo = (ImageView) v.findViewById(R.id.walkIcon);
 
-            viewHolder.HistoryID = HistoryId;
-            viewHolder.HistoryName = HistoryName;
+            viewHolder.TreeScore = TreeScore;
+            viewHolder.JourneyDate = JourneyDate;
+            viewHolder.JourneyTime =  JourneyTime;
+            viewHolder.WalkLogo = WalkLogo;
             v.setTag(viewHolder);
         }
         else
             viewHolder = (ViewHolder) v.getTag();
 
         Journey d = getItem(position);
-        viewHolder.HistoryID.setText(d.timestamp.toString());
-        viewHolder.HistoryName.setText(Long.toString(d.score));
+        viewHolder.JourneyTime.setText(d.timestamp.toString());
+        viewHolder.JourneyDate.setText(d.date);
+        viewHolder.TreeScore.setText(Long.toString(d.score));
         return v;
     }
 }
