@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -52,6 +53,24 @@ public class HistoryFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_history, container, false);
         initialiseListView(view);
+        Button sortByScore = (Button) view.findViewById(R.id.sortScoreButton);
+        sortByScore.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                historyListAdapter.sortData(Journey.findWithQuery(Journey.class, "SELECT * FROM JOURNEY ORDER BY SCORE DESC"));
+                historyListAdapter.notifyDataSetChanged();
+            }
+        });
+
+        Button sortByDate = (Button) view.findViewById(R.id.sortDateButton);
+        sortByDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                historyListAdapter.sortData(Journey.findWithQuery(Journey.class, "SELECT * FROM JOURNEY ORDER BY TIMESTAMP DESC"));
+                historyListAdapter.notifyDataSetChanged();
+            }
+        });
+
         return view;
     }
     /*
@@ -67,7 +86,6 @@ public class HistoryFragment extends Fragment {
         }
         favoriteListAdapter.notifyDataSetChanged();
     }*/
-
     private void initialiseListView(View view) {
         errorMessageText = (TextView) view.findViewById(R.id.favoritesTextEmptyMessage);
         errorMessageText.setVisibility(View.GONE);
@@ -120,5 +138,4 @@ public class HistoryFragment extends Fragment {
            }
        });
     }
-
 }

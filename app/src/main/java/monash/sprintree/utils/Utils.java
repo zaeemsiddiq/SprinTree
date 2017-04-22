@@ -34,8 +34,11 @@ import java.lang.reflect.Type;
 import java.nio.channels.FileChannel;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
 
 import monash.sprintree.data.Constants;
 import monash.sprintree.data.Tree;
@@ -146,12 +149,31 @@ public class Utils {
     return unix timestamp
      */
     public static Long getCurrentTimeStamp() {
-        return System.currentTimeMillis()/1000;
+        Calendar calendar = Calendar.getInstance();
+        TimeZone tz = TimeZone.getDefault();
+        calendar.add(Calendar.MILLISECOND, tz.getOffset(calendar.getTimeInMillis()));
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+        java.util.Date currenTimeZone=new java.util.Date((long)1379487711*1000);
+        return calendar.getTime().getTime();
     }
 
     public static String getTodaysDate() {
         SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
         return sdf.format(new Date());
+    }
+
+    public  static String getDateCurrentTimeZone(long timestamp) {
+        try{
+            Calendar calendar = Calendar.getInstance();
+            TimeZone tz = TimeZone.getDefault();
+            calendar.setTimeInMillis(timestamp * 1000);
+            calendar.add(Calendar.MILLISECOND, tz.getOffset(calendar.getTimeInMillis()));
+            SimpleDateFormat sdf = new SimpleDateFormat("hh:mm a");
+            Date currenTimeZone = (Date) calendar.getTime();
+            return sdf.format(currenTimeZone);
+        }catch (Exception e) {
+        }
+        return "";
     }
 
 }

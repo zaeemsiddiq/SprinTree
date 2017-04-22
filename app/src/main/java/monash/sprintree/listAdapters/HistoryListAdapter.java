@@ -15,13 +15,13 @@ import java.util.List;
 import monash.sprintree.R;
 import monash.sprintree.data.History;
 import monash.sprintree.data.Journey;
+import monash.sprintree.utils.Utils;
 
 /**
  * Created by Zaeem on 6/1/2016.
  */
 public class HistoryListAdapter extends ArrayAdapter<Journey> implements Filterable {
     List<Journey> historyList;
-   List<Journey> originalHistoryList;
     private Context context;
 
     private class ViewHolder {
@@ -33,7 +33,6 @@ public class HistoryListAdapter extends ArrayAdapter<Journey> implements Filtera
     public HistoryListAdapter(Context context, List<Journey> list) {
         super(context, R.layout.list_history_item, list);
         this.historyList = list;
-        this.originalHistoryList = list;
         this.context = context;
     }
 
@@ -48,8 +47,8 @@ public class HistoryListAdapter extends ArrayAdapter<Journey> implements Filtera
         return historyList.size();
     }
 
-    public void resetData() {   // calling this method to reset the filterable data to original list which was initialised at start
-        historyList = originalHistoryList;
+    public void sortData( List<Journey> list ) {   // calling this method to reset the filterable data to original list which was initialised at start
+        historyList = list;
     }
 
     @Override
@@ -75,7 +74,7 @@ public class HistoryListAdapter extends ArrayAdapter<Journey> implements Filtera
             viewHolder = (ViewHolder) v.getTag();
 
         Journey d = getItem(position);
-        viewHolder.JourneyTime.setText(d.timestamp.toString());
+        viewHolder.JourneyTime.setText(Utils.getDateCurrentTimeZone(d.timestamp));
         viewHolder.JourneyDate.setText(d.date);
         viewHolder.TreeScore.setText(Long.toString(d.score));
         return v;

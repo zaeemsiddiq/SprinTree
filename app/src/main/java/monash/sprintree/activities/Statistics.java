@@ -131,7 +131,7 @@ public class Statistics extends AppCompatActivity {
     }
 
     private SpannableString generateCenterText() {
-        SpannableString s = new SpannableString( "999" + "\nTrees");
+        SpannableString s = new SpannableString( journeyTrees.size() + "\nTrees");
         s.setSpan(new RelativeSizeSpan(2f), 0, s.length(), 0);
         return s;
     }
@@ -202,7 +202,7 @@ public class Statistics extends AppCompatActivity {
         scoreLabel.setText(String.valueOf(journey.score));
         durationLabel.setText(String.valueOf(journey.duration));
         distanceLabel.setText(String.valueOf(journey.distance));
-        toolbarTitle.setText( "History " + String.valueOf(journey.timestamp));
+        toolbarTitle.setText( "History " + Utils.getDateCurrentTimeZone(journey.timestamp));
     }
 
     private void initiateToolbar() {
