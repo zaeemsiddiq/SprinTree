@@ -73,6 +73,11 @@ public class HistoryFragment extends Fragment {
 
         return view;
     }
+
+    public void reloadData() {
+        historyListAdapter.sortData(Journey.findWithQuery(Journey.class, "SELECT * FROM JOURNEY ORDER BY TIMESTAMP DESC"));
+        historyListAdapter.notifyDataSetChanged();
+    }
     /*
     public void refresh() { // reload the list
         historyListAdapter = new HistoryListAdapter(getActivity(), Constants.dbContext.getAllFavorites());

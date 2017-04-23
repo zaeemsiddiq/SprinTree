@@ -14,7 +14,9 @@ public class Journey extends SugarRecord<Journey> {
     public String date;
     public long score;
     public long distance;   //meters
-    public long duration;   //seconds
+    public int hours;
+    public int mins;
+    public int seconds;
     public String journeyImagePath; // path of image in local database
 
     public List<JourneyPath> getPath() {

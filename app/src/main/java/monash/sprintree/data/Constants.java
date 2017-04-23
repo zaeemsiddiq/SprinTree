@@ -40,7 +40,7 @@ public class Constants {
 
     /* Journey Constants */
     public static int MILESTONE_DISTANCE = 100; // load nearest trees after x meters
-    public static int TREES_RADIUS = 1000;   // meters to load trees
+    public static int TREES_RADIUS = 600;   // meters to load trees
     public static float NEAREST_TREE_DISTANCE = (float) 10.00; // distance identifier to get the nearest tree
     public static int TREE_NORMAL_SCORE = 10;   // tree score
 }

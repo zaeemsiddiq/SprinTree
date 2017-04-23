@@ -62,7 +62,7 @@ public class Splash extends AppCompatActivity implements SyncServiceComplete {
         new Thread() {
             @Override
             public void run() {
-                final List<Tree> trees = Tree.findWithQuery(Tree.class, "SELECT * FROM TREE LIMIT 2000");
+                final List<Tree> trees = Tree.findWithQuery(Tree.class, "SELECT * FROM TREE");
                 final List<Tree> commonTrees = Tree.findWithQuery(Tree.class, "SELECT COUNT(genus), genus FROM TREE GROUP BY genus ORDER BY count(genus) DESC LIMIT 10");
 
                 Constants.trees = trees;

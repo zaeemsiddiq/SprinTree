@@ -39,12 +39,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.pedant.SweetAlert.SweetAlertDialog;
 import monash.sprintree.R;
 import monash.sprintree.data.Journey;
 import monash.sprintree.data.JourneyTree;
 import monash.sprintree.data.Tree;
 import monash.sprintree.utils.Utils;
 
+import static android.R.attr.cacheColorHint;
 import static android.R.attr.path;
 
 public class Statistics extends AppCompatActivity {
@@ -95,7 +97,7 @@ public class Statistics extends AppCompatActivity {
         journey.score = 200;
         journey.distance = 400;
         journey.timestamp = (long)12345322;
-        journey.duration = 40000;
+        journey.hours = 40000;
 
         journeyTrees = new ArrayList<>();
 
@@ -200,14 +202,47 @@ public class Statistics extends AppCompatActivity {
         }
 
         scoreLabel.setText(String.valueOf(journey.score));
-        durationLabel.setText(String.valueOf(journey.duration));
-        distanceLabel.setText(String.valueOf(journey.distance));
+        durationLabel.setText(String.valueOf(journey.hours) + ":" + String.valueOf(journey.mins) + ":" + String.valueOf(journey.seconds));
+        distanceLabel.setText(String.valueOf(((float)journey.distance/1000)));
         toolbarTitle.setText( "History " + Utils.getDateCurrentTimeZone(journey.timestamp));
     }
 
+    private void deleteJourney() {
+
+        new SweetAlertDialog(this, SweetAlertDialog.WARNING_TYPE)
+                .setTitleText("Do you want to delete this run?")
+                .setCancelText("No,Don't!")
+                .setConfirmText("Yes,Delete it!")
+                .showCancelButton(true)
+                .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                    @Override
+                    public void onClick(SweetAlertDialog sDialog) {
+                        journey.delete();
+                        sDialog.setTitleText("Deleted!")
+                                .setContentText("Your journey has been deleted!")
+                                .setConfirmText("OK")
+                                .showCancelButton(false)
+                                .setCancelClickListener(null)
+                                .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                                    @Override
+                                    public void onClick(SweetAlertDialog sweetAlertDialog) {
+                                        Statistics.this.finish();
+                                    }
+                                })
+                                .changeAlertType(SweetAlertDialog.SUCCESS_TYPE);
+                    }
+                })
+                .show();
+    }
     private void initiateToolbar() {
         Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
         toolbarTitle = (TextView) findViewById(R.id.toolbarTitle);
+        findViewById(R.id.toolbarDelete).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                deleteJourney();
+            }
+        });
         setSupportActionBar(myToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
@@ -216,9 +251,15 @@ public class Statistics extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
+                this.finish();
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        this.finish();
     }
 
     public void imageUpload(View view) {
@@ -286,6 +327,8 @@ public class Statistics extends AppCompatActivity {
         }
         return mypath.getAbsolutePath();
     }
+
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
