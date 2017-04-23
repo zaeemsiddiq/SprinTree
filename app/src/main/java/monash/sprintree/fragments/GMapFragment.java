@@ -479,11 +479,7 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
 
         @Override
         public View getInfoWindow(com.google.android.gms.maps.model.Marker marker) {
-            return null;
-        }
 
-        @Override
-        public View getInfoContents(final com.google.android.gms.maps.model.Marker marker) {
             lastMarker = marker;
 
             TextView tvTitle = ((TextView) myContentsView
@@ -499,16 +495,16 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
 
 
             Tree tree = TreeService.findTreeByPosition(marker.getPosition());
-           // if(listener.isTreeVisited(tree)) {
-                myContentsView.findViewById(R.id.layoutLock).setVisibility(View.GONE);
-                myContentsView.findViewById(R.id.layoutInfo).setVisibility(View.VISIBLE);
+            // if(listener.isTreeVisited(tree)) {
+            myContentsView.findViewById(R.id.layoutLock).setVisibility(View.GONE);
+            myContentsView.findViewById(R.id.layoutInfo).setVisibility(View.VISIBLE);
             if(tree.commonName.equals("tba")){
                 tvTitle.setText(tree.scientificName);
             }
             else{
                 tvTitle.setText(tree.commonName);
             }
-                tvSnippet.setText("Genus: "+tree.genus);
+            tvSnippet.setText("Genus: "+tree.genus);
             details.setText("Year Planted: "+String.valueOf(tree.yearPlanted));
             if((tree.usefulLifeExpectencyValue==0)) {
                 life.setVisibility(View.GONE);
@@ -518,29 +514,14 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
                 life.setText("Life Expectancy: " + String.valueOf(tree.usefulLifeExpectencyValue) + " yrs");
             }
 
-
-
-            //} else {
-                //myContentsView.findViewById(R.id.layoutInfo).setVisibility(View.GONE);
-               // myContentsView.findViewById(R.id.layoutLock).setVisibility(View.VISIBLE);
-           // }
-
-            /*if( lastTree == null ) {
-                if (!hasImage(imageView)) {
-                    WikimediaService task = new WikimediaService(this, imageView, tree);
-                    task.execute();
-                }
-            } else {
-                 if (!lastTree.comId.equals(tree.comId)){
-                     imageView.setImageDrawable(null);
-                     WikimediaService task = new WikimediaService(this, imageView, tree);
-                     task.execute();
-                 }
-            }*/
             lastTree = tree;
-
-
             return myContentsView;
+        }
+
+        @Override
+        public View getInfoContents(final com.google.android.gms.maps.model.Marker marker) {
+            return null;
+
         }
 
         @Override
