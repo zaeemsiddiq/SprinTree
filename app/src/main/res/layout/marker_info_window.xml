@@ -34,7 +34,7 @@
 
         <TextView
             android:id="@+id/txtTitle"
-            android:textColor="#FFFFFF"
+            android:textColor="#8B4513"
             android:textStyle="bold"
             android:textAlignment="center"
             android:textSize="20dp"

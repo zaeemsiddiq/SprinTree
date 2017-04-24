@@ -397,6 +397,19 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
         }
     }
 
+    public void moveCameraZoom(Location location) {
+        if (location != null) {
+            LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+            if (mMap == null) {
+                return;
+            } else {
+                CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, Constants.MAP_ZOOM);
+                mMap.animateCamera(cameraUpdate);
+                Constants.LAST_LOCATION = location;
+            }
+        }
+    }
+
     @Override
     public boolean onClusterClick(Cluster<Marker> cluster) {
         Toast.makeText(getActivity(), "Zoom in to view trees", Toast.LENGTH_SHORT).show();

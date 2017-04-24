@@ -393,7 +393,7 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
 
     @Override
     public void mapReady() {
-        mapFragment.moveCamera(Constants.LAST_LOCATION);
+        mapFragment.moveCameraZoom(Constants.LAST_LOCATION);
         findViewById(R.id.loadingProgressBar).setVisibility(View.GONE);
         findViewById(R.id.mainFrame).setVisibility(View.VISIBLE);
     }
