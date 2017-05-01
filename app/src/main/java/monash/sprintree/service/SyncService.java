@@ -1,35 +1,26 @@
 package monash.sprintree.service;
 
 
-import android.widget.NumberPicker;
-
-import com.google.firebase.FirebaseApp;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-
-import monash.sprintree.activities.MapsActivity;
-import monash.sprintree.activities.Splash;
+import monash.sprintree.activities.SplashScreen;
 import monash.sprintree.data.Constants;
-import monash.sprintree.data.Tree;
 
 /**
  * Created by Zaeem on 5/10/2016.
  */
 
 public class SyncService {
-    Splash listener;
+    SplashScreen listener;
     FirebaseDatabase database;
     DatabaseReference myRef;
 
 
-    public SyncService(Splash listener) {
+    public SyncService(SplashScreen listener) {
         this.listener = listener;
         database = FirebaseDatabase.getInstance();
         //FirebaseDatabase database = FirebaseDatabase.getInstance();

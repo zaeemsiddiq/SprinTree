@@ -12,4 +12,11 @@
     <color name="blue_dark">#1C4C9E</color>
     <color name="blue_light">#1A769D</color>
     <color name="transparent">#00000000</color>
+
+    <color name="kopie_green">#A1D700</color>
+    <color name="kopie_olive">#4F9300</color>
+    <color name="kopie_light_green">#2B6832</color>
+    <color name="kopie_blue">#17373C</color>
+    <color name="kopie_dark_blue">#0D1C33</color>
+    <color name="white">#FFFFFF</color>
 </resources>

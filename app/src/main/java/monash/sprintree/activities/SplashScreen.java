@@ -4,6 +4,7 @@ import monash.sprintree.data.Journey;
 import monash.sprintree.data.JourneyPath;
 import monash.sprintree.data.Tree;
 
+import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -12,10 +13,17 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.firebase.FirebaseApp;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.stream.JsonReader;
+import com.orm.SugarRecord;
 
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.lang.reflect.Type;
 import java.util.List;
 
 import monash.sprintree.R;
@@ -23,8 +31,10 @@ import monash.sprintree.data.Constants;
 import monash.sprintree.service.SyncService;
 import monash.sprintree.service.SyncServiceComplete;
 import monash.sprintree.utils.Utils;
+import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
-public class Splash extends AppCompatActivity implements SyncServiceComplete {
+public class SplashScreen extends AppCompatActivity implements SyncServiceComplete {
 
     /*
     View objects
@@ -36,13 +46,22 @@ public class Splash extends AppCompatActivity implements SyncServiceComplete {
      */
     private int loadedTrees;
 
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         FirebaseApp.initializeApp(this);
         super.onCreate(savedInstanceState);
-        Utils.fullScreen(Splash.this);
-        setContentView(R.layout.activity_splash);
+        CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
+                .setDefaultFontPath("fonts/Lato-Light.ttf")
+                .setFontAttrId(R.attr.fontPath)
+                .build()
+        );
+        Utils.fullScreen(SplashScreen.this);
+        setContentView(R.layout.activity_splash_screen);
         if (getIntent().getBooleanExtra("Exit me", false)) {
             finish();
         }
@@ -50,6 +69,7 @@ public class Splash extends AppCompatActivity implements SyncServiceComplete {
         //deleteDB();
         //Utils.exportDatabse( this );
         startLoading();
+        //startDashboardActivity();
         //test();
     }
     private void test() {
@@ -74,13 +94,12 @@ public class Splash extends AppCompatActivity implements SyncServiceComplete {
                         public void run() {
                             if (trees.size() == 0) { // if the database is empty, load the trees from firebase
                                 try {
-                                    Utils.openRenderer(getApplicationContext(), "structured2.json");
-                                    startMapsActivity();
+                                    openRenderer(getApplicationContext(), "structured2.json");
                                 } catch (IOException e) {
                                     e.printStackTrace();
                                 }
                             } else {
-                                startMapsActivity();
+                                startDashboardActivity();
                             }
                         }
                     });
@@ -120,8 +139,6 @@ public class Splash extends AppCompatActivity implements SyncServiceComplete {
 
     private void initiateLayout() {
         loadedTrees = 0;
-        syncProgress = (ProgressBar) findViewById(R.id.mainProgressBar);
-        syncProgress.setProgress(0);
     }
 
     @Override
@@ -134,7 +151,7 @@ public class Splash extends AppCompatActivity implements SyncServiceComplete {
             new Thread() {
                 @Override
                 public void run() {
-                    SyncService service = new SyncService(Splash.this);
+                    SyncService service = new SyncService(SplashScreen.this);
                     service.firebaseReload(comId);
                     try {
                         runOnUiThread(new Runnable() {
@@ -151,14 +168,55 @@ public class Splash extends AppCompatActivity implements SyncServiceComplete {
 
     }
 
-    public void launchHome(View view) {
-        startMapsActivity();
-    }
-
     @Override
     public void loadComplete() {
         Constants.trees = Tree.findWithQuery(Tree.class, "SELECT * FROM TREE");
-        Toast.makeText(this, "Data Loading Complete", Toast.LENGTH_SHORT).show();
         startMapsActivity();
+    }
+
+    public void openRenderer(final Context context, final String fileName) throws IOException {
+
+        new Thread() {
+            @Override
+            public void run() {
+                File file= null;
+                try {
+                    file = Utils.FileUtils.fileFromAsset(context, fileName);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    Gson gson = new Gson();
+                    JsonReader reader = new JsonReader(new FileReader(file));
+                    Type listType = new TypeToken<List<Tree>>(){}.getType();
+                    List<Tree> posts = (List<Tree>) gson.fromJson(reader, listType);
+                    SugarRecord.saveInTx(posts);
+                    Constants.trees = posts;
+                    try {
+                        reader.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    // code runs in a thread
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            startDashboardActivity();
+                        }
+                    });
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }.start();
+    }
+
+    private void startDashboardActivity() {
+        Intent mapIntent = new Intent(this, Dashboard.class);
+        startActivityForResult(mapIntent, 0);
     }
 }

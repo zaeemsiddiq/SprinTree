@@ -3,19 +3,20 @@
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorPrimary">@color/kopie_blue</item>
+        <item name="colorPrimaryDark">@color/kopie_dark_blue</item>
     </style>
     <style name="TreeTabLayout" parent="Widget.Design.TabLayout">
-        <item name="android:background">@color/steel</item>
-        <item name="tabIndicatorColor">@color/olive_dark</item>
+        <item name="android:background">@color/kopie_blue</item>
+        <item name="fontPath">fonts/Lato-Light.ttf</item>
+        <item name="tabIndicatorColor">@color/white</item>
         <item name="tabTextAppearance">@style/TreeTabTextAppearance</item>
         <item name="tabSelectedTextColor">@color/olive_dark</item>
     </style>
     <style name="TreeTabTextAppearance" parent="TextAppearance.Design.Tab">
         <item name="android:textSize">20sp</item>
-        <item name="android:textColor">@color/coal</item>
+        <item name="fontPath">fonts/Lato-Light.ttf</item>
+        <item name="android:textColor">@color/white</item>
         <item name="textAllCaps">true</item>
         <item name="android:textStyle">bold</item>
     </style>

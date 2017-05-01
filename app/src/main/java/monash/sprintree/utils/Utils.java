@@ -50,7 +50,8 @@ import monash.sprintree.data.Tree;
 public class Utils {
 
 
-    public static void openRenderer(Context context,String fileName) throws IOException {
+    public static void openRenderer(final Context context, String fileName) throws IOException {
+
         File file=  FileUtils.fileFromAsset(context, fileName);
         try {
             Gson gson = new Gson();
@@ -65,11 +66,11 @@ public class Utils {
         }
     }
 
-    private static class FileUtils {
+    public static class FileUtils {
         private FileUtils() {
         }
 
-        private static File fileFromAsset(Context context, String assetName) throws IOException {
+        public static File fileFromAsset(Context context, String assetName) throws IOException {
             File outFile = new File(context.getCacheDir(), assetName );
             copy(context.getAssets().open(assetName), outFile);
 

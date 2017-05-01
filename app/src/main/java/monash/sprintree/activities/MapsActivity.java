@@ -6,6 +6,9 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.Typeface;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
@@ -22,6 +25,8 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.NotificationCompatBase;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.MapFragment;
@@ -42,8 +47,11 @@ import monash.sprintree.data.Tree;
 import monash.sprintree.fragments.FragmentListener;
 import monash.sprintree.fragments.GMapFragment;
 import monash.sprintree.fragments.HistoryFragment;
+import monash.sprintree.fragments.MyPlantFragment;
 import monash.sprintree.service.TreeService;
 import monash.sprintree.utils.Utils;
+import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class MapsActivity extends FragmentActivity implements LocationListener, FragmentListener {
 
@@ -52,6 +60,8 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
      */
     private GMapFragment mapFragment;
     private HistoryFragment historyFragment;
+    private MyPlantFragment myPlantFragment;
+
     public static int FRAGMENT_MAP = 0; // used to map tab positions
     public static int FRAGMENT_HISTORY = 1;
 
@@ -85,8 +95,18 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
     private Location lastLocationMilestone;
 
     @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
+                .setDefaultFontPath("fonts/Lato-Light.ttf")
+                .setFontAttrId(R.attr.fontPath)
+                .build()
+        );
         //Utils.fullScreen(MapsActivity.this);
         setContentView(R.layout.activity_maps);
         if(Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1) {
@@ -97,7 +117,6 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
             loadData();
             initLayout();
         }
-
     }
 
     private void loadData() {
@@ -154,42 +173,52 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
     private void initLayout() {
         initiateTabsLayout();
         mapFragment = GMapFragment.newInstance(MapsActivity.this, nonUniqueMarkers, uniqueMarkers);
-        selectTab(FRAGMENT_MAP);
+        historyFragment = HistoryFragment.newInstance(MapsActivity.this);
+        myPlantFragment = MyPlantFragment.newInstance(this);
+        Bundle extras = getIntent().getExtras();
+        int selectTabId = 0;
+        if (extras != null) {
+            findViewById(R.id.loadingProgressBar).setVisibility(View.GONE);
+            findViewById(R.id.mainFrame).setVisibility(View.VISIBLE);
+            selectTabId = extras.getInt("showTab");
+
+        }
+        selectTab(selectTabId);
     }
 
     private void initiateTabsLayout() { // adding the tabs dynamically
         tabLayoutDashboard = (TabLayout) findViewById(R.id.mainTabs);
-        tabLayoutDashboard.addTab(tabLayoutDashboard.newTab().setText("Map")); //0
-        tabLayoutDashboard.addTab(tabLayoutDashboard.newTab().setText("History")); //1
-        tabLayoutDashboard.addTab(tabLayoutDashboard.newTab().setText("My Forest")); //2
+        tabLayoutDashboard.addTab(tabLayoutDashboard.newTab().setText("Map").setIcon(R.drawable.mapico)); //0
+        tabLayoutDashboard.addTab(tabLayoutDashboard.newTab().setText("History").setIcon(R.drawable.historyico)); //1
+        tabLayoutDashboard.addTab(tabLayoutDashboard.newTab().setText("My Forest").setIcon(R.drawable.treeico)); //2
+
+        tabLayoutDashboard.getTabAt(0).getIcon().setColorFilter(Color.parseColor("#A1D700"), PorterDuff.Mode.SRC_IN);
+        tabLayoutDashboard.getTabAt(1).getIcon().setColorFilter(Color.parseColor("#A1D700"), PorterDuff.Mode.SRC_IN);
+        tabLayoutDashboard.getTabAt(2).getIcon().setColorFilter(Color.parseColor("#A1D700"), PorterDuff.Mode.SRC_IN);
+
         tabLayoutDashboard.setTabMode(TabLayout.MODE_FIXED);
+        changeTabsFont(tabLayoutDashboard);
 
         tabLayoutDashboard.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-                System.out.println(tab.getPosition());
                 if(tab.getPosition() == 0) {
                     if(mapFragment != null) {
                         // hide the current fragment first
                         hideFragment(currentFragment);
                         // add/show the fragment
                         showFragment(mapFragment);
-                        // set the current fragment to this one
-                        currentFragment = mapFragment;
                     }
                 }
                 if(tab.getPosition() == 1) {
-                    //Toast.makeText(MapsActivity.this, "This feature will be added in upcoming versions", Toast.LENGTH_SHORT).show();
                     historyFragment = HistoryFragment.newInstance(MapsActivity.this);
-                    // hide the current fragment first
                     hideFragment(currentFragment);
-                    // add/show the fragment
                     showFragment(historyFragment);
-                    // set the current fragment to this one
-                    currentFragment = historyFragment;
                 }
                 if(tab.getPosition() == 2) {
-                    Toast.makeText(MapsActivity.this, "This feature will be added in upcoming versions", Toast.LENGTH_SHORT).show();
+                    myPlantFragment = MyPlantFragment.newInstance(MapsActivity.this);
+                    hideFragment(currentFragment);
+                    showFragment(myPlantFragment);
                 }
             }
 
@@ -286,6 +315,12 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
                 break;
             }
         }
+        for( Tree journeyTree : TreeService.getVisitedTrees()) {
+            if(journeyTree.comId.equals(tree.comId) ){
+                treeVisited = true;
+                break;
+            }
+        }
         return treeVisited;
     }
 
@@ -362,6 +397,8 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
         }
     }
     private void showFragment(Fragment fragment) {
+        // set the current fragment to this one
+        currentFragment = fragment;
         if(!fragment.isAdded()) {
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ft.add(R.id.mainFrame, fragment);
@@ -377,6 +414,7 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
         ft.remove(currentFragment);
         ft.commit();
     }
+
     public void selectTab(int fragmentNumber) {
         if(fragmentNumber == FRAGMENT_MAP) {
             hideFragment(currentFragment);
@@ -530,48 +568,7 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
 
     @Override
     public void onBackPressed() {   // this is fired if user presses the back button. its a good idea to ask the user before quitting the app
-
-        try {
-            new SweetAlertDialog(this, SweetAlertDialog.WARNING_TYPE)
-                    .setTitleText("Do you want to exit ?")
-                    .setCancelText("No")
-                    .setConfirmText("Yes")
-                    .showCancelButton(true)
-                    .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
-                        @Override
-                        public void onClick(SweetAlertDialog sDialog) {
-                            removeFragment();
-                            stopLocationUpdates();
-                            setResult(Constants.REQUEST_EXIT);
-                            finish();
-                            sDialog.cancel();
-                        }
-                    })
-                    .show();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-
-
-
-        /*new AlertDialog.Builder(this)
-                .setTitle("Caution")
-                .setMessage("Do you want to exit the application ?")
-                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        removeFragment();
-                        stopLocationUpdates();
-                        setResult(Constants.REQUEST_EXIT);
-                        finish();
-                    }
-                })
-                .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        // do nothing
-                    }
-                })
-                .setIcon(android.R.drawable.button_onoff_indicator_on)
-                .show();*/
+        finish();
     }
 
     protected void stopLocationUpdates() {
@@ -583,5 +580,20 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
         super.onActivityResult(requestCode, resultCode, data);
         historyFragment = HistoryFragment.newInstance(MapsActivity.this);
         selectTab(FRAGMENT_HISTORY);
+    }
+
+    private void changeTabsFont(TabLayout tabLayout) {
+        ViewGroup vg = (ViewGroup) tabLayout.getChildAt(0);
+        int tabsCount = vg.getChildCount();
+        for (int j = 0; j < tabsCount; j++) {
+            ViewGroup vgTab = (ViewGroup) vg.getChildAt(j);
+            int tabChildsCount = vgTab.getChildCount();
+            for (int i = 0; i < tabChildsCount; i++) {
+                View tabViewChild = vgTab.getChildAt(i);
+                if (tabViewChild instanceof TextView) {
+                    ((TextView) tabViewChild).setTypeface(Typeface.createFromAsset(getAssets(),"fonts/Lato-Regular.ttf"));
+                }
+            }
+        }
     }
 }

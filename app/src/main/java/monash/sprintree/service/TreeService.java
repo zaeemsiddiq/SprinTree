@@ -1,6 +1,9 @@
 package monash.sprintree.service;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.database.DataSnapshot;
+
+import monash.sprintree.data.Journey;
+import monash.sprintree.data.JourneyTree;
 import monash.sprintree.data.Tree;
 
 import com.google.firebase.database.DataSnapshot;
@@ -69,5 +72,15 @@ public class TreeService {
             return trees.get(0);
         }
         return new Tree();
+    }
+
+    public static List<Tree> getVisitedTrees() {
+        List<Tree> visitedTrees = new ArrayList<>();
+        for(Journey journey : Journey.listAll(Journey.class)) {
+            for( JourneyTree journeyTree: journey.getTrees() ) {
+                visitedTrees.add(journeyTree.tree);
+            }
+        }
+        return visitedTrees;
     }
 }

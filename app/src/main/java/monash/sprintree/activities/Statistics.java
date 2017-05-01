@@ -9,6 +9,8 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -17,10 +19,13 @@ import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.Legend;
@@ -30,6 +35,13 @@ import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.utils.ColorTemplate;
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -42,6 +54,7 @@ import java.util.List;
 import cn.pedant.SweetAlert.SweetAlertDialog;
 import monash.sprintree.R;
 import monash.sprintree.data.Journey;
+import monash.sprintree.data.JourneyPath;
 import monash.sprintree.data.JourneyTree;
 import monash.sprintree.data.Tree;
 import monash.sprintree.utils.Utils;
@@ -49,7 +62,27 @@ import monash.sprintree.utils.Utils;
 import static android.R.attr.cacheColorHint;
 import static android.R.attr.path;
 
-public class Statistics extends AppCompatActivity {
+public class Statistics extends AppCompatActivity implements OnMapReadyCallback {
+
+    GoogleMap mMap;
+    ArrayList<LatLng> coordList = new ArrayList<LatLng>();
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        this.mMap = googleMap;
+
+        PolylineOptions polylineOptions = new PolylineOptions();
+        // Create polyline options with existing LatLng ArrayList
+        polylineOptions.addAll(coordList);
+        polylineOptions
+                .width(5)
+                .color(Color.RED);
+
+        mMap.addPolyline(polylineOptions);
+
+        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(coordList.get(0), 17.0f);
+        mMap.animateCamera(cameraUpdate);
+
+    }
 
     private class TreePieEntry{
         public TreePieEntry(String genus, int count) {
@@ -81,14 +114,50 @@ public class Statistics extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_statistics);
 
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
+
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
             journey = Journey.findById(Journey.class, extras.getLong("journeyId"));
             journeyTrees = journey.getTrees();
+            for ( JourneyPath journeyPath: journey.getPath()) {
+                coordList.add(new LatLng(journeyPath.latitude, journeyPath.longitude));
+            }
         }
         //fakeData();
         initiateToolbar();
         initiateLayout();
+
+        final NestedScrollView scroll = (NestedScrollView) findViewById(R.id.scroll);
+        ImageView transparent = (ImageView)findViewById(R.id.imagetrans);
+
+        transparent.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                int action = event.getAction();
+                switch (action) {
+                    case MotionEvent.ACTION_DOWN:
+                        // Disallow ScrollView to intercept touch events.
+                        scroll.requestDisallowInterceptTouchEvent(true);
+                        // Disable touch on transparent view
+                        return false;
+
+                    case MotionEvent.ACTION_UP:
+                        // Allow ScrollView to intercept touch events.
+                        scroll.requestDisallowInterceptTouchEvent(false);
+                        return true;
+
+                    case MotionEvent.ACTION_MOVE:
+                        scroll.requestDisallowInterceptTouchEvent(true);
+                        return false;
+
+                    default:
+                        return true;
+                }
+            }
+        });
     }
 
     private void fakeData() {
