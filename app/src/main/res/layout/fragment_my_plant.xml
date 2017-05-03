@@ -18,9 +18,15 @@
         <ImageView
             android:id="@+id/coringImage"
             android:layout_gravity="center"
-            android:layout_width="300dp"
-            android:layout_height="300dp"
-            android:src="@drawable/petrolpump" />
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:scaleType="fitXY"
+            android:src="@drawable/tree_empty" />
+        <Button
+            android:id="@+id/animateButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="animate"/>
 
 
     </LinearLayout>

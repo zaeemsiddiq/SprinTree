@@ -82,7 +82,7 @@ public class SplashScreen extends AppCompatActivity implements SyncServiceComple
         new Thread() {
             @Override
             public void run() {
-                final List<Tree> trees = Tree.findWithQuery(Tree.class, "SELECT * FROM TREE");
+                final List<Tree> trees = Tree.findWithQuery(Tree.class, "SELECT * FROM TREE LIMIT 4000");
                 final List<Tree> commonTrees = Tree.findWithQuery(Tree.class, "SELECT COUNT(genus), genus FROM TREE GROUP BY genus ORDER BY count(genus) DESC LIMIT 10");
 
                 Constants.trees = trees;

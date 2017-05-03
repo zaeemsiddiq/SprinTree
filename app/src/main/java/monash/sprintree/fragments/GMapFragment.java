@@ -129,17 +129,19 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
      */
     List<Marker> nonUniqueTrees;
     List<Marker> uniqueTrees;
-    boolean displayAll = true;
+    List<Marker> unlockedTrees;
+    int displayAll = 0;
 
     public GMapFragment() {
     }
 
-    public static GMapFragment newInstance(FragmentListener listener, List<Marker> nonUniqueTrees, List<Marker> uniqueTrees) {
+    public static GMapFragment newInstance(FragmentListener listener, List<Marker> nonUniqueTrees, List<Marker> uniqueTrees, List<Marker> unlockedTrees) {
 
         GMapFragment fragment = new GMapFragment();
         fragment.listener = listener;
         fragment.nonUniqueTrees = nonUniqueTrees;
         fragment.uniqueTrees = uniqueTrees;
+        fragment.unlockedTrees = unlockedTrees;
 
         return fragment;
     }
@@ -187,7 +189,8 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
         //List<String> list = new ArrayList<String>();
         ArrayList<SpinnerItem> list = new ArrayList<>();
         list.add(new SpinnerItem("All trees", R.drawable.tree));
-        list.add(new SpinnerItem("Uncommon", R.mipmap.unique_tree));
+        list.add(new SpinnerItem("Uncommon", R.drawable.tree_unique));
+        list.add(new SpinnerItem("Unlocked", R.drawable.tree_visited));
 
         treeView = (Spinner) view.findViewById(R.id.treeViewSpinner);
 
@@ -197,11 +200,7 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 
-                if (position == 0) {
-                    displayAll = true;
-                } else {
-                    displayAll = false;
-                }
+                displayAll = position;
                 addMarkers(displayAll);
             }
 
@@ -329,7 +328,7 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
                 .color(Color.RED));
     }
 
-    private void addMarkers(boolean displayAll) {
+    private void addMarkers(int displayAll) {
 
         if (isAdded()) {
             mMap.clear();
@@ -346,21 +345,25 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
 
             mClusterManager.clearItems();
             /* end custom info window clusters */
-            if (displayAll) {
+            if (displayAll == 0) {
                 mClusterManager.addItems(nonUniqueTrees);
                 mClusterManager.addItems(uniqueTrees);
+                mClusterManager.addItems(unlockedTrees);
 
-            } else {
+            } else if (displayAll == 1) {
                 mClusterManager.addItems(uniqueTrees);
+            } else if (displayAll == 2) {
+                mClusterManager.addItems(unlockedTrees);
             }
             mClusterManager.cluster();
         }
     }
 
-    public void reloadTrees(List<Marker> nonUniqueTrees, List<Marker> uniqueTrees) {
+    public void reloadTrees(List<Marker> nonUniqueTrees, List<Marker> uniqueTrees, List<Marker> unlockedTrees) {
         this.uniqueTrees = uniqueTrees;
         this.nonUniqueTrees = nonUniqueTrees;
-        addMarkers(displayAll);
+        this.unlockedTrees = unlockedTrees;
+        addMarkers(displayAll);  // 0 = display all
     }
 
     @Override
@@ -369,7 +372,7 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
         /* for custom info window clusters */
         //mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
 
-        addMarkers(true);
+        addMarkers(0);
 
         if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
@@ -393,6 +396,8 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
                 CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLng(latLng);
                 mMap.animateCamera(cameraUpdate);
                 Constants.LAST_LOCATION = location;
+
+
             }
         }
     }
@@ -405,15 +410,16 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
             } else {
                 CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, Constants.MAP_ZOOM);
                 mMap.animateCamera(cameraUpdate);
-                Constants.LAST_LOCATION = location;
             }
         }
     }
 
     @Override
     public boolean onClusterClick(Cluster<Marker> cluster) {
-        Toast.makeText(getActivity(), "Zoom in to view trees", Toast.LENGTH_SHORT).show();
-        return false;
+        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(cluster.getPosition(), 19.0f);
+        mMap.animateCamera(cameraUpdate);
+        return true;
+        //Toast.makeText(getActivity(), "Zoom in to view trees", Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -459,10 +465,12 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
         @Override
         protected void onBeforeClusterRendered(Cluster<Marker> cluster, MarkerOptions markerOptions) {
             final Drawable clusterIcon;
-            if (displayAll) {
+            if (displayAll == 0) {
                 clusterIcon = getResources().getDrawable(R.drawable.tree);
+            } else if (displayAll == 1) {
+                clusterIcon = getResources().getDrawable(R.drawable.tree_unique);
             } else {
-                clusterIcon = getResources().getDrawable(R.mipmap.unique_tree);
+                clusterIcon = getResources().getDrawable(R.drawable.tree_visited);
             }
 
             //clusterIcon.setColorFilter(getResources().getColor(android.R.color.holo_orange_light), PorterDuff.Mode.SRC_ATOP);

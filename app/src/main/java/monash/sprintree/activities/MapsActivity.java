@@ -78,6 +78,7 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
      */
     List<Marker> nonUniqueMarkers;
     List<Marker> uniqueMarkers;
+    List<Marker> unlockedMarkers;
 
     /*
     Journey Objects
@@ -109,10 +110,9 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
         );
         //Utils.fullScreen(MapsActivity.this);
         setContentView(R.layout.activity_maps);
-        if(Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1) {
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1) {
             handlePermissions();
-        }
-        else {
+        } else {
             initiateLocationManager();
             loadData();
             initLayout();
@@ -131,7 +131,8 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
 
         uniqueMarkers = new ArrayList<>();
         nonUniqueMarkers = new ArrayList<>();
-        polyLines= new ArrayList<Polyline>();
+        unlockedMarkers = new ArrayList<>();
+        polyLines = new ArrayList<Polyline>();
         lastLocationMilestone = null;
         loadTrees();
     }
@@ -139,30 +140,37 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
     private void loadTrees() {
         uniqueMarkers.clear();
         nonUniqueMarkers.clear();
-        for( Tree tree : radiusBoundedTrees() ) {
-
-                if( (tree.genus.equals("Ulmus")) || (tree.genus.equals("Eucalyptus")) || (tree.genus.equals("Platanus"))
-                        || (tree.genus.equals("Corymbia")) || (tree.genus.equals("Angophora")) || (tree.genus.equals("Allocasuarina"))
-                        || (tree.genus.equals("Acacia")) || (tree.genus.equals("Quercus")) || (tree.genus.equals("Ficus"))
-                        || (tree.genus.equals("Melaleuca"))
-                        ) {
-                    nonUniqueMarkers.add( new Marker(new LatLng(tree.latitude, tree.longitude), tree.commonName, tree.genus, R.drawable.tree , tree.comId));
+        unlockedMarkers.clear();
+        for (Tree tree : radiusBoundedTrees()) {
+            if ((tree.genus.equals("Ulmus")) || (tree.genus.equals("Eucalyptus")) || (tree.genus.equals("Platanus"))
+                    || (tree.genus.equals("Corymbia")) || (tree.genus.equals("Angophora")) || (tree.genus.equals("Allocasuarina"))
+                    || (tree.genus.equals("Acacia")) || (tree.genus.equals("Quercus")) || (tree.genus.equals("Ficus"))
+                    || (tree.genus.equals("Melaleuca"))
+                    ) {
+                if (isTreeVisited(tree)) {
+                    unlockedMarkers.add(new Marker(new LatLng(tree.latitude, tree.longitude), tree.commonName, tree.genus, R.drawable.tree_visited, tree.comId));
+                } else {
+                    nonUniqueMarkers.add(new Marker(new LatLng(tree.latitude, tree.longitude), tree.commonName, tree.genus, R.drawable.tree, tree.comId));
                 }
-                else {
-                    uniqueMarkers.add( new Marker(new LatLng(tree.latitude, tree.longitude), tree.commonName, tree.genus, R.mipmap.unique_tree, tree.comId));
+            } else {
+                if (isTreeVisited(tree)) {
+                    unlockedMarkers.add(new Marker(new LatLng(tree.latitude, tree.longitude), tree.commonName, tree.genus, R.drawable.tree_visited, tree.comId));
+                } else {
+                    uniqueMarkers.add(new Marker(new LatLng(tree.latitude, tree.longitude), tree.commonName, tree.genus, R.drawable.tree_unique, tree.comId));
                 }
             }
         }
+    }
 
     // function to get all trees within the specified radius
     private List<Tree> radiusBoundedTrees() {
         List<Tree> nearestTrees = new ArrayList<>();
         Location myLocation = Constants.LAST_LOCATION;
-        if( myLocation != null ) {
-            for( Tree tree : Constants.trees ) {
+        if (myLocation != null) {
+            for (Tree tree : Constants.trees) {
                 float[] results = new float[1];
                 Location.distanceBetween(myLocation.getLatitude(), myLocation.getLongitude(), tree.latitude, tree.longitude, results); // in case of 0 previous stop is the starting stop
-                if(results[0] < Constants.TREES_RADIUS ) {
+                if (results[0] < Constants.TREES_RADIUS) {
                     nearestTrees.add(tree);
                 }
             }
@@ -172,7 +180,7 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
 
     private void initLayout() {
         initiateTabsLayout();
-        mapFragment = GMapFragment.newInstance(MapsActivity.this, nonUniqueMarkers, uniqueMarkers);
+        mapFragment = GMapFragment.newInstance(MapsActivity.this, nonUniqueMarkers, uniqueMarkers, unlockedMarkers);
         historyFragment = HistoryFragment.newInstance(MapsActivity.this);
         myPlantFragment = MyPlantFragment.newInstance(this);
         Bundle extras = getIntent().getExtras();
@@ -202,20 +210,20 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
         tabLayoutDashboard.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-                if(tab.getPosition() == 0) {
-                    if(mapFragment != null) {
+                if (tab.getPosition() == 0) {
+                    if (mapFragment != null) {
                         // hide the current fragment first
                         hideFragment(currentFragment);
                         // add/show the fragment
                         showFragment(mapFragment);
                     }
                 }
-                if(tab.getPosition() == 1) {
+                if (tab.getPosition() == 1) {
                     historyFragment = HistoryFragment.newInstance(MapsActivity.this);
                     hideFragment(currentFragment);
                     showFragment(historyFragment);
                 }
-                if(tab.getPosition() == 2) {
+                if (tab.getPosition() == 2) {
                     myPlantFragment = MyPlantFragment.newInstance(MapsActivity.this);
                     hideFragment(currentFragment);
                     showFragment(myPlantFragment);
@@ -241,7 +249,7 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
         }
         // Get the location manager
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        locationManager.requestLocationUpdates( LocationManager.GPS_PROVIDER,
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
                 2000,
                 1, this);
         // Define the criteria how to select the location provider -> use
@@ -264,59 +272,58 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
 
     @Override
     public void onLocationChanged(Location location) {
-        if( lastLocationMilestone == null) {
+        if (lastLocationMilestone == null) {
             lastLocationMilestone = location;
         }
         float lat = (float) (location.getLatitude());
         float lng = (float) (location.getLongitude());
 
-        if(JOURNEY_STARTED) {
+        if (JOURNEY_STARTED) {
             addJourneyPathToList(lat, lng);
-            drawLineOnMap( location );
+            drawLineOnMap(location);
             calculateAndAddNearestTree(lat, lng);
-            journeyDistance += distanceTravelled( lat, lng );
+            journeyDistance += distanceTravelled(lat, lng);
             mapFragment.moveCamera(location);
         }
         Constants.LAST_LOCATION = location;
-        if(distanceTravelled( (float)lastLocationMilestone.getLatitude(), (float)lastLocationMilestone.getLongitude()) >= Constants.MILESTONE_DISTANCE) {   // load nearest trees
+        if (distanceTravelled((float) lastLocationMilestone.getLatitude(), (float) lastLocationMilestone.getLongitude()) >= Constants.MILESTONE_DISTANCE) {   // load nearest trees
             lastLocationMilestone = location;
             loadTrees();
-            mapFragment.reloadTrees(nonUniqueMarkers, uniqueMarkers);
+            mapFragment.reloadTrees(nonUniqueMarkers, uniqueMarkers, unlockedMarkers);
         }
     }
 
-    private float distanceTravelled( float lat, float lng ) {
+    private float distanceTravelled(float lat, float lng) {
         float[] results = new float[1];
         Location.distanceBetween(lat, lng, Constants.LAST_LOCATION.getLatitude(), Constants.LAST_LOCATION.getLongitude(), results);
         return results[0];
     }
 
-    private void drawLineOnMap( Location location) {
-        LatLng from = new LatLng( Constants.LAST_LOCATION.getLatitude(), Constants.LAST_LOCATION.getLongitude() );
-        LatLng to = new LatLng( location.getLatitude() , location.getLongitude() );
-        polyLines.add( mapFragment.addPolyLine( from, to ) );
+    private void drawLineOnMap(Location location) {
+        LatLng from = new LatLng(Constants.LAST_LOCATION.getLatitude(), Constants.LAST_LOCATION.getLongitude());
+        LatLng to = new LatLng(location.getLatitude(), location.getLongitude());
+        polyLines.add(mapFragment.addPolyLine(from, to));
     }
 
-    public void hideTab()
-    {
+    public void hideTab() {
         tabLayoutDashboard.setVisibility(View.GONE);
     }
 
-    public void showTab()
-    {
+    public void showTab() {
         tabLayoutDashboard.setVisibility(View.VISIBLE);
     }
+
     @Override
     public boolean isTreeVisited(Tree tree) {
         boolean treeVisited = false;
-        for( JourneyTree journeyTree : journeyTreeList) {
-            if(journeyTree.tree.comId.equals(tree.comId) ){
+        for (JourneyTree journeyTree : journeyTreeList) {
+            if (journeyTree.tree.comId.equals(tree.comId)) {
                 treeVisited = true;
                 break;
             }
         }
-        for( Tree journeyTree : TreeService.getVisitedTrees()) {
-            if(journeyTree.comId.equals(tree.comId) ){
+        for (Tree journeyTree : TreeService.getVisitedTrees()) {
+            if (journeyTree.comId.equals(tree.comId)) {
                 treeVisited = true;
                 break;
             }
@@ -332,23 +339,53 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
     }
 
     private void calculateAndAddNearestTree(float lat, float lng) {
-        if(mapFragment != null) {
+        Marker nearestMarker = null;
+        boolean isNearestTreeFound = false;
+        Tree nearestTree = null;
+        if (mapFragment != null) {
             //float[] results = new float[1]; // initialising a 1d result array to pass into distanceBetween method (source: developers.google.com)
-            for(Marker marker : nonUniqueMarkers) {
+            for (Marker marker : nonUniqueMarkers) {
                 float[] results = new float[1];
-                Location.distanceBetween(lat,lng, marker.getPosition().latitude, marker.getPosition().longitude, results); // in case of 0 previous stop is the starting stop
-                if(results[0] < Constants.NEAREST_TREE_DISTANCE ) {
-                    Tree nearestTree = TreeService.findTreeByPosition(marker.getPosition());
-                    if(!isTreeVisited(nearestTree)) {  // tree not visited before, add tree now
+                Location.distanceBetween(lat, lng, marker.getPosition().latitude, marker.getPosition().longitude, results); // in case of 0 previous stop is the starting stop
+                if (results[0] < Constants.NEAREST_TREE_DISTANCE) {
+                    nearestTree = TreeService.findTreeByPosition(marker.getPosition());
+                    if (!isTreeVisited(nearestTree)) {  // tree not visited before, add tree now
+                        isNearestTreeFound = true;
+                        nearestMarker = marker;
                         JourneyTree journeyTree = new JourneyTree();
                         journeyTree.tree = nearestTree;
-                        journeyTreeList.add( journeyTree );
+                        journeyTreeList.add(journeyTree);
                         journeyScore += Constants.TREE_NORMAL_SCORE;
                         mapFragment.updateViews(journeyScore);
                         Snackbar.make(getWindow().getDecorView().getRootView(), "Tree Unlocked - " + marker.getTitle(), Snackbar.LENGTH_LONG).show();
+                        break;
                     }
                 }
             }
+            for (Marker marker : uniqueMarkers) {
+                float[] results = new float[1];
+                Location.distanceBetween(lat, lng, marker.getPosition().latitude, marker.getPosition().longitude, results); // in case of 0 previous stop is the starting stop
+                if (results[0] < Constants.NEAREST_TREE_DISTANCE) {
+                    nearestTree = TreeService.findTreeByPosition(marker.getPosition());
+                    if (!isTreeVisited(nearestTree)) {  // tree not visited before, add tree now
+                        isNearestTreeFound = true;
+                        nearestMarker = marker;
+                        JourneyTree journeyTree = new JourneyTree();
+                        journeyTree.tree = nearestTree;
+                        journeyTreeList.add(journeyTree);
+                        journeyScore += Constants.TREE_NORMAL_SCORE;
+                        mapFragment.updateViews(journeyScore);
+                        Snackbar.make(getWindow().getDecorView().getRootView(), "Tree Unlocked - " + marker.getTitle(), Snackbar.LENGTH_LONG).show();
+                        break;
+                    }
+                }
+            }
+            if (isNearestTreeFound) {
+                nonUniqueMarkers.remove(nearestMarker);
+                uniqueMarkers.remove(nearestMarker);
+                unlockedMarkers.add(new Marker(new LatLng(nearestTree.latitude, nearestTree.longitude), nearestTree.commonName, nearestTree.genus, R.drawable.tree_visited, nearestTree.comId));
+            }
+            mapFragment.reloadTrees(nonUniqueMarkers, uniqueMarkers, unlockedMarkers);
         }
     }
 
@@ -365,14 +402,16 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
     }
 
     @Override
-    public void onProviderDisabled(String provider) {}
+    public void onProviderDisabled(String provider) {
+    }
 
 
     @Override
-    public void onProviderEnabled(String provider) {}
+    public void onProviderEnabled(String provider) {
+    }
 
     private void handlePermissions() {
-        if (Build.VERSION.SDK_INT> Build.VERSION_CODES.LOLLIPOP_MR1) {  // current version is Marshmallow, which requires permissions on runtime
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1) {  // current version is Marshmallow, which requires permissions on runtime
             requestPermissions(Constants.permissions, REQUEST_PERMISSION_CODE);
         }
     }
@@ -381,7 +420,7 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         switch (requestCode) {
             case REQUEST_PERMISSION_CODE:
-                if( grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     initiateLocationManager();
                     loadData();
                     initLayout();
@@ -390,16 +429,17 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
     }
 
     private void hideFragment(Fragment fragment) {
-        if(fragment != null) {
+        if (fragment != null) {
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ft.hide(fragment);
             ft.commit();
         }
     }
+
     private void showFragment(Fragment fragment) {
         // set the current fragment to this one
         currentFragment = fragment;
-        if(!fragment.isAdded()) {
+        if (!fragment.isAdded()) {
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ft.add(R.id.mainFrame, fragment);
             ft.commit();
@@ -409,6 +449,7 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
             ft.commit();
         }
     }
+
     private void removeFragment() {
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.remove(currentFragment);
@@ -416,11 +457,11 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
     }
 
     public void selectTab(int fragmentNumber) {
-        if(fragmentNumber == FRAGMENT_MAP) {
+        if (fragmentNumber == FRAGMENT_MAP) {
             hideFragment(currentFragment);
             showFragment(mapFragment);
             currentFragment = mapFragment;
-        } else  if(fragmentNumber == FRAGMENT_HISTORY) {
+        } else if (fragmentNumber == FRAGMENT_HISTORY) {
             hideFragment(currentFragment);
             showFragment(historyFragment);
             currentFragment = historyFragment;
@@ -463,7 +504,7 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
 
     private void stopJourney() {
 
-        new SweetAlertDialog(this, SweetAlertDialog.WARNING_TYPE)
+        new SweetAlertDialog(this, SweetAlertDialog.NORMAL_TYPE)
                 .setTitleText("Do you want to save this run?")
                 .setCancelText("No,Don't!")
                 .setConfirmText("Yes,Save it!")
@@ -487,7 +528,7 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
                         final Journey journey = saveJourney();
                         removePolyLines();
                         final Intent intent = new Intent(getApplicationContext(), Statistics.class);
-                        intent.putExtra( "journeyId", journey.getId() );
+                        intent.putExtra("journeyId", journey.getId());
 
                         sweetAlertDialog.setTitleText("Saved")
                                 .setContentText("Your journey has been saved")
@@ -525,8 +566,9 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
                 .setIcon(android.R.drawable.ic_menu_help)
                 .show();*/
     }
+
     private void removePolyLines() {
-        for(Polyline polyline: polyLines) {
+        for (Polyline polyline : polyLines) {
             polyline.remove();
         }
         polyLines.clear();
@@ -544,12 +586,12 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
         journey.timestamp = Utils.getCurrentTimeStamp();
         journey.save();
 
-        for( JourneyPath journeyPath : journeyPathList ) {
+        for (JourneyPath journeyPath : journeyPathList) {
             journeyPath.journey = journey;
             journeyPath.save();
         }
 
-        for( JourneyTree journeyTree : journeyTreeList ) {
+        for (JourneyTree journeyTree : journeyTreeList) {
             journeyTree.journey = journey;
             journeyTree.save();
         }
@@ -561,7 +603,7 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
         journeyMins = 0;
         journeySecs = 0;
         journeyScore = 0;
-        mapFragment.updateViews( 0 );
+        mapFragment.updateViews(0);
 
         return journey;
     }
@@ -591,7 +633,7 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
             for (int i = 0; i < tabChildsCount; i++) {
                 View tabViewChild = vgTab.getChildAt(i);
                 if (tabViewChild instanceof TextView) {
-                    ((TextView) tabViewChild).setTypeface(Typeface.createFromAsset(getAssets(),"fonts/Lato-Regular.ttf"));
+                    ((TextView) tabViewChild).setTypeface(Typeface.createFromAsset(getAssets(), "fonts/Lato-Regular.ttf"));
                 }
             }
         }

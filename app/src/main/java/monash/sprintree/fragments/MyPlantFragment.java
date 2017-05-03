@@ -24,7 +24,9 @@ import monash.sprintree.data.Journey;
 public class MyPlantFragment extends Fragment {
     FragmentListener listener;
     private ImageView imgHolder;
+    int percent = 10;
 
+    Button animateButton;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,7 +45,20 @@ public class MyPlantFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_my_plant, container, false);
         imgHolder = (ImageView) view.findViewById(R.id.coringImage);
         imgHolder
-                .setImageBitmap(doTopToBottomOperation(80));
+                .setImageBitmap(doBottomToTopOperation(percent));
+
+        animateButton = (Button) view.findViewById(R.id.animateButton);
+        animateButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                percent+=5;
+                if(percent == 100) {
+                    percent=0;
+                }
+                imgHolder
+                        .setImageBitmap(doBottomToTopOperation(percent));
+            }
+        });
         return view;
     }
 
@@ -52,7 +67,7 @@ public class MyPlantFragment extends Fragment {
                 .getBitmap();
 
         Bitmap bitmapTarget = BitmapFactory.decodeResource(getResources(),
-                R.drawable.petrolpump_simple );
+                R.drawable.tree_full );
 
         int heightToCrop = bitmapTarget.getHeight() * percentage / 100;
 
@@ -73,7 +88,7 @@ public class MyPlantFragment extends Fragment {
                 .getBitmap();
 
         Bitmap bitmapTarget = BitmapFactory.decodeResource(getResources(),
-                R.drawable.amu_bubble_mask);
+                R.drawable.tree_full);
 
         int heightToCrop = bitmapTarget.getHeight() * (100 - percentage) / 100;
 
