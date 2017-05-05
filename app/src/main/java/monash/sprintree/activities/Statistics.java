@@ -6,8 +6,10 @@ import android.content.ContextWrapper;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.widget.NestedScrollView;
@@ -23,6 +25,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -49,6 +52,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
@@ -70,17 +74,20 @@ public class Statistics extends AppCompatActivity implements OnMapReadyCallback 
     public void onMapReady(GoogleMap googleMap) {
         this.mMap = googleMap;
 
-        PolylineOptions polylineOptions = new PolylineOptions();
-        // Create polyline options with existing LatLng ArrayList
-        polylineOptions.addAll(coordList);
-        polylineOptions
-                .width(5)
-                .color(Color.RED);
+        if(coordList.size()>0) {
+            PolylineOptions polylineOptions = new PolylineOptions();
+            // Create polyline options with existing LatLng ArrayList
+            polylineOptions.addAll(coordList);
+            polylineOptions
+                    .width(5)
+                    .color(Color.RED);
 
-        mMap.addPolyline(polylineOptions);
+            mMap.addPolyline(polylineOptions);
 
-        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(coordList.get(0), 17.0f);
-        mMap.animateCamera(cameraUpdate);
+            CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(coordList.get(0), 17.0f);
+            mMap.animateCamera(cameraUpdate);
+        }
+
 
     }
 
@@ -95,10 +102,10 @@ public class Statistics extends AppCompatActivity implements OnMapReadyCallback 
     private final int REQUEST_CODE_IMAGE_PICK = 1;
 
     ImageView journeyImageView;
-    private Button buttonEdit;
     private TextView toolbarTitle;
     private List<TreePieEntry> pieTrees;
     private TextView scoreLabel, durationLabel, distanceLabel;
+    private LinearLayout parentView;
 
     private Journey journey;
     private List<JourneyTree> journeyTrees;
@@ -228,11 +235,17 @@ public class Statistics extends AppCompatActivity implements OnMapReadyCallback 
 
 
         Legend l = mChart.getLegend();
-        l.setVerticalAlignment(Legend.LegendVerticalAlignment.BOTTOM);
+        l.setVerticalAlignment(Legend.LegendVerticalAlignment.TOP);
         l.setHorizontalAlignment(Legend.LegendHorizontalAlignment.RIGHT);
         l.setOrientation(Legend.LegendOrientation.VERTICAL);
+        l.setXEntrySpace(7f);
+        l.setYEntrySpace(0f);
+        l.setYOffset(0f);
         l.setDrawInside(false);
         l.setEnabled(false);
+
+        // entry label styling
+        mChart.setEntryLabelColor(Color.BLACK);
 
         entries = new ArrayList<>();
         AddValuesToPIEENTRY();
@@ -271,8 +284,11 @@ public class Statistics extends AppCompatActivity implements OnMapReadyCallback 
         }
 
         scoreLabel.setText(String.valueOf(journey.score));
-        durationLabel.setText(String.valueOf(journey.hours) + ":" + String.valueOf(journey.mins) + ":" + String.valueOf(journey.seconds));
-        distanceLabel.setText(String.valueOf(((float)journey.distance/1000)));
+        String hours = journey.hours < 10 ? "0" + String.valueOf(journey.hours) : String.valueOf(journey.hours);
+        String mins = journey.mins < 10 ? "0" + String.valueOf(journey.mins) : String.valueOf(journey.mins);
+        String seconds = journey.seconds < 10 ? "0" + String.valueOf(journey.seconds) : String.valueOf(journey.seconds);
+        durationLabel.setText( hours + ":" + mins + ":" + seconds );
+        distanceLabel.setText(String.valueOf((Math.round(journey.distance))));
         toolbarTitle.setText( "History " + Utils.getDateCurrentTimeZone(journey.timestamp));
     }
 
@@ -312,8 +328,65 @@ public class Statistics extends AppCompatActivity implements OnMapReadyCallback 
                 deleteJourney();
             }
         });
+        findViewById(R.id.toolbarShare).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                takeScreenshot();
+            }
+        });
         setSupportActionBar(myToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    }
+
+    private void takeScreenshot() {
+        Date now = new Date();
+        android.text.format.DateFormat.format("yyyy-MM-dd_hh:mm:ss", now);
+
+        try {
+            // image naming and path  to include sd card  appending name you choose for file
+            String mPath = Environment.getExternalStorageDirectory().toString() + "/" + now + ".jpg";
+
+            parentView = (LinearLayout) findViewById(R.id.parentView);
+            // create bitmap screen capture
+            //View v1 = getWindow().getDecorView().getRootView();
+            View v1 = parentView.getRootView();
+
+            v1.setDrawingCacheEnabled(true);
+            Bitmap bitmap = Bitmap.createBitmap(v1.getDrawingCache());
+            v1.setDrawingCacheEnabled(false);
+
+            File imageFile = new File(mPath);
+
+            FileOutputStream outputStream = new FileOutputStream(imageFile);
+            int quality = 100;
+            bitmap.compress(Bitmap.CompressFormat.JPEG, quality, outputStream);
+            outputStream.flush();
+            outputStream.close();
+
+            openScreenshot(imageFile);
+        } catch (Throwable e) {
+            // Several error may come out with file handling or OOM
+            e.printStackTrace();
+        }
+    }
+
+    private void openScreenshot(File imageFile) {
+        /*Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_VIEW);
+        Uri uri = Uri.fromFile(imageFile);
+        intent.setDataAndType(uri, "image/*");
+        startActivity(intent);*/
+
+        ArrayList<Uri> imageUris = new ArrayList<Uri>();
+        imageUris.add(Uri.fromFile(imageFile)); // Add your image URIs here
+
+        Intent shareIntent = new Intent();
+        shareIntent.setAction(Intent.ACTION_SEND_MULTIPLE);
+        shareIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, imageUris);
+        shareIntent.setType("image/*");
+        startActivity(Intent.createChooser(shareIntent, "Share images to.."));
+
+
     }
 
     @Override

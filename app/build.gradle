@@ -48,6 +48,7 @@ dependencies {
     compile 'com.github.ybq:Android-SpinKit:1.1.0'
     compile 'uk.co.chrisjenx:calligraphy:2.2.0'
     compile 'com.github.markushi:circlebutton:1.1'
+    compile project(':library')
 }
 // ADD THIS AT THE BOTTOM
 apply plugin: 'com.google.gms.google-services'

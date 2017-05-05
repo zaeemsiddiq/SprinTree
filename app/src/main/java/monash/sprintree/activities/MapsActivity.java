@@ -175,6 +175,11 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
                 }
             }
         }
+        if(nearestTrees.size()==0) {
+            if(currentFragment == mapFragment){
+                Toast.makeText(this, "No Trees Nearby, Try in CBD", Toast.LENGTH_SHORT).show();
+            }
+        }
         return nearestTrees;
     }
 

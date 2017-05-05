@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#D3D3D3"
+    android:background="@color/kopie_blue"
     android:fitsSystemWindows="true">
 
     <android.support.design.widget.AppBarLayout
@@ -51,7 +51,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:id="@+id/parentView">
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
@@ -73,6 +74,8 @@
             </RelativeLayout>
             <LinearLayout
                 android:layout_marginTop="5dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:weightSum="100"
@@ -144,7 +147,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Distance (km)"
+                        android:text="Distance (m)"
                         android:gravity="center"/>
                 </LinearLayout>
             </LinearLayout>
@@ -157,12 +160,12 @@
                 android:id="@+id/chart"
                 android:background="#ffffff"
                 android:layout_width="match_parent"
-                android:layout_height="300dp"
-                android:layout_marginRight="5dp"
-                android:layout_marginLeft="5dp"/>
+                android:layout_height="280dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginLeft="10dp"/>
             <View
                 android:layout_width="match_parent"
-                android:layout_height="40dp" />
+                android:layout_height="10dp" />
 
             <RelativeLayout
                 android:layout_width="wrap_content"
@@ -173,8 +176,8 @@
                     android:name="com.google.android.gms.maps.SupportMapFragment"
                     android:layout_width="match_parent"
                     android:layout_height="400dp"
-                    android:layout_marginRight="5dp"
-                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginLeft="10dp"
                     tools:context=".activities.Statistics" />
                 <ImageView
                     android:layout_width="wrap_content"
@@ -189,7 +192,14 @@
                     android:src="@color/transparent"/>
 
             </RelativeLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="40dp" />
 
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/shareImage"/>
         </LinearLayout>
 
     </android.support.v4.widget.NestedScrollView>

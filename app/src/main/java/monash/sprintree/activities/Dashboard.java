@@ -12,6 +12,7 @@ import com.google.firebase.FirebaseApp;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
+import com.lylc.widget.circularprogressbar.CircularProgressBar;
 import com.orm.SugarRecord;
 
 import java.io.File;
