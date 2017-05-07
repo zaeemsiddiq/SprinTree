@@ -196,10 +196,20 @@
                 android:layout_width="match_parent"
                 android:layout_height="40dp" />
 
-            <ImageView
-                android:layout_width="match_parent"
+            <Button
+                android:id="@+id/saveButton"
+                android:layout_width="0px"
+                android:gravity="center"
+                android:layout_margin="10px"
+                android:layout_weight="100"
                 android:layout_height="wrap_content"
-                android:id="@+id/shareImage"/>
+                android:background="@color/kopie_blue"
+                android:elevation="5dp"
+                android:text="SAVE"
+                android:textColor="@color/kopie_green"
+                android:textSize="20sp"
+                android:visibility="visible"
+                android:textStyle="bold" />
         </LinearLayout>
 
     </android.support.v4.widget.NestedScrollView>

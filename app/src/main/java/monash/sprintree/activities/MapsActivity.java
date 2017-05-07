@@ -311,6 +311,16 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
             calculateAndAddNearestTree(lat, lng);
             journeyDistance += distanceTravelled(lat, lng);
             mapFragment.moveCamera(location);
+
+            if (Constants.IS_APPLICATION_MINIMIZED) {
+                for (Marker marker : uniqueMarkers) {
+                    float[] results = new float[1];
+                    Location.distanceBetween(lat, lng, marker.getPosition().latitude, marker.getPosition().longitude, results); // in case of 0 previous stop is the starting stop
+                    if ( results[0] < Constants.UNIQUE_TREE_NOTIFICATION_DISTANCE ) {
+                        generateNotification( "Hang On!!", "There is a unique tree nearby" );
+                    }
+                }
+            }
         }
         Constants.LAST_LOCATION = location;
         if (distanceTravelled((float) lastLocationMilestone.getLatitude(), (float) lastLocationMilestone.getLongitude()) >= Constants.MILESTONE_DISTANCE) {   // load nearest trees
@@ -318,24 +328,16 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
             loadTrees();
             mapFragment.reloadTrees(nonUniqueMarkers, uniqueMarkers, unlockedMarkers);
         }
-        if (Constants.IS_APPLICATION_MINIMIZED) {
-            for (Marker marker : uniqueMarkers) {
-                float[] results = new float[1];
-                Location.distanceBetween(lat, lng, marker.getPosition().latitude, marker.getPosition().longitude, results); // in case of 0 previous stop is the starting stop
-                if ( results[0] < Constants.UNIQUE_TREE_NOTIFICATION_DISTANCE ) {
-                    generateNotification("There is a unique tree nearby");
-                }
-            }
-        }
+
     }
 
-    private void generateNotification(String message) {
+    private void generateNotification(String title, String message) {
         NotificationCompat.Builder mBuilder =
                 (NotificationCompat.Builder) new NotificationCompat.Builder(this)
                         .setSmallIcon(R.drawable.treeico)
                         .setLargeIcon(BitmapFactory.decodeResource(this.getResources(),
                                 R.drawable.tree))
-                        .setContentTitle("Hang On!!")
+                        .setContentTitle(title)
                         .setAutoCancel(true)
                         .setDefaults(Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE | Notification.DEFAULT_LIGHTS)
                         .setContentText(message);
@@ -685,7 +687,6 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
                     }
                 })
                 .show();
-        System.out.println("Show Complete");
         /*new AlertDialog.Builder(this)
                 .setTitle("Caution")
                 .setMessage("Do you want to save your journey ?")

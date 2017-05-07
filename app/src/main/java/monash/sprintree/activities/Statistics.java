@@ -68,6 +68,22 @@ import static android.R.attr.path;
 
 public class Statistics extends AppCompatActivity implements OnMapReadyCallback {
 
+    private final int REQUEST_CODE_IMAGE_PICK = 1;
+
+    ImageView journeyImageView;
+    private TextView toolbarTitle;
+    private List<TreePieEntry> pieTrees;
+    private TextView scoreLabel, durationLabel, distanceLabel;
+    private LinearLayout parentView;
+
+    private Journey journey;
+    private List<JourneyTree> journeyTrees;
+
+    PieChart mChart;
+    ArrayList<PieEntry> entries ;
+    PieDataSet pieDataSet ;
+    PieData pieData;
+    Button saveButton;
     GoogleMap mMap;
     ArrayList<LatLng> coordList = new ArrayList<LatLng>();
     @Override
@@ -99,21 +115,7 @@ public class Statistics extends AppCompatActivity implements OnMapReadyCallback 
         String name;
         int count;
     }
-    private final int REQUEST_CODE_IMAGE_PICK = 1;
 
-    ImageView journeyImageView;
-    private TextView toolbarTitle;
-    private List<TreePieEntry> pieTrees;
-    private TextView scoreLabel, durationLabel, distanceLabel;
-    private LinearLayout parentView;
-
-    private Journey journey;
-    private List<JourneyTree> journeyTrees;
-
-    PieChart mChart;
-    ArrayList<PieEntry> entries ;
-    PieDataSet pieDataSet ;
-    PieData pieData ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -209,7 +211,7 @@ public class Statistics extends AppCompatActivity implements OnMapReadyCallback 
     }
 
     private SpannableString generateCenterText() {
-        SpannableString s = new SpannableString( journeyTrees.size() + "\nTrees");
+        SpannableString s = new SpannableString( journeyTrees.size() >0 ? journeyTrees.size() + "\nTrees" : "No Trees Crossed\n:(");
         s.setSpan(new RelativeSizeSpan(2f), 0, s.length(), 0);
         return s;
     }
@@ -220,6 +222,15 @@ public class Statistics extends AppCompatActivity implements OnMapReadyCallback 
         durationLabel = (TextView) findViewById(R.id.durationLabel);
         distanceLabel = (TextView) findViewById(R.id.distanceLabel);
         journeyImageView = (ImageView) findViewById(R.id.journeyImage);
+        saveButton = (Button) findViewById(R.id.saveButton);
+        saveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new SweetAlertDialog(Statistics.this, SweetAlertDialog.NORMAL_TYPE)
+                        .setTitleText("Journey saved")
+                        .setConfirmText("Ok").show();
+            }
+        });
 
         loadImageFromStorage(journey.journeyImagePath == null ? "" : journey.journeyImagePath);
         mChart = (PieChart) findViewById(R.id.chart);
@@ -436,7 +447,9 @@ public class Statistics extends AppCompatActivity implements OnMapReadyCallback 
                         String path = saveToInternalStorage(bitmap, System.currentTimeMillis()+"_j.jpg");
                         journey.journeyImagePath = path;
                         journey.save();
-
+                        new SweetAlertDialog(this, SweetAlertDialog.NORMAL_TYPE)
+                                .setTitleText("Picture saved")
+                                .setConfirmText("Ok").show();
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
