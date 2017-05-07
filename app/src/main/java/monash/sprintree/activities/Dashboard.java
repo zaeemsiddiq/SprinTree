@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -56,7 +57,7 @@ public class Dashboard extends AppCompatActivity {
         Utils.fullScreen(Dashboard.this);
         setContentView(R.layout.activity_dashboard);
         if (getIntent().getBooleanExtra("Exit me", false)) {
-            //finish();
+            finish();
         }
     }
     private void startMapsActivity(int tab) {
@@ -68,6 +69,11 @@ public class Dashboard extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
     }
 
     @Override

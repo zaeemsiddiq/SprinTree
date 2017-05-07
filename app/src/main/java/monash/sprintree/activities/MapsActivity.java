@@ -2,10 +2,16 @@ package monash.sprintree.activities;
 
 import android.Manifest;
 import android.animation.Animator;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
@@ -13,7 +19,12 @@ import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkInfo;
 import android.os.Build;
+import android.os.Vibrator;
+import android.provider.Settings;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
@@ -24,6 +35,8 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.NotificationCompatBase;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.app.NotificationCompat;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -36,6 +49,7 @@ import com.google.android.gms.maps.model.Polyline;
 import java.util.ArrayList;
 import java.util.List;
 
+import br.com.goncalves.pugnotification.notification.PugNotification;
 import cn.pedant.SweetAlert.SweetAlertDialog;
 import monash.sprintree.R;
 import monash.sprintree.data.Constants;
@@ -55,6 +69,8 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class MapsActivity extends FragmentActivity implements LocationListener, FragmentListener {
 
+
+    boolean isActivityDataLoaded = false;
     /*
     Fragment objects
      */
@@ -72,6 +88,7 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
     static final int REQUEST_PERMISSION_CODE = 100;
     Fragment currentFragment;
     LocationManager locationManager;
+    private String provider;
 
     /*
     Data objects
@@ -120,6 +137,7 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
     }
 
     private void loadData() {
+        Constants.IS_APPLICATION_MINIMIZED = false;
         JOURNEY_STARTED = false;
         journeyScore = 0;
         journeyDistance = 0;
@@ -141,7 +159,7 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
         uniqueMarkers.clear();
         nonUniqueMarkers.clear();
         unlockedMarkers.clear();
-        for (Tree tree : radiusBoundedTrees()) {
+        for (Tree tree : radiusBoundedTrees(Constants.TREES_RADIUS)) {
             if ((tree.genus.equals("Ulmus")) || (tree.genus.equals("Eucalyptus")) || (tree.genus.equals("Platanus"))
                     || (tree.genus.equals("Corymbia")) || (tree.genus.equals("Angophora")) || (tree.genus.equals("Allocasuarina"))
                     || (tree.genus.equals("Acacia")) || (tree.genus.equals("Quercus")) || (tree.genus.equals("Ficus"))
@@ -163,20 +181,20 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
     }
 
     // function to get all trees within the specified radius
-    private List<Tree> radiusBoundedTrees() {
+    private List<Tree> radiusBoundedTrees(int radius) {
         List<Tree> nearestTrees = new ArrayList<>();
         Location myLocation = Constants.LAST_LOCATION;
         if (myLocation != null) {
             for (Tree tree : Constants.trees) {
                 float[] results = new float[1];
                 Location.distanceBetween(myLocation.getLatitude(), myLocation.getLongitude(), tree.latitude, tree.longitude, results); // in case of 0 previous stop is the starting stop
-                if (results[0] < Constants.TREES_RADIUS) {
+                if (results[0] < radius) {
                     nearestTrees.add(tree);
                 }
             }
         }
-        if(nearestTrees.size()==0) {
-            if(currentFragment == mapFragment){
+        if (nearestTrees.size() == 0) {
+            if (currentFragment == mapFragment) {
                 Toast.makeText(this, "No Trees Nearby, Try in CBD", Toast.LENGTH_SHORT).show();
             }
         }
@@ -197,6 +215,7 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
 
         }
         selectTab(selectTabId);
+        isActivityDataLoaded = true;
     }
 
     private void initiateTabsLayout() { // adding the tabs dynamically
@@ -252,15 +271,17 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
             //Toast.makeText(this, "Allow permissions", Toast.LENGTH_SHORT).show();
             return;
         }
-        // Get the location manager
-        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
-                2000,
-                1, this);
+        if (locationManager == null) {
+            // Get the location manager
+            locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
+                    2000,
+                    1, this);
+        }
         // Define the criteria how to select the location provider -> use
         // default
         Criteria criteria = new Criteria();
-        String provider = locationManager.getBestProvider(criteria, false);
+        provider = locationManager.getBestProvider(criteria, false);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             //Toast.makeText(this, "Allow permissions", Toast.LENGTH_SHORT).show();
             return;
@@ -277,6 +298,7 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
 
     @Override
     public void onLocationChanged(Location location) {
+
         if (lastLocationMilestone == null) {
             lastLocationMilestone = location;
         }
@@ -296,6 +318,36 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
             loadTrees();
             mapFragment.reloadTrees(nonUniqueMarkers, uniqueMarkers, unlockedMarkers);
         }
+        if (Constants.IS_APPLICATION_MINIMIZED) {
+            for (Marker marker : uniqueMarkers) {
+                float[] results = new float[1];
+                Location.distanceBetween(lat, lng, marker.getPosition().latitude, marker.getPosition().longitude, results); // in case of 0 previous stop is the starting stop
+                if ( results[0] < Constants.UNIQUE_TREE_NOTIFICATION_DISTANCE ) {
+                    generateNotification("There is a unique tree nearby");
+                }
+            }
+        }
+    }
+
+    private void generateNotification(String message) {
+        NotificationCompat.Builder mBuilder =
+                (NotificationCompat.Builder) new NotificationCompat.Builder(this)
+                        .setSmallIcon(R.drawable.treeico)
+                        .setLargeIcon(BitmapFactory.decodeResource(this.getResources(),
+                                R.drawable.tree))
+                        .setContentTitle("Hang On!!")
+                        .setAutoCancel(true)
+                        .setDefaults(Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE | Notification.DEFAULT_LIGHTS)
+                        .setContentText(message);
+
+        Intent notificationIntent = getIntent();
+        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+
+        PendingIntent resultPendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_ONE_SHOT);
+        mBuilder.setContentIntent(resultPendingIntent);
+        NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        // mId allows you to update the notification later on.
+        mNotificationManager.notify(1, mBuilder.build());
     }
 
     private float distanceTravelled(float lat, float lng) {
@@ -410,6 +462,86 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
     public void onProviderDisabled(String provider) {
     }
 
+    private boolean isGpsConnected() {
+        LocationManager locationManager =
+                (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+    }
+
+    private void showGpsDialog() {
+        SweetAlertDialog dialog = new SweetAlertDialog(this, SweetAlertDialog.NORMAL_TYPE);
+        dialog.setTitleText("Please turn on Location services");
+        dialog.setCancelText("Cancel");
+        dialog.setConfirmText("Turn On");
+        dialog.showCancelButton(true);
+        dialog.setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+            @Override
+            public void onClick(SweetAlertDialog sweetAlertDialog) {
+                startActivityForResult(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS), 3);
+                sweetAlertDialog.dismiss();
+            }
+        });
+        dialog.show();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();  // Always call the superclass method first
+
+        // The activity is either being restarted or started for the first time
+        // so this is where we should make sure that GPS is enabled
+        if (!isGpsConnected()) {
+            // Create a dialog here that requests the user to enable GPS, and use an intent
+            // with the android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS action
+            // to take the user to the Settings screen to enable GPS when they click "OK"
+            showGpsDialog();
+        } else {
+
+        }
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();  // Always call the superclass method first
+        // Activity being restarted from stopped state
+    }
+
+    @Override
+    protected void onUserLeaveHint() {
+        if (isActivityDataLoaded) {
+            Constants.IS_APPLICATION_MINIMIZED = true;  // app is minimised
+        }
+        Log.d("onUserLeaveHint", "Home button pressed");
+        super.onUserLeaveHint();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        if (locationManager == null) {
+            // Get the location manager
+            locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
+                    2000,
+                    1, this);
+        }
+        Constants.IS_APPLICATION_MINIMIZED = false;
+        Log.d("***", "Resumed");
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 3) {
+
+        } else {
+            historyFragment = HistoryFragment.newInstance(MapsActivity.this);
+            selectTab(FRAGMENT_HISTORY);
+        }
+    }
 
     @Override
     public void onProviderEnabled(String provider) {
@@ -622,12 +754,6 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
         locationManager.removeUpdates(this);
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        historyFragment = HistoryFragment.newInstance(MapsActivity.this);
-        selectTab(FRAGMENT_HISTORY);
-    }
 
     private void changeTabsFont(TabLayout tabLayout) {
         ViewGroup vg = (ViewGroup) tabLayout.getChildAt(0);

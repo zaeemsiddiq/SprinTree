@@ -517,7 +517,7 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
                     .findViewById(R.id.life));
 
             Tree tree = TreeService.findTreeByPosition(marker.getPosition());
-            if (listener.isTreeVisited(tree)) {
+            //if (listener.isTreeVisited(tree)) {
                 myContentsView.findViewById(R.id.layoutLock).setVisibility(View.GONE);
                 myContentsView.findViewById(R.id.layoutInfo).setVisibility(View.VISIBLE);
                 if (tree.commonName.equals("tba")) {
@@ -533,10 +533,10 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
                     life.setVisibility(View.VISIBLE);
                     life.setText("Life Expectancy: " + String.valueOf(tree.usefulLifeExpectencyValue) + " yrs");
                 }
-            } else {
-                myContentsView.findViewById(R.id.layoutInfo).setVisibility(View.GONE);
-                myContentsView.findViewById(R.id.layoutLock).setVisibility(View.VISIBLE);
-            }
+            //} else {
+                //myContentsView.findViewById(R.id.layoutInfo).setVisibility(View.GONE);
+                //myContentsView.findViewById(R.id.layoutLock).setVisibility(View.VISIBLE);
+            //}
 
             /*if( lastTree == null ) {
                 if (!hasImage(imageView)) {

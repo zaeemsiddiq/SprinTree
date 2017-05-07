@@ -13,7 +13,6 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 import monash.sprintree.R;
-import monash.sprintree.data.History;
 import monash.sprintree.data.Journey;
 import monash.sprintree.utils.Utils;
 

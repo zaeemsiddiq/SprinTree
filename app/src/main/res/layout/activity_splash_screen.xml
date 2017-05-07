@@ -5,8 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@drawable/swiss"
-    >
+    android:background="@drawable/swiss">
     <com.github.ybq.android.spinkit.SpinKitView
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/mainProgressBar"
@@ -14,16 +13,17 @@
         android:layout_width="200dp"
         android:layout_height="200dp"
         android:layout_gravity="center"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        app:SpinKit_Color="@color/white" />
+        android:layout_centerInParent="true"
+        app:SpinKit_Color="@color/kopie_blue" />
     <TextView
         android:layout_below="@id/mainProgressBar"
+        android:id="@+id/mainProgressText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:textColor="#ffffff"
+        android:layout_alignParentBottom="true"
+        android:textColor="@color/white"
         android:textSize="30sp"
         android:gravity="center"
-        android:text="Please wait while the application loads trees"/>
+        android:text="Please wait while i load trees for you"/>
 </RelativeLayout>

@@ -49,6 +49,7 @@ dependencies {
     compile 'uk.co.chrisjenx:calligraphy:2.2.0'
     compile 'com.github.markushi:circlebutton:1.1'
     compile project(':library')
+    compile 'com.novoda:merlin:0.10.0'
 }
 // ADD THIS AT THE BOTTOM
 apply plugin: 'com.google.gms.google-services'

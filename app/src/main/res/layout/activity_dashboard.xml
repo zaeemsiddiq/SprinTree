@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    android:background="@drawable/dash_background"
+    android:background="@drawable/dash_beach_1"
     tools:context=".activities.Dashboard">
 
     <LinearLayout
@@ -21,7 +21,7 @@
             <at.markushi.ui.CircleButton
                 android:layout_width="164dip"
                 android:layout_height="164dip"
-                app:cb_color="@color/kopie_blue"
+                app:cb_color="@color/kopie_blue_transparent"
                 app:cb_pressedRingWidth="5dip"
                 android:onClick="launchMap"/>
             <LinearLayout
@@ -53,7 +53,7 @@
             <at.markushi.ui.CircleButton
                 android:layout_width="164dip"
                 android:layout_height="164dip"
-                app:cb_color="@color/kopie_blue"
+                app:cb_color="@color/kopie_blue_transparent"
                 app:cb_pressedRingWidth="5dip"
                 android:onClick="launchHistory"/>
             <LinearLayout
@@ -84,7 +84,7 @@
             <at.markushi.ui.CircleButton
                 android:layout_width="164dip"
                 android:layout_height="164dip"
-                app:cb_color="@color/kopie_blue"
+                app:cb_color="@color/kopie_blue_transparent"
                 app:cb_pressedRingWidth="5dip"
                 android:onClick="launchMyForest"/>
             <LinearLayout
