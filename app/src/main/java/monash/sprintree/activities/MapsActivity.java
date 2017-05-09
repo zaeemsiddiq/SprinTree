@@ -163,7 +163,8 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
             if ((tree.genus.equals("Ulmus")) || (tree.genus.equals("Eucalyptus")) || (tree.genus.equals("Platanus"))
                     || (tree.genus.equals("Corymbia")) || (tree.genus.equals("Angophora")) || (tree.genus.equals("Allocasuarina"))
                     || (tree.genus.equals("Acacia")) || (tree.genus.equals("Quercus")) || (tree.genus.equals("Ficus"))
-                    || (tree.genus.equals("Melaleuca"))
+                    || (tree.genus.equals("Melaleuca")) || (tree.genus.equals("Lophostemon")) || (tree.genus.equals("Callistemon"))
+                    || (tree.genus.equals("Acer")) || (tree.genus.equals("Casuarina"))
                     ) {
                 if (isTreeVisited(tree)) {
                     unlockedMarkers.add(new Marker(new LatLng(tree.latitude, tree.longitude), tree.commonName, tree.genus, R.drawable.tree_visited, tree.comId));

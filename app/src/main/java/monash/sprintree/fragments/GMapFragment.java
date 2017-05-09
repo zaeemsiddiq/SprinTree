@@ -17,6 +17,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,6 +40,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
@@ -371,6 +373,13 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
         mMap = googleMap;
         /* for custom info window clusters */
         //mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+       boolean success = mMap.setMapStyle(
+                MapStyleOptions.loadRawResourceStyle(
+                       getActivity(), R.raw.style_json));
+
+        if (!success) {
+            Log.e("MapsActivityRaw", "Style parsing failed.");
+        }
 
         addMarkers(0);
 
@@ -476,6 +485,7 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
             //clusterIcon.setColorFilter(getResources().getColor(android.R.color.holo_orange_light), PorterDuff.Mode.SRC_ATOP);
 
             mClusterIconGenerator.setBackground(clusterIcon);
+            mClusterIconGenerator.setTextAppearance(R.style.iconGenText);
 
             //modify padding for one or two digit numbers
             /*
