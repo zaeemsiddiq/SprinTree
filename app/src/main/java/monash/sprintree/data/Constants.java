@@ -34,7 +34,6 @@ public class Constants {
 
     /* Data Objects */
     public static List<Tree> trees;
-    public static List<Tree> commonTrees;
 
     public static final int FRAGMENT_BUTTON_START     = 1;
     public static final int FRAGMENT_BUTTON_PAUSE     = 2;

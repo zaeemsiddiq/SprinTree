@@ -69,6 +69,7 @@ public class SplashScreen extends AppCompatActivity implements SyncServiceComple
     protected void onCreate(Bundle savedInstanceState) {
         FirebaseApp.initializeApp(this);
         super.onCreate(savedInstanceState);
+        //deleteDB();
         CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
                 .setDefaultFontPath("fonts/Lato-Light.ttf")
                 .setFontAttrId(R.attr.fontPath)
@@ -102,13 +103,13 @@ public class SplashScreen extends AppCompatActivity implements SyncServiceComple
     private void hideProgressViews() {
         findViewById(R.id.mainProgressBar).setVisibility(View.INVISIBLE);
         TextView textView = (TextView) findViewById(R.id.mainProgressText);
-        textView.setText("Oops !!, I would be needing an internet connection to go ahead :(");
+        textView.setText("Oops !! I would be needing an internet connection to go ahead :(");
     }
 
     private void showProgressViews() {
         findViewById(R.id.mainProgressBar).setVisibility(View.VISIBLE);
         TextView textView = (TextView) findViewById(R.id.mainProgressText);
-        textView.setText("Please wait while i load trees for you");
+        textView.setText("Please wait, loading trees");
     }
 
     @Override
@@ -164,10 +165,9 @@ public class SplashScreen extends AppCompatActivity implements SyncServiceComple
             @Override
             public void run() {
                 final List<Tree> trees = Tree.findWithQuery(Tree.class, "SELECT * FROM TREE LIMIT 4000");
-                final List<Tree> commonTrees = Tree.findWithQuery(Tree.class, "SELECT COUNT(genus), genus FROM TREE GROUP BY genus ORDER BY count(genus) DESC LIMIT 10");
+                //final List<Tree> commonTrees = Tree.findWithQuery(Tree.class, "SELECT COUNT(genus), genus FROM TREE GROUP BY genus ORDER BY count(genus) DESC LIMIT 10");
 
                 Constants.trees = trees;
-                Constants.commonTrees = commonTrees;
                 try {
                     // code runs in a thread
                     runOnUiThread(new Runnable() {
@@ -246,7 +246,7 @@ public class SplashScreen extends AppCompatActivity implements SyncServiceComple
 
     @Override
     public void loadComplete() {
-        Constants.trees = Tree.findWithQuery(Tree.class, "SELECT * FROM TREE");
+        Constants.trees = Tree.findWithQuery(Tree.class, "SELECT * FROM TREE LIMIT 4000 ");
         startMapsActivity();
     }
 
