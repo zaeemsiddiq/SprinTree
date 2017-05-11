@@ -1,0 +1,14 @@
+[
+    {
+        "merged": "/Users/kalyani/Documents/DiverseSprint/sprintree/app/build/intermediates/res/merged/debug/drawable-v21/abc_btn_colored_material.xml",
+        "source": "/Users/kalyani/.android/build-cache/3e9e5795c77b8080d5081c41d819b1660a547dcf/output/res/drawable-v21/abc_btn_colored_material.xml"
+    },
+    {
+        "merged": "/Users/kalyani/Documents/DiverseSprint/sprintree/app/build/intermediates/res/merged/debug/drawable-v21/abc_action_bar_item_background_material.xml",
+        "source": "/Users/kalyani/.android/build-cache/3e9e5795c77b8080d5081c41d819b1660a547dcf/output/res/drawable-v21/abc_action_bar_item_background_material.xml"
+    },
+    {
+        "merged": "/Users/kalyani/Documents/DiverseSprint/sprintree/app/build/intermediates/res/merged/debug/drawable-v21/abc_edit_text_material.xml",
+        "source": "/Users/kalyani/.android/build-cache/3e9e5795c77b8080d5081c41d819b1660a547dcf/output/res/drawable-v21/abc_edit_text_material.xml"
+    }
+]

@@ -1,0 +1,14 @@
+[
+    {
+        "merged": "/Users/kalyani/Documents/DiverseSprint/sprintree/app/build/intermediates/res/merged/debug/drawable-hdpi-v11/camera.png",
+        "source": "/Users/kalyani/Documents/DiverseSprint/sprintree/app/src/main/res/drawable-hdpi-v11/camera.png"
+    },
+    {
+        "merged": "/Users/kalyani/Documents/DiverseSprint/sprintree/app/build/intermediates/res/merged/debug/drawable-hdpi-v11/uncommontree.png",
+        "source": "/Users/kalyani/Documents/DiverseSprint/sprintree/app/src/main/res/drawable-hdpi-v11/uncommontree.png"
+    },
+    {
+        "merged": "/Users/kalyani/Documents/DiverseSprint/sprintree/app/build/intermediates/res/merged/debug/drawable-hdpi-v11/lock.png",
+        "source": "/Users/kalyani/Documents/DiverseSprint/sprintree/app/src/main/res/drawable-hdpi-v11/lock.png"
+    }
+]

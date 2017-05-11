@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items version="2" >
+
+    <item
+        is-multidex="true"
+        jar="/Users/kalyani/Documents/DiverseSprint/sprintree/library/build/intermediates/bundles/default/classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="8b5752b3179669b8f7bd461f3048b489a4eebe26">
+        <dex dex="/Users/kalyani/Documents/DiverseSprint/sprintree/app/build/intermediates/transforms/dex/debug/folders/1000/4/classes_7c54dc3f8c988353684ec93800827b96d6eb1d9b/classes.dex" />
+    </item>
+
+</items>
