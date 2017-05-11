@@ -42,9 +42,12 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -308,11 +311,10 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
 
         if (JOURNEY_STARTED) {
             addJourneyPathToList(lat, lng);
-            drawLineOnMap(location);
             calculateAndAddNearestTree(lat, lng);
             journeyDistance += distanceTravelled(lat, lng);
             mapFragment.moveCamera(location);
-
+            drawLineOnMap(location);
             if (Constants.IS_APPLICATION_MINIMIZED) {
                 for (Marker marker : uniqueMarkers) {
                     float[] results = new float[1];
@@ -328,6 +330,7 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
             lastLocationMilestone = location;
             loadTrees();
             mapFragment.reloadTrees(nonUniqueMarkers, uniqueMarkers, unlockedMarkers);
+            drawLineOnMap(location);
         }
 
     }
@@ -360,16 +363,35 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
     }
 
     private void drawLineOnMap(Location location) {
-        LatLng from = new LatLng(Constants.LAST_LOCATION.getLatitude(), Constants.LAST_LOCATION.getLongitude());
-        LatLng to = new LatLng(location.getLatitude(), location.getLongitude());
-        polyLines.add(mapFragment.addPolyLine(from, to));
+        removePolyLines();
+        PolylineOptions polylineOptions = new PolylineOptions().width(5).color(Color.RED);
+        ArrayList<LatLng> coordList = new ArrayList<LatLng>();
+        for( JourneyPath path : journeyPathList  ) {
+            coordList.add( new LatLng(path.latitude, path.longitude));
+            polylineOptions.add( new LatLng(path.latitude, path.longitude));
+        }
+        polyLines.add(mapFragment.addPolylines(polylineOptions));
+
+        //LatLng from = new LatLng(Constants.LAST_LOCATION.getLatitude(), Constants.LAST_LOCATION.getLongitude());
+        //LatLng to = new LatLng(location.getLatitude(), location.getLongitude());
+        //polyLines.add(mapFragment.addPolyLine(from, to));
+    }
+
+
+    private void removePolyLines() {
+        for (Polyline polyline : polyLines) {
+            polyline.remove();
+        }
+        polyLines.clear();
     }
 
     public void hideTab() {
         tabLayoutDashboard.setVisibility(View.GONE);
+        mapFragment.makeClockVisible(true);
     }
 
     public void showTab() {
+        mapFragment.makeClockVisible(false);
         tabLayoutDashboard.setVisibility(View.VISIBLE);
     }
 
@@ -706,12 +728,6 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
                 .show();*/
     }
 
-    private void removePolyLines() {
-        for (Polyline polyline : polyLines) {
-            polyline.remove();
-        }
-        polyLines.clear();
-    }
 
     private Journey saveJourney() {
 

@@ -20,4 +20,5 @@
     <color name="kopie_blue_transparent">#8017373C</color>
     <color name="kopie_dark_blue">#0D1C33</color>
     <color name="white">#FFFFFF</color>
+    <color name="white_transparent">#10000000</color>
 </resources>
