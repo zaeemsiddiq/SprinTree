@@ -21,13 +21,16 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.DecelerateInterpolator;
+import android.view.animation.LinearInterpolator;
 import android.view.animation.ScaleAnimation;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -59,6 +62,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import at.markushi.ui.CircleButton;
 import monash.sprintree.R;
 import monash.sprintree.activities.MapsActivity;
 import monash.sprintree.data.Constants;
@@ -104,8 +108,11 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
     View v;
     private GoogleMap mMap;
     private FragmentListener listener;
-    private SpinnerAdapter spinnerAdapter;
     MapWrapperLayout mapWrapperLayout;
+
+    CircleButton visitedButton, allButton, uncommonButton;
+
+    LinearLayout clockView;
 
     TickerView treeScore;
     private Button startButton, pauseButton, resumeButton, stopButton;
@@ -114,7 +121,6 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
     private TickerView timerValueSecs;
     private TextView countdown;
     CountDownAnimation countDownAnimation;
-    Spinner treeView;
 
     private long startTime = 0L;
 
@@ -166,6 +172,45 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
     }
 
     private void initiateLayout(View view) {
+
+        clockView = (LinearLayout) view.findViewById(R.id.clockView);
+        clockView.setVisibility(View.GONE);
+
+        visitedButton = (CircleButton) view.findViewById(R.id.visitedButton);
+        visitedButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                displayAll = 2;
+                addMarkers(displayAll);
+            }
+        });
+        allButton = (CircleButton) view.findViewById(R.id.allButton);
+        allButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                displayAll = 0;
+                addMarkers(displayAll);
+            }
+        });
+        uncommonButton = (CircleButton) view.findViewById(R.id.uncommonButton);
+        uncommonButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                displayAll = 1;
+                addMarkers(displayAll);
+            }
+        });;
+
+        Animation mAnimation = new AlphaAnimation(1, 0);
+        mAnimation.setDuration(300);
+        mAnimation.setInterpolator(new LinearInterpolator());
+        mAnimation.setRepeatCount(4);
+        mAnimation.setRepeatMode(Animation.REVERSE);
+
+        visitedButton.startAnimation(mAnimation);
+        allButton.startAnimation(mAnimation);
+        uncommonButton.startAnimation(mAnimation);
+
         treeScore = (TickerView) view.findViewById(R.id.treeCounter);
         treeScore.setCharacterList(TickerUtils.getDefaultNumberList());
         treeScore.setText("0");
@@ -194,7 +239,7 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
         list.add(new SpinnerItem("Uncommon", R.drawable.tree_unique));
         list.add(new SpinnerItem("Unlocked", R.drawable.tree_visited));
 
-        treeView = (Spinner) view.findViewById(R.id.treeViewSpinner);
+        /*treeView = (Spinner) view.findViewById(R.id.treeViewSpinner);
 
         spinnerAdapter = new SpinnerAdapter(getActivity(), R.layout.spinner_layout, R.id.txt, list);
         treeView.setAdapter(spinnerAdapter);
@@ -210,7 +255,7 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
             public void onNothingSelected(AdapterView<?> parent) {
 
             }
-        });
+        });*/
 
         startButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
@@ -219,6 +264,7 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
                     startButton.setText("CANCEL");
 
                     countdownTimer(countdown, 3);
+
                     // initiate countdown timer, when its done, start the journey procedure
                 } else {
                     startButton.setText("START");
@@ -305,6 +351,10 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
 
     };
 
+    public void makeClockVisible(boolean visible) {
+        clockView.setVisibility( visible == true ? View.VISIBLE : View.GONE );
+    }
+
     @Override
     public void onDetach() {
         super.onDetach();
@@ -328,6 +378,10 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
                 .add(from, to)
                 .width(4)
                 .color(Color.RED));
+    }
+
+    public Polyline addPolylines( PolylineOptions polylineOptions ) {
+        return mMap.addPolyline(polylineOptions);
     }
 
     private void addMarkers(int displayAll) {
@@ -405,8 +459,6 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
                 CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLng(latLng);
                 mMap.animateCamera(cameraUpdate);
                 Constants.LAST_LOCATION = location;
-
-
             }
         }
     }
@@ -643,7 +695,8 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
             public void onCountDownEnd(CountDownAnimation animation) {
                 startButton.setText("START");
                 Toast.makeText(getActivity(), "Your journey has started", Toast.LENGTH_SHORT).show();
-                treeView.setSelection(0, true);
+                displayAll = 0;
+                //treeView.setSelection(0, true);
                 moveCamera(Constants.LAST_LOCATION);
                 startTime = SystemClock.uptimeMillis();
                 customHandler.postDelayed(updateTimerThread, 0);

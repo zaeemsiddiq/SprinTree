@@ -1,4 +1,5 @@
-<monash.sprintree.utils.MapWrapperLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<monash.sprintree.utils.MapWrapperLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/map_relative_layout"
@@ -10,107 +11,194 @@
         android:orientation="vertical"
         android:layout_alignParentTop="true"
         android:layout_alignParentStart="true">
+
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="60dp"
+            android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:background="@color/kopie_blue"
-            android:weightSum="100">
-            <LinearLayout
+            android:weightSum="100"
+            android:background="@color/kopie_blue_transparent"
+            android:layout_gravity="center"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp">
+            <View
                 android:layout_width="0px"
-                android:layout_weight="5"
                 android:layout_height="match_parent"
-                android:orientation="horizontal">
-            </LinearLayout>
+                android:layout_weight="5" />
+
             <LinearLayout
                 android:layout_width="0px"
+                android:layout_height="match_parent"
                 android:layout_weight="20"
-                android:layout_height="match_parent"
-                android:orientation="horizontal">
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_height="wrap_content"
-                    android:scaleType="fitXY"
-                    android:src="@drawable/tree" />
-                <com.robinhood.ticker.TickerView
-                    android:id="@+id/treeCounter"
-                    android:layout_gravity="center"
-                    android:textSize="30sp"
-                    android:gravity="center"
-                    android:textColor="@color/kopie_green"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
-            </LinearLayout>
-            <LinearLayout
-                android:layout_width="0px"
-                android:layout_weight="10"
-                android:layout_height="match_parent"
-                android:orientation="horizontal">
-            </LinearLayout>
-            <LinearLayout
-                android:layout_width="0px"
-                android:layout_weight="30"
-                android:layout_gravity="center"
-                android:layout_height="match_parent"
                 android:orientation="horizontal">
 
+                <ImageView
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_gravity="center"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/tree" />
+
                 <com.robinhood.ticker.TickerView
-                    android:id="@+id/timerHours"
-                    android:layout_width="wrap_content"
+                    android:id="@+id/treeCounter"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textSize="30sp"
-                    android:gravity="center"
                     android:layout_gravity="center"
-                    android:textColor="@color/kopie_green" />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_height="wrap_content"
-                    android:textSize="30sp"
                     android:gravity="center"
                     android:textColor="@color/kopie_green"
-                    android:text=":"/>
-                <com.robinhood.ticker.TickerView
-                    android:id="@+id/timerMins"
-                    android:layout_gravity="center"
+                    android:textSize="35sp" />
+            </LinearLayout>
+            <View
+                android:layout_width="0px"
+                android:layout_height="match_parent"
+                android:layout_weight="10" />
+            <LinearLayout
+                android:layout_width="0px"
+                android:layout_weight="25"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <RelativeLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="30sp"
-                    android:gravity="center"
-                    android:textColor="@color/kopie_green" />
+                    android:layout_gravity="center">
+                    <at.markushi.ui.CircleButton
+                        android:id="@+id/visitedButton"
+                        android:layout_width="50dip"
+                        android:layout_height="50dip"
+                        app:cb_color="#d9d6bf"
+                        app:cb_pressedRingWidth="5dip"/>
+                    <ImageView
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_centerInParent="true"
+                        android:src="@drawable/tree_visited"/>
+                </RelativeLayout>
                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_gravity="center"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textSize="30sp"
                     android:gravity="center"
-                    android:textColor="@color/kopie_green"
-                    android:text=":"/>
-                <com.robinhood.ticker.TickerView
-                    android:id="@+id/timerSecs"
+                    android:text="Visited"
+                    android:textSize="15sp"
+                    android:textColor="@color/kopie_blue"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0px"
+                android:layout_weight="15"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <RelativeLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:textSize="30sp"
+                    android:layout_gravity="center">
+                    <at.markushi.ui.CircleButton
+                        android:id="@+id/allButton"
+                        android:layout_width="50dip"
+                        android:layout_height="50dip"
+                        app:cb_color="#d9d6bf"
+                        app:cb_pressedRingWidth="5dip"/>
+                    <ImageView
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_centerInParent="true"
+                        android:src="@drawable/tree"/>
+                </RelativeLayout>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:textColor="@color/kopie_green" />
+                    android:text="All"
+                    android:textSize="15sp"
+                    android:textColor="@color/kopie_blue"/>
             </LinearLayout>
             <LinearLayout
                 android:layout_width="0px"
-                android:layout_weight="1"
-                android:layout_height="match_parent"
-                android:orientation="horizontal">
+                android:layout_weight="25"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center">
+                    <at.markushi.ui.CircleButton
+                        android:id="@+id/uncommonButton"
+                        android:layout_width="50dip"
+                        android:layout_height="50dip"
+                        app:cb_color="#d9d6bf"
+                        app:cb_pressedRingWidth="5dip"/>
+                    <ImageView
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_centerInParent="true"
+                        android:src="@drawable/tree_unique"/>
+                </RelativeLayout>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="Uncommon"
+                    android:textSize="15sp"
+                    android:textColor="@color/kopie_blue" />
             </LinearLayout>
-            <Spinner
-                android:layout_width="0px"
-                android:layout_weight="34"
-                android:visibility="visible"
-                android:id="@+id/treeViewSpinner"
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/clockView"
+            android:elevation="2dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:visibility="gone"
+            android:background="@color/kopie_blue_transparent"
+            android:orientation="horizontal">
+
+            <com.robinhood.ticker.TickerView
+                android:id="@+id/timerHours"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:gravity="center"
-                android:layout_height="match_parent" />
+                android:textColor="@color/kopie_blue"
+                android:textSize="40sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text=":"
+                android:textColor="@color/kopie_blue"
+                android:textSize="40sp" />
+
+            <com.robinhood.ticker.TickerView
+                android:id="@+id/timerMins"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:textColor="@color/kopie_blue"
+                android:textSize="40sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text=":"
+                android:textColor="@color/kopie_blue"
+                android:textSize="40sp" />
+
+            <com.robinhood.ticker.TickerView
+                android:id="@+id/timerSecs"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:textColor="@color/kopie_blue"
+                android:textSize="40sp" />
         </LinearLayout>
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"

@@ -6,6 +6,9 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.LinearInterpolator;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
@@ -23,6 +26,7 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.List;
 
+import at.markushi.ui.CircleButton;
 import cn.pedant.SweetAlert.SweetAlertDialog;
 import monash.sprintree.R;
 import monash.sprintree.data.Constants;
@@ -56,6 +60,7 @@ public class Dashboard extends AppCompatActivity {
         );
         Utils.fullScreen(Dashboard.this);
         setContentView(R.layout.activity_dashboard);
+
         if (getIntent().getBooleanExtra("Exit me", false)) {
             finish();
         }

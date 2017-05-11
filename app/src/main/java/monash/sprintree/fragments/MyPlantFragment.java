@@ -95,7 +95,7 @@ public class MyPlantFragment extends Fragment {
 
             @Override
             public void onAnimationFinish() {
-                circularProgressBar.setSubTitle(visitedGenus.size()+"/"+(visitedGenus.size() + unVisitedGenus.size()) +" visited");
+                circularProgressBar.setSubTitle(visitedGenus.size()+"/"+(visitedGenus.size() + unVisitedGenus.size()) +" families visited");
             }
         });
 
