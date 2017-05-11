@@ -263,6 +263,7 @@ public class Statistics extends AppCompatActivity implements OnMapReadyCallback 
         pieDataSet = new PieDataSet(entries, "Trees");
         pieData = new PieData( pieDataSet);
         pieDataSet.setColors(ColorTemplate.VORDIPLOM_COLORS);
+        pieDataSet.setValueTextSize(10f);
         pieDataSet.setValueTextColor(Color.BLACK);
         mChart.setData(pieData);
         mChart.animateY(3000);
@@ -291,7 +292,7 @@ public class Statistics extends AppCompatActivity implements OnMapReadyCallback 
         }
 
         for( TreePieEntry pieTree : pieTrees ) {
-            entries.add(new PieEntry((float)pieTree.count, pieTree.name));
+            entries.add(new PieEntry(pieTree.count, pieTree.name));
         }
 
         scoreLabel.setText(String.valueOf(journey.score));
