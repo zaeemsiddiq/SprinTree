@@ -26,6 +26,8 @@ import monash.sprintree.data.JourneyPath;
 import monash.sprintree.data.JourneyTree;
 import monash.sprintree.listAdapters.HistoryListAdapter;
 
+import static monash.sprintree.R.*;
+
 public class HistoryFragment extends Fragment {
     private TextView errorMessageText;
     private ListView listView;
@@ -50,21 +52,32 @@ public class HistoryFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_history, container, false);
+        View view = inflater.inflate(layout.fragment_history, container, false);
         initialiseListView(view);
-        Button sortByScore = (Button) view.findViewById(R.id.sortScoreButton);
+        final Button sortByScore = (Button) view.findViewById(id.sortScoreButton);
+        final Button sortByDate = (Button) view.findViewById(id.sortDateButton);
+
         sortByScore.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                sortByDate.setBackground(getResources().getDrawable(drawable.button_border_right));
+                sortByDate.setTextColor(getResources().getColor(color.white));
+                sortByScore.setTextColor(getResources().getColor(R.color.kopie_blue));
+                sortByScore.setBackground(getResources().getDrawable(drawable.button_pressed));
                 historyListAdapter.sortData(Journey.findWithQuery(Journey.class, "SELECT * FROM JOURNEY ORDER BY SCORE DESC"));
                 historyListAdapter.notifyDataSetChanged();
             }
         });
 
-        Button sortByDate = (Button) view.findViewById(R.id.sortDateButton);
+        //sortByDate.setBackground(getResources().getDrawable(R.drawable.buttonselector));
         sortByDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                sortByScore.setBackground(getResources().getDrawable(drawable.button_border));
+                sortByScore.setTextColor(getResources().getColor(color.white));
+                sortByDate.setTextColor(getResources().getColor(R.color.kopie_blue));
+                sortByDate.setBackground(getResources().getDrawable(drawable.button_pressed_right));
+               // sortByDate.setBackgroundColor(getResources().getColor(R.color.white));
                 historyListAdapter.sortData(Journey.findWithQuery(Journey.class, "SELECT * FROM JOURNEY ORDER BY TIMESTAMP DESC"));
                 historyListAdapter.notifyDataSetChanged();
             }
@@ -86,9 +99,9 @@ public class HistoryFragment extends Fragment {
         favoriteListAdapter.notifyDataSetChanged();
     }*/
     private void initialiseListView(View view) {
-        errorMessageText = (TextView) view.findViewById(R.id.favoritesTextEmptyMessage);
+        errorMessageText = (TextView) view.findViewById(id.favoritesTextEmptyMessage);
         errorMessageText.setVisibility(View.GONE);
-        listView = (ListView) view.findViewById(R.id.journeyHistory);
+        listView = (ListView) view.findViewById(id.journeyHistory);
 
         historyListAdapter = new HistoryListAdapter(getActivity(), Journey.listAll(Journey.class));
         listView.setAdapter(historyListAdapter);
