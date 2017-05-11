@@ -290,7 +290,7 @@ public class Statistics extends AppCompatActivity implements OnMapReadyCallback 
         }
 
         for( TreePieEntry pieTree : pieTrees ) {
-            entries.add(new PieEntry((float)pieTree.count, pieTree.name));
+            entries.add(new PieEntry(pieTree.count, pieTree.name));
         }
 
         scoreLabel.setText(String.valueOf(journey.score));

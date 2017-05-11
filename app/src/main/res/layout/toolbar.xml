@@ -30,7 +30,8 @@
             android:layout_weight="8"
             android:layout_height="wrap_content"
             android:id="@+id/toolbarShare"
-            android:backgroundTint="@color/white"
+            android:backgroundTint="#FFFFFFFFF"
+            android:backgroundTintMode="src_atop"
             android:background="@android:drawable/ic_menu_share"/>
 
         <ImageButton
@@ -38,7 +39,8 @@
             android:layout_weight="8"
             android:layout_height="wrap_content"
             android:id="@+id/toolbarDelete"
-            android:backgroundTint="@color/white"
+            android:backgroundTint="#FFFFFFFFF"
+            android:backgroundTintMode="src_atop"
             android:background="@android:drawable/ic_menu_delete"/>
     </LinearLayout>
 </android.support.v7.widget.Toolbar>
