@@ -282,6 +282,7 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
                 customHandler.postDelayed(updateTimerThread, 0);
                 resumeButton.setVisibility(View.GONE);
                 pauseButton.setVisibility(View.VISIBLE);
+                makeClockVisible(true);
                 ((MapsActivity) getActivity()).hideTab();
                 listener.mapButtonPressed(Constants.FRAGMENT_BUTTON_RESUME);
             }
@@ -352,7 +353,7 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
     };
 
     public void makeClockVisible(boolean visible) {
-        clockView.setVisibility( visible == true ? View.VISIBLE : View.GONE );
+        clockView.setVisibility( visible ? View.VISIBLE : View.GONE );
     }
 
     @Override

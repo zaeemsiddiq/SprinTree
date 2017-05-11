@@ -386,8 +386,8 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
     }
 
     public void hideTab() {
-        tabLayoutDashboard.setVisibility(View.GONE);
         mapFragment.makeClockVisible(true);
+        tabLayoutDashboard.setVisibility(View.GONE);
     }
 
     public void showTab() {
