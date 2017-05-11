@@ -11,3 +11,6 @@
 /build/*
 */build
 *.properties
+app/build/
+library/build
+*/library/build/
