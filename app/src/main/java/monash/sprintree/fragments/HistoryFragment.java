@@ -61,8 +61,8 @@ public class HistoryFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 sortByDate.setBackground(getResources().getDrawable(drawable.button_border_right));
-                sortByDate.setTextColor(getResources().getColor(color.white));
-                sortByScore.setTextColor(getResources().getColor(R.color.kopie_blue));
+                sortByDate.setTextColor(getResources().getColor(color.kopie_blue));
+                sortByScore.setTextColor(getResources().getColor(color.white));
                 sortByScore.setBackground(getResources().getDrawable(drawable.button_pressed));
                 historyListAdapter.sortData(Journey.findWithQuery(Journey.class, "SELECT * FROM JOURNEY ORDER BY SCORE DESC"));
                 historyListAdapter.notifyDataSetChanged();
@@ -74,8 +74,8 @@ public class HistoryFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 sortByScore.setBackground(getResources().getDrawable(drawable.button_border));
-                sortByScore.setTextColor(getResources().getColor(color.white));
-                sortByDate.setTextColor(getResources().getColor(R.color.kopie_blue));
+                sortByScore.setTextColor(getResources().getColor(color.kopie_blue));
+                sortByDate.setTextColor(getResources().getColor(color.white));
                 sortByDate.setBackground(getResources().getDrawable(drawable.button_pressed_right));
                // sortByDate.setBackgroundColor(getResources().getColor(R.color.white));
                 historyListAdapter.sortData(Journey.findWithQuery(Journey.class, "SELECT * FROM JOURNEY ORDER BY TIMESTAMP DESC"));

@@ -15,30 +15,44 @@
         android:weightSum="100"
         app:elevation="0dp"
         android:gravity="center">
+     <TextView
+         android:layout_width="0dp"
+         android:layout_weight="5"
+         android:layout_height="match_parent" />
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="84"
+            android:layout_weight="65"
             android:text="Title"
             android:id="@+id/toolbarTitle"
             android:textSize="18dp"
             android:gravity="left"
-            android:paddingLeft="10px"
             android:textColor="#ffffff"/>
         <ImageButton
             android:layout_width="0dp"
-            android:layout_weight="8"
+            android:layout_weight="10"
             android:layout_height="wrap_content"
             android:id="@+id/toolbarShare"
-            android:backgroundTint="@color/white"
+            android:backgroundTint="#FFFFFF"
+            android:backgroundTintMode="src_atop"
             android:background="@android:drawable/ic_menu_share"/>
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="5"
+            android:layout_height="match_parent" />
 
         <ImageButton
             android:layout_width="0dp"
-            android:layout_weight="8"
+            android:layout_weight="10"
             android:layout_height="wrap_content"
             android:id="@+id/toolbarDelete"
-            android:backgroundTint="@color/white"
-            android:background="@android:drawable/ic_menu_delete"/>
+            android:backgroundTint="#FFFFFF"
+            android:backgroundTintMode="src_atop"
+            android:background="@android:drawable/ic_menu_delete" />
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="5"
+            android:layout_height="match_parent" />
+
     </LinearLayout>
 </android.support.v7.widget.Toolbar>

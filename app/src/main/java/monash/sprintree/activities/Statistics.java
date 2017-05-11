@@ -81,7 +81,7 @@ public class Statistics extends AppCompatActivity implements OnMapReadyCallback 
 
     PieChart mChart;
     ArrayList<PieEntry> entries ;
-    PieDataSet pieDataSet ;
+    PieDataSet pieDataSet;
     PieData pieData;
     Button saveButton;
     GoogleMap mMap;
@@ -107,7 +107,7 @@ public class Statistics extends AppCompatActivity implements OnMapReadyCallback 
 
     }
 
-    private class TreePieEntry{
+    private class TreePieEntry {
         public TreePieEntry(String genus, int count) {
             this.name = genus;
             this.count = count;
@@ -115,7 +115,6 @@ public class Statistics extends AppCompatActivity implements OnMapReadyCallback 
         String name;
         int count;
     }
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -211,7 +210,7 @@ public class Statistics extends AppCompatActivity implements OnMapReadyCallback 
     }
 
     private SpannableString generateCenterText() {
-        SpannableString s = new SpannableString( journeyTrees.size() >0 ? journeyTrees.size() + "\nTrees" : "No Trees Crossed\n:(");
+        SpannableString s = new SpannableString( journeyTrees.size() >0 ? journeyTrees.size() + "\nTrees" : "No Trees Crossed\n");
         s.setSpan(new RelativeSizeSpan(2f), 0, s.length(), 0);
         return s;
     }

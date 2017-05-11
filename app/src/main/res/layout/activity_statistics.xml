@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -12,23 +11,22 @@
         android:id="@+id/appBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        android:fitsSystemWindows="true">
+        android:fitsSystemWindows="true"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
         <android.support.design.widget.CollapsingToolbarLayout
             android:id="@+id/collapsingToolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_scrollFlags="scroll|exitUntilCollapsed"
             android:fitsSystemWindows="true"
             app:contentScrim="?attr/colorPrimary"
-            app:expandedTitleMarginStart="48dp"
             app:expandedTitleMarginEnd="64dp"
+            app:expandedTitleMarginStart="48dp"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed"
             app:title="Collapsing toolbar">
 
 
-            <include
-                layout="@layout/toolbar"/>
+            <include layout="@layout/toolbar" />
             <!--
 
 
@@ -43,70 +41,92 @@
     </android.support.design.widget.AppBarLayout>
 
     <android.support.v4.widget.NestedScrollView
+        android:id="@+id/scroll"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/scroll"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout
+            android:id="@+id/parentView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:id="@+id/parentView">
+            android:orientation="vertical">
+
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
+
                 <ImageView
                     android:id="@+id/journeyImage"
                     android:layout_width="match_parent"
                     android:layout_height="250dp"
                     android:scaleType="centerCrop"
                     android:src="@drawable/history_banner" />
-                <ImageView
-                    android:tint="#ffffff"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:layout_marginRight="10dp"
-                    android:layout_alignParentBottom="true"
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
-                    android:onClick="imageUpload"
-                    android:src="@drawable/camera"/>
+                    android:layout_alignParentBottom="true">
+
+                    <at.markushi.ui.CircleButton
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:onClick="imageUpload"
+                        app:cb_color="@color/kopie_blue"
+                        app:cb_pressedRingWidth="5dip" />
+
+                    <ImageView
+                        android:layout_width="25dp"
+                        android:layout_height="25dp"
+                        android:layout_centerHorizontal="true"
+                        android:layout_centerVertical="true"
+                        android:src="@drawable/camera"
+                        android:tint="@color/kopie_green" />
+
+                </RelativeLayout>
             </RelativeLayout>
+
             <LinearLayout
-                android:layout_marginTop="5dp"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:weightSum="100"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="5dp"
                 android:background="#ffffff"
                 android:gravity="center_horizontal|center_vertical"
                 android:orientation="horizontal"
-                android:padding="40px">
+                android:padding="40px"
+                android:weightSum="100">
+
                 <LinearLayout
                     android:layout_width="0px"
                     android:layout_height="wrap_content"
                     android:layout_weight="33"
                     android:orientation="vertical">
+
                     <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="0"
                         android:id="@+id/scoreLabel"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
                         android:gravity="center"
+                        android:text="0"
                         android:textSize="30sp" />
+
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Journey Score"
-                        android:gravity="center"/>
+                        android:gravity="center"
+                        android:text="Journey Score" />
 
                 </LinearLayout>
+
                 <View
                     android:layout_width="0.1dp"
                     android:layout_height="50dp"
                     android:layout_gravity="center_vertical"
-                    android:background="#000000"/>
+                    android:background="#000000" />
+
                 <LinearLayout
                     android:layout_width="0px"
                     android:layout_height="wrap_content"
@@ -124,45 +144,51 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Duration (m)"
-                        android:gravity="center"/>
+                        android:gravity="center"
+                        android:text="Duration (m)" />
                 </LinearLayout>
+
                 <View
                     android:layout_width="0.1dp"
                     android:layout_height="50dp"
                     android:layout_gravity="center_vertical"
-                    android:background="#000000"/>
+                    android:background="#000000" />
+
                 <LinearLayout
                     android:layout_width="0px"
                     android:layout_height="wrap_content"
                     android:layout_weight="33"
                     android:orientation="vertical">
+
                     <TextView
-                        android:layout_width="match_parent"
                         android:id="@+id/distanceLabel"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="0.0"
                         android:gravity="center"
-                        android:textSize="30sp"/>
+                        android:text="0.0"
+                        android:textSize="30sp" />
+
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Distance (m)"
-                        android:gravity="center"/>
+                        android:gravity="center"
+                        android:text="Distance (m)" />
                 </LinearLayout>
             </LinearLayout>
+
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="5dp">
-            </LinearLayout>
+                android:layout_marginTop="5dp"></LinearLayout>
+
             <com.github.mikephil.charting.charts.PieChart
                 android:id="@+id/chart"
-                android:background="#ffffff"
                 android:layout_width="match_parent"
                 android:layout_height="280dp"
+                android:layout_marginLeft="10dp"
                 android:layout_marginRight="10dp"
-                android:layout_marginLeft="10dp"/>
+                android:background="#ffffff" />
+
             <View
                 android:layout_width="match_parent"
                 android:layout_height="10dp" />
@@ -170,46 +196,48 @@
             <RelativeLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
+
                 <fragment xmlns:android="http://schemas.android.com/apk/res/android"
                     xmlns:tools="http://schemas.android.com/tools"
                     android:id="@+id/map"
                     android:name="com.google.android.gms.maps.SupportMapFragment"
                     android:layout_width="match_parent"
                     android:layout_height="400dp"
-                    android:layout_marginRight="10dp"
                     android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
                     tools:context=".activities.Statistics" />
+
                 <ImageView
+                    android:id="@+id/imagetrans"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/imagetrans"
-                    android:layout_alignTop="@+id/map"
                     android:layout_alignBottom="@+id/map"
                     android:layout_alignEnd="@+id/map"
-                    android:layout_alignRight="@+id/map"
                     android:layout_alignLeft="@+id/map"
+                    android:layout_alignRight="@+id/map"
                     android:layout_alignStart="@+id/map"
-                    android:src="@color/transparent"/>
+                    android:layout_alignTop="@+id/map"
+                    android:src="@color/transparent" />
 
             </RelativeLayout>
+
             <View
                 android:layout_width="match_parent"
-                android:layout_height="40dp" />
+                android:layout_height="10dp" />
 
             <Button
                 android:id="@+id/saveButton"
-                android:layout_width="0px"
-                android:gravity="center"
-                android:layout_margin="10px"
-                android:layout_weight="100"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/kopie_blue"
+                android:layout_margin="10px"
+                android:background="@color/kopie_green"
                 android:elevation="5dp"
+                android:gravity="center"
                 android:text="SAVE"
-                android:textColor="@color/kopie_green"
+                android:textColor="@color/kopie_blue"
                 android:textSize="20sp"
-                android:visibility="visible"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:visibility="visible" />
         </LinearLayout>
 
     </android.support.v4.widget.NestedScrollView>

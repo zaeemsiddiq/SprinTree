@@ -27,7 +27,7 @@
                 android:textSize="20sp"
                 android:textColor="@color/white"
                 android:layout_gravity="center"
-                android:text="Visit every genus to make me colorful"/>
+                android:text="Visit atleast one tree of each family to make me colorful"/>
 
         </LinearLayout>
 
