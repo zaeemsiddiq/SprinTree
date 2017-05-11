@@ -1,0 +1,270 @@
+[
+    {
+        "merged": "/Users/kalyani/Documents/DiverseSprint/sprintree/app/build/intermediates/res/merged/debug/layout/amu_webview.xml",
+        "source": "/Users/kalyani/.android/build-cache/9636dbd447f64e3443c7a0b36f2ceea41984c772/output/res/layout/amu_webview.xml"
+    },
+    {
+        "merged": "/Users/kalyani/Documents/DiverseSprint/sprintree/app/build/intermediates/res/merged/debug/layout/abc_activity_chooser_view_list_item.xml",
+        "source": "/Users/kalyani/.android/build-cache/3e9e5795c77b8080d5081c41d819b1660a547dcf/output/res/layout/abc_activity_chooser_view_list_item.xml"
+    },
+    {
+        "merged": "/Users/kalyani/Documents/DiverseSprint/sprintree/app/build/intermediates/res/merged/debug/layout/support_simple_spinner_dropdown_item.xml",
+        "source": "/Users/kalyani/.android/build-cache/3e9e5795c77b8080d5081c41d819b1660a547dcf/output/res/layout/support_simple_spinner_dropdown_item.xml"
+    },
+    {
+        "merged": "/Users/kalyani/Documents/DiverseSprint/sprintree/app/build/intermediates/res/merged/debug/layout/activity_statistics.xml",
+        "source": "/Users/kalyani/Documents/DiverseSprint/sprintree/app/src/main/res/layout/activity_statistics.xml"
+    },
+    {
+        "merged": "/Users/kalyani/Documents/DiverseSprint/sprintree/app/build/intermediates/res/merged/debug/layout/abc_action_menu_item_layout.xml",
+        "source": "/Users/kalyani/.android/build-cache/3e9e5795c77b8080d5081c41d819b1660a547dcf/output/res/layout/abc_action_menu_item_layout.xml"
+    },
+    {
+        "merged": "/Users/kalyani/Documents/DiverseSprint/sprintree/app/build/intermediates/res/merged/debug/layout/spinner_layout.xml",
+        "source": "/Users/kalyani/Documents/DiverseSprint/sprintree/app/src/main/res/layout/spinner_layout.xml"
+    },
+    {
+        "merged": "/Users/kalyani/Documents/DiverseSprint/sprintree/app/build/intermediates/res/merged/debug/layout/design_navigation_item_subheader.xml",
+        "source": "/Users/kalyani/.android/build-cache/1f01191afc5f57778b723113e7d7fa7c00273e51/output/res/layout/design_navigation_item_subheader.xml"
+    },
+    {
+        "merged": "/Users/kalyani/Documents/DiverseSprint/sprintree/app/build/intermediates/res/merged/debug/layout/marker_info_window.xml",
+        "source": "/Users/kalyani/Documents/DiverseSprint/sprintree/app/src/main/res/layout/marker_info_window.xml"
+    },
+    {
+        "merged": "/Users/kalyani/Documents/DiverseSprint/sprintree/app/build/intermediates/res/merged/debug/layout/abc_screen_toolbar.xml",
+        "source": "/Users/kalyani/.android/build-cache/3e9e5795c77b8080d5081c41d819b1660a547dcf/output/res/layout/abc_screen_toolbar.xml"
+    },
+    {
+        "merged": "/Users/kalyani/Documents/DiverseSprint/sprintree/app/build/intermediates/res/merged/debug/layout/design_layout_tab_text.xml",
+        "source": "/Users/kalyani/.android/build-cache/1f01191afc5f57778b723113e7d7fa7c00273e51/output/res/layout/design_layout_tab_text.xml"
+    },
+    {
+        "merged": "/Users/kalyani/Documents/DiverseSprint/sprintree/app/build/intermediates/res/merged/debug/layout/design_menu_item_action_area.xml",
+        "source": "/Users/kalyani/.android/build-cache/1f01191afc5f57778b723113e7d7fa7c00273e51/output/res/layout/design_menu_item_action_area.xml"
+    },
+    {
+        "merged": "/Users/kalyani/Documents/DiverseSprint/sprintree/app/build/intermediates/res/merged/debug/layout/abc_list_menu_item_icon.xml",
+        "source": "/Users/kalyani/.android/build-cache/3e9e5795c77b8080d5081c41d819b1660a547dcf/output/res/layout/abc_list_menu_item_icon.xml"
+    },
+    {
+        "merged": "/Users/kalyani/Documents/DiverseSprint/sprintree/app/build/intermediates/res/merged/debug/layout/amu_info_window.xml",
+        "source": "/Users/kalyani/.android/build-cache/9636dbd447f64e3443c7a0b36f2ceea41984c772/output/res/layout/amu_info_window.xml"
+    },
+    {
+        "merged": "/Users/kalyani/Documents/DiverseSprint/sprintree/app/build/intermediates/res/merged/debug/layout/abc_select_dialog_material.xml",
+        "source": "/Users/kalyani/.android/build-cache/3e9e5795c77b8080d5081c41d819b1660a547dcf/output/res/layout/abc_select_dialog_material.xml"
+    },
+    {
+        "merged": "/Users/kalyani/Documents/DiverseSprint/sprintree/app/build/intermediates/res/merged/debug/layout/notification_template_big_media.xml",
+        "source": "/Users/kalyani/.android/build-cache/3e9e5795c77b8080d5081c41d819b1660a547dcf/output/res/layout/notification_template_big_media.xml"
+    },
+    {
+        "merged": "/Users/kalyani/Documents/DiverseSprint/sprintree/app/build/intermediates/res/merged/debug/layout/fragment_history.xml",
+        "source": "/Users/kalyani/Documents/DiverseSprint/sprintree/app/src/main/res/layout/fragment_history.xml"
+    },
+    {
+        "merged": "/Users/kalyani/Documents/DiverseSprint/sprintree/app/build/intermediates/res/merged/debug/layout/abc_action_bar_view_list_nav_layout.xml",
+        "source": "/Users/kalyani/.android/build-cache/3e9e5795c77b8080d5081c41d819b1660a547dcf/output/res/layout/abc_action_bar_view_list_nav_layout.xml"
+    },
+    {
+        "merged": "/Users/kalyani/Documents/DiverseSprint/sprintree/app/build/intermediates/res/merged/debug/layout/notification_media_cancel_action.xml",
+        "source": "/Users/kalyani/.android/build-cache/3e9e5795c77b8080d5081c41d819b1660a547dcf/output/res/layout/notification_media_cancel_action.xml"
+    },
+    {
+        "merged": "/Users/kalyani/Documents/DiverseSprint/sprintree/app/build/intermediates/res/merged/debug/layout/design_navigation_item.xml",
+        "source": "/Users/kalyani/.android/build-cache/1f01191afc5f57778b723113e7d7fa7c00273e51/output/res/layout/design_navigation_item.xml"
+    },
+    {
+        "merged": "/Users/kalyani/Documents/DiverseSprint/sprintree/app/build/intermediates/res/merged/debug/layout/select_dialog_multichoice_material.xml",
+        "source": "/Users/kalyani/.android/build-cache/3e9e5795c77b8080d5081c41d819b1660a547dcf/output/res/layout/select_dialog_multichoice_material.xml"
+    },
+    {
+        "merged": "/Users/kalyani/Documents/DiverseSprint/sprintree/app/build/intermediates/res/merged/debug/layout/abc_list_menu_item_layout.xml",
+        "source": "/Users/kalyani/.android/build-cache/3e9e5795c77b8080d5081c41d819b1660a547dcf/output/res/layout/abc_list_menu_item_layout.xml"
+    },
+    {
+        "merged": "/Users/kalyani/Documents/DiverseSprint/sprintree/app/build/intermediates/res/merged/debug/layout/design_bottom_sheet_dialog.xml",
+        "source": "/Users/kalyani/.android/build-cache/1f01191afc5f57778b723113e7d7fa7c00273e51/output/res/layout/design_bottom_sheet_dialog.xml"
+    },
+    {
+        "merged": "/Users/kalyani/Documents/DiverseSprint/sprintree/app/build/intermediates/res/merged/debug/layout/design_navigation_menu_item.xml",
+        "source": "/Users/kalyani/.android/build-cache/1f01191afc5f57778b723113e7d7fa7c00273e51/output/res/layout/design_navigation_menu_item.xml"
+    },
+    {
+        "merged": "/Users/kalyani/Documents/DiverseSprint/sprintree/app/build/intermediates/res/merged/debug/layout/toolbar.xml",
+        "source": "/Users/kalyani/Documents/DiverseSprint/sprintree/app/src/main/res/layout/toolbar.xml"
+    },
+    {
+        "merged": "/Users/kalyani/Documents/DiverseSprint/sprintree/app/build/intermediates/res/merged/debug/layout/abc_dialog_title_material.xml",
+        "source": "/Users/kalyani/.android/build-cache/3e9e5795c77b8080d5081c41d819b1660a547dcf/output/res/layout/abc_dialog_title_material.xml"
+    },
+    {
+        "merged": "/Users/kalyani/Documents/DiverseSprint/sprintree/app/build/intermediates/res/merged/debug/layout/select_dialog_singlechoice_material.xml",
+        "source": "/Users/kalyani/.android/build-cache/3e9e5795c77b8080d5081c41d819b1660a547dcf/output/res/layout/select_dialog_singlechoice_material.xml"
+    },
+    {
+        "merged": "/Users/kalyani/Documents/DiverseSprint/sprintree/app/build/intermediates/res/merged/debug/layout/abc_alert_dialog_button_bar_material.xml",
+        "source": "/Users/kalyani/.android/build-cache/3e9e5795c77b8080d5081c41d819b1660a547dcf/output/res/layout/abc_alert_dialog_button_bar_material.xml"
+    },
+    {
+        "merged": "/Users/kalyani/Documents/DiverseSprint/sprintree/app/build/intermediates/res/merged/debug/layout/notification_media_action.xml",
+        "source": "/Users/kalyani/.android/build-cache/3e9e5795c77b8080d5081c41d819b1660a547dcf/output/res/layout/notification_media_action.xml"
+    },
+    {
+        "merged": "/Users/kalyani/Documents/DiverseSprint/sprintree/app/build/intermediates/res/merged/debug/layout/notification_template_big_media_narrow.xml",
+        "source": "/Users/kalyani/.android/build-cache/3e9e5795c77b8080d5081c41d819b1660a547dcf/output/res/layout/notification_template_big_media_narrow.xml"
+    },
+    {
+        "merged": "/Users/kalyani/Documents/DiverseSprint/sprintree/app/build/intermediates/res/merged/debug/layout/abc_popup_menu_header_item_layout.xml",
+        "source": "/Users/kalyani/.android/build-cache/3e9e5795c77b8080d5081c41d819b1660a547dcf/output/res/layout/abc_popup_menu_header_item_layout.xml"
+    },
+    {
+        "merged": "/Users/kalyani/Documents/DiverseSprint/sprintree/app/build/intermediates/res/merged/debug/layout/abc_search_view.xml",
+        "source": "/Users/kalyani/.android/build-cache/3e9e5795c77b8080d5081c41d819b1660a547dcf/output/res/layout/abc_search_view.xml"
+    },
+    {
+        "merged": "/Users/kalyani/Documents/DiverseSprint/sprintree/app/build/intermediates/res/merged/debug/layout/fragment_my_plant.xml",
+        "source": "/Users/kalyani/Documents/DiverseSprint/sprintree/app/src/main/res/layout/fragment_my_plant.xml"
+    },
+    {
+        "merged": "/Users/kalyani/Documents/DiverseSprint/sprintree/app/build/intermediates/res/merged/debug/layout/activity_maps.xml",
+        "source": "/Users/kalyani/Documents/DiverseSprint/sprintree/app/src/main/res/layout/activity_maps.xml"
+    },
+    {
+        "merged": "/Users/kalyani/Documents/DiverseSprint/sprintree/app/build/intermediates/res/merged/debug/layout/list_history_item.xml",
+        "source": "/Users/kalyani/Documents/DiverseSprint/sprintree/app/src/main/res/layout/list_history_item.xml"
+    },
+    {
+        "merged": "/Users/kalyani/Documents/DiverseSprint/sprintree/app/build/intermediates/res/merged/debug/layout/pugnotification_custom.xml",
+        "source": "/Users/kalyani/.android/build-cache/888a3fa88d77214d7274523ae086c4512c1f7af0/output/res/layout/pugnotification_custom.xml"
+    },
+    {
+        "merged": "/Users/kalyani/Documents/DiverseSprint/sprintree/app/build/intermediates/res/merged/debug/layout/abc_popup_menu_item_layout.xml",
+        "source": "/Users/kalyani/.android/build-cache/3e9e5795c77b8080d5081c41d819b1660a547dcf/output/res/layout/abc_popup_menu_item_layout.xml"
+    },
+    {
+        "merged": "/Users/kalyani/Documents/DiverseSprint/sprintree/app/build/intermediates/res/merged/debug/layout/alert_dialog.xml",
+        "source": "/Users/kalyani/.android/build-cache/fdb6a9309196169e686abb104ac3b30acb6c8f64/output/res/layout/alert_dialog.xml"
+    },
+    {
+        "merged": "/Users/kalyani/Documents/DiverseSprint/sprintree/app/build/intermediates/res/merged/debug/layout/abc_action_bar_title_item.xml",
+        "source": "/Users/kalyani/.android/build-cache/3e9e5795c77b8080d5081c41d819b1660a547dcf/output/res/layout/abc_action_bar_title_item.xml"
+    },
+    {
+        "merged": "/Users/kalyani/Documents/DiverseSprint/sprintree/app/build/intermediates/res/merged/debug/layout/notification_template_lines.xml",
+        "source": "/Users/kalyani/.android/build-cache/3e9e5795c77b8080d5081c41d819b1660a547dcf/output/res/layout/notification_template_lines.xml"
+    },
+    {
+        "merged": "/Users/kalyani/Documents/DiverseSprint/sprintree/app/build/intermediates/res/merged/debug/layout/amu_text_bubble.xml",
+        "source": "/Users/kalyani/.android/build-cache/9636dbd447f64e3443c7a0b36f2ceea41984c772/output/res/layout/amu_text_bubble.xml"
+    },
+    {
+        "merged": "/Users/kalyani/Documents/DiverseSprint/sprintree/app/build/intermediates/res/merged/debug/layout/fragment_map.xml",
+        "source": "/Users/kalyani/Documents/DiverseSprint/sprintree/app/src/main/res/layout/fragment_map.xml"
+    },
+    {
+        "merged": "/Users/kalyani/Documents/DiverseSprint/sprintree/app/build/intermediates/res/merged/debug/layout/notification_template_part_chronometer.xml",
+        "source": "/Users/kalyani/.android/build-cache/3e9e5795c77b8080d5081c41d819b1660a547dcf/output/res/layout/notification_template_part_chronometer.xml"
+    },
+    {
+        "merged": "/Users/kalyani/Documents/DiverseSprint/sprintree/app/build/intermediates/res/merged/debug/layout/design_layout_snackbar_include.xml",
+        "source": "/Users/kalyani/.android/build-cache/1f01191afc5f57778b723113e7d7fa7c00273e51/output/res/layout/design_layout_snackbar_include.xml"
+    },
+    {
+        "merged": "/Users/kalyani/Documents/DiverseSprint/sprintree/app/build/intermediates/res/merged/debug/layout/design_navigation_item_separator.xml",
+        "source": "/Users/kalyani/.android/build-cache/1f01191afc5f57778b723113e7d7fa7c00273e51/output/res/layout/design_navigation_item_separator.xml"
+    },
+    {
+        "merged": "/Users/kalyani/Documents/DiverseSprint/sprintree/app/build/intermediates/res/merged/debug/layout/marker_layout.xml",
+        "source": "/Users/kalyani/Documents/DiverseSprint/sprintree/app/src/main/res/layout/marker_layout.xml"
+    },
+    {
+        "merged": "/Users/kalyani/Documents/DiverseSprint/sprintree/app/build/intermediates/res/merged/debug/layout/abc_action_mode_bar.xml",
+        "source": "/Users/kalyani/.android/build-cache/3e9e5795c77b8080d5081c41d819b1660a547dcf/output/res/layout/abc_action_mode_bar.xml"
+    },
+    {
+        "merged": "/Users/kalyani/Documents/DiverseSprint/sprintree/app/build/intermediates/res/merged/debug/layout/abc_action_mode_close_item_material.xml",
+        "source": "/Users/kalyani/.android/build-cache/3e9e5795c77b8080d5081c41d819b1660a547dcf/output/res/layout/abc_action_mode_close_item_material.xml"
+    },
+    {
+        "merged": "/Users/kalyani/Documents/DiverseSprint/sprintree/app/build/intermediates/res/merged/debug/layout/activity_splash_screen.xml",
+        "source": "/Users/kalyani/Documents/DiverseSprint/sprintree/app/src/main/res/layout/activity_splash_screen.xml"
+    },
+    {
+        "merged": "/Users/kalyani/Documents/DiverseSprint/sprintree/app/build/intermediates/res/merged/debug/layout/abc_screen_simple.xml",
+        "source": "/Users/kalyani/.android/build-cache/3e9e5795c77b8080d5081c41d819b1660a547dcf/output/res/layout/abc_screen_simple.xml"
+    },
+    {
+        "merged": "/Users/kalyani/Documents/DiverseSprint/sprintree/app/build/intermediates/res/merged/debug/layout/design_layout_snackbar.xml",
+        "source": "/Users/kalyani/.android/build-cache/1f01191afc5f57778b723113e7d7fa7c00273e51/output/res/layout/design_layout_snackbar.xml"
+    },
+    {
+        "merged": "/Users/kalyani/Documents/DiverseSprint/sprintree/app/build/intermediates/res/merged/debug/layout/abc_action_bar_up_container.xml",
+        "source": "/Users/kalyani/.android/build-cache/3e9e5795c77b8080d5081c41d819b1660a547dcf/output/res/layout/abc_action_bar_up_container.xml"
+    },
+    {
+        "merged": "/Users/kalyani/Documents/DiverseSprint/sprintree/app/build/intermediates/res/merged/debug/layout/design_navigation_item_header.xml",
+        "source": "/Users/kalyani/.android/build-cache/1f01191afc5f57778b723113e7d7fa7c00273e51/output/res/layout/design_navigation_item_header.xml"
+    },
+    {
+        "merged": "/Users/kalyani/Documents/DiverseSprint/sprintree/app/build/intermediates/res/merged/debug/layout/abc_activity_chooser_view.xml",
+        "source": "/Users/kalyani/.android/build-cache/3e9e5795c77b8080d5081c41d819b1660a547dcf/output/res/layout/abc_activity_chooser_view.xml"
+    },
+    {
+        "merged": "/Users/kalyani/Documents/DiverseSprint/sprintree/app/build/intermediates/res/merged/debug/layout/design_layout_tab_icon.xml",
+        "source": "/Users/kalyani/.android/build-cache/1f01191afc5f57778b723113e7d7fa7c00273e51/output/res/layout/design_layout_tab_icon.xml"
+    },
+    {
+        "merged": "/Users/kalyani/Documents/DiverseSprint/sprintree/app/build/intermediates/res/merged/debug/layout/abc_action_menu_layout.xml",
+        "source": "/Users/kalyani/.android/build-cache/3e9e5795c77b8080d5081c41d819b1660a547dcf/output/res/layout/abc_action_menu_layout.xml"
+    },
+    {
+        "merged": "/Users/kalyani/Documents/DiverseSprint/sprintree/app/build/intermediates/res/merged/debug/layout/abc_screen_simple_overlay_action_mode.xml",
+        "source": "/Users/kalyani/.android/build-cache/3e9e5795c77b8080d5081c41d819b1660a547dcf/output/res/layout/abc_screen_simple_overlay_action_mode.xml"
+    },
+    {
+        "merged": "/Users/kalyani/Documents/DiverseSprint/sprintree/app/build/intermediates/res/merged/debug/layout/select_dialog_item_material.xml",
+        "source": "/Users/kalyani/.android/build-cache/3e9e5795c77b8080d5081c41d819b1660a547dcf/output/res/layout/select_dialog_item_material.xml"
+    },
+    {
+        "merged": "/Users/kalyani/Documents/DiverseSprint/sprintree/app/build/intermediates/res/merged/debug/layout/abc_alert_dialog_material.xml",
+        "source": "/Users/kalyani/.android/build-cache/3e9e5795c77b8080d5081c41d819b1660a547dcf/output/res/layout/abc_alert_dialog_material.xml"
+    },
+    {
+        "merged": "/Users/kalyani/Documents/DiverseSprint/sprintree/app/build/intermediates/res/merged/debug/layout/abc_list_menu_item_radio.xml",
+        "source": "/Users/kalyani/.android/build-cache/3e9e5795c77b8080d5081c41d819b1660a547dcf/output/res/layout/abc_list_menu_item_radio.xml"
+    },
+    {
+        "merged": "/Users/kalyani/Documents/DiverseSprint/sprintree/app/build/intermediates/res/merged/debug/layout/notification_template_part_time.xml",
+        "source": "/Users/kalyani/.android/build-cache/3e9e5795c77b8080d5081c41d819b1660a547dcf/output/res/layout/notification_template_part_time.xml"
+    },
+    {
+        "merged": "/Users/kalyani/Documents/DiverseSprint/sprintree/app/build/intermediates/res/merged/debug/layout/activity_dashboard.xml",
+        "source": "/Users/kalyani/Documents/DiverseSprint/sprintree/app/src/main/res/layout/activity_dashboard.xml"
+    },
+    {
+        "merged": "/Users/kalyani/Documents/DiverseSprint/sprintree/app/build/intermediates/res/merged/debug/layout/notification_template_media.xml",
+        "source": "/Users/kalyani/.android/build-cache/3e9e5795c77b8080d5081c41d819b1660a547dcf/output/res/layout/notification_template_media.xml"
+    },
+    {
+        "merged": "/Users/kalyani/Documents/DiverseSprint/sprintree/app/build/intermediates/res/merged/debug/layout/design_navigation_menu.xml",
+        "source": "/Users/kalyani/.android/build-cache/1f01191afc5f57778b723113e7d7fa7c00273e51/output/res/layout/design_navigation_menu.xml"
+    },
+    {
+        "merged": "/Users/kalyani/Documents/DiverseSprint/sprintree/app/build/intermediates/res/merged/debug/layout/abc_screen_content_include.xml",
+        "source": "/Users/kalyani/.android/build-cache/3e9e5795c77b8080d5081c41d819b1660a547dcf/output/res/layout/abc_screen_content_include.xml"
+    },
+    {
+        "merged": "/Users/kalyani/Documents/DiverseSprint/sprintree/app/build/intermediates/res/merged/debug/layout/abc_expanded_menu_layout.xml",
+        "source": "/Users/kalyani/.android/build-cache/3e9e5795c77b8080d5081c41d819b1660a547dcf/output/res/layout/abc_expanded_menu_layout.xml"
+    },
+    {
+        "merged": "/Users/kalyani/Documents/DiverseSprint/sprintree/app/build/intermediates/res/merged/debug/layout/abc_list_menu_item_checkbox.xml",
+        "source": "/Users/kalyani/.android/build-cache/3e9e5795c77b8080d5081c41d819b1660a547dcf/output/res/layout/abc_list_menu_item_checkbox.xml"
+    },
+    {
+        "merged": "/Users/kalyani/Documents/DiverseSprint/sprintree/app/build/intermediates/res/merged/debug/layout/abc_search_dropdown_item_icons_2line.xml",
+        "source": "/Users/kalyani/.android/build-cache/3e9e5795c77b8080d5081c41d819b1660a547dcf/output/res/layout/abc_search_dropdown_item_icons_2line.xml"
+    }
+]

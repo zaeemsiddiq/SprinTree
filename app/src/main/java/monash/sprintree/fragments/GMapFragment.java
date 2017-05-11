@@ -589,11 +589,16 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
                     tvTitle.setText(tree.commonName);
                 }
                 tvSnippet.setText("Genus: " + tree.genus);
-                details.setText("Year Planted: " + String.valueOf(tree.yearPlanted));
-                if ((tree.usefulLifeExpectencyValue == 0)) {
-                    life.setVisibility(View.GONE);
+                if ((tree.yearPlanted == 0)) {
+                    details.setText("Year Planted: 1900");
                 } else {
-                    life.setVisibility(View.VISIBLE);
+                    details.setText("Year Planted: " + String.valueOf(tree.yearPlanted));
+                }
+                if ((tree.usefulLifeExpectencyValue == 0)) {
+                    life.setText("Life Expectancy: 10 yrs");
+                    //life.setVisibility(View.GONE);
+                } else {
+                    //life.setVisibility(View.VISIBLE);
                     life.setText("Life Expectancy: " + String.valueOf(tree.usefulLifeExpectencyValue) + " yrs");
                 }
             } else {

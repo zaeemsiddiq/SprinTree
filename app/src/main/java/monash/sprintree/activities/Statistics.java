@@ -267,6 +267,7 @@ public class Statistics extends AppCompatActivity implements OnMapReadyCallback 
         pieDataSet = new PieDataSet(entries, "Trees");
         pieData = new PieData( pieDataSet);
         pieDataSet.setColors(ColorTemplate.VORDIPLOM_COLORS);
+        pieDataSet.setValueTextSize(10f);
         pieDataSet.setValueTextColor(Color.BLACK);
         mChart.setData(pieData);
         mChart.animateY(3000);
