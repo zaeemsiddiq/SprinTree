@@ -264,7 +264,6 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
                     startButton.setText("CANCEL");
 
                     countdownTimer(countdown, 3);
-
                     // initiate countdown timer, when its done, start the journey procedure
                 } else {
                     startButton.setText("START");
@@ -282,11 +281,11 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
                 customHandler.postDelayed(updateTimerThread, 0);
                 resumeButton.setVisibility(View.GONE);
                 pauseButton.setVisibility(View.VISIBLE);
-                makeClockVisible(true);
                 ((MapsActivity) getActivity()).hideTab();
                 listener.mapButtonPressed(Constants.FRAGMENT_BUTTON_RESUME);
             }
         });
+        //check
 
         pauseButton.setOnClickListener(new View.OnClickListener() {
 
@@ -696,6 +695,7 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
             public void onCountDownEnd(CountDownAnimation animation) {
                 startButton.setText("START");
                 Toast.makeText(getActivity(), "Your journey has started", Toast.LENGTH_SHORT).show();
+                makeClockVisible(true);
                 displayAll = 0;
                 //treeView.setSelection(0, true);
                 moveCamera(Constants.LAST_LOCATION);
