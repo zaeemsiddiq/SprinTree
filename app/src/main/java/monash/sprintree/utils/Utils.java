@@ -32,6 +32,7 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.lang.reflect.Type;
 import java.nio.channels.FileChannel;
+import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -149,13 +150,10 @@ public class Utils {
     /*
     return unix timestamp
      */
-    public static Long getCurrentTimeStamp() {
-        Calendar calendar = Calendar.getInstance();
-        TimeZone tz = TimeZone.getDefault();
-        calendar.add(Calendar.MILLISECOND, tz.getOffset(calendar.getTimeInMillis()));
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
-        java.util.Date currenTimeZone=new java.util.Date((long)1379487711*1000);
-        return calendar.getTime().getTime();
+    public static long getCurrentTimeStamp() {
+        Long tsLong = System.currentTimeMillis()/1000;
+        String ts = tsLong.toString();
+        return Long.valueOf(tsLong);
     }
 
     public static String getTodaysDate() {
@@ -163,15 +161,14 @@ public class Utils {
         return sdf.format(new Date());
     }
 
-    public  static String getDateCurrentTimeZone(long timestamp) {
+    public  static String timestampToDate(long timestamp) {
         try{
-            Calendar calendar = Calendar.getInstance();
-            TimeZone tz = TimeZone.getDefault();
-            calendar.setTimeInMillis(timestamp * 1000);
-            calendar.add(Calendar.MILLISECOND, tz.getOffset(calendar.getTimeInMillis()));
-            SimpleDateFormat sdf = new SimpleDateFormat("hh:mm a");
-            Date currenTimeZone = (Date) calendar.getTime();
-            return sdf.format(currenTimeZone);
+            Date date = new Date(timestamp*1000L); // *1000 is to convert seconds to milliseconds
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss a"); // the format of your date
+            sdf.setTimeZone(TimeZone.getDefault()); // give a timezone reference for formating (see comment at the bottom
+            String formattedDate = sdf.format(date);
+            System.out.println(formattedDate);
+            return formattedDate;
         }catch (Exception e) {
         }
         return "";

@@ -73,7 +73,7 @@ public class HistoryListAdapter extends ArrayAdapter<Journey> implements Filtera
             viewHolder = (ViewHolder) v.getTag();
 
         Journey d = getItem(position);
-        viewHolder.JourneyTime.setText(Utils.getDateCurrentTimeZone(d.timestamp));
+        viewHolder.JourneyTime.setText(Utils.timestampToDate(d.timestamp));
         viewHolder.JourneyDate.setText(d.date);
         viewHolder.TreeScore.setText(Long.toString(d.score));
         return v;

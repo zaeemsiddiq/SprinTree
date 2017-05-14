@@ -61,7 +61,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="250dp"
                     android:scaleType="centerCrop"
-                    android:src="@drawable/history_banner" />
+                    android:src="@drawable/stats_banner" />
 
                 <RelativeLayout
                     android:layout_width="wrap_content"
@@ -82,7 +82,7 @@
                         android:layout_centerHorizontal="true"
                         android:layout_centerVertical="true"
                         android:src="@drawable/camera"
-                        android:tint="@color/kopie_green" />
+                        android:tint="@color/white" />
 
                 </RelativeLayout>
             </RelativeLayout>
@@ -103,6 +103,7 @@
                     android:layout_width="0px"
                     android:layout_height="wrap_content"
                     android:layout_weight="33"
+                    android:visibility="gone"
                     android:orientation="vertical">
 
                     <TextView
@@ -124,13 +125,14 @@
                 <View
                     android:layout_width="0.1dp"
                     android:layout_height="50dp"
+                    android:visibility="gone"
                     android:layout_gravity="center_vertical"
                     android:background="#000000" />
 
                 <LinearLayout
                     android:layout_width="0px"
                     android:layout_height="wrap_content"
-                    android:layout_weight="33"
+                    android:layout_weight="50"
                     android:orientation="vertical">
 
                     <TextView
@@ -157,7 +159,7 @@
                 <LinearLayout
                     android:layout_width="0px"
                     android:layout_height="wrap_content"
-                    android:layout_weight="33"
+                    android:layout_weight="50"
                     android:orientation="vertical">
 
                     <TextView

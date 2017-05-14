@@ -10,7 +10,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:orientation="horizontal"
         android:weightSum="100"
         app:elevation="0dp"
@@ -27,15 +27,16 @@
             android:id="@+id/toolbarTitle"
             android:textSize="18dp"
             android:gravity="left"
-            android:textColor="#ffffff"/>
+            android:textColor="#FFFFFFFF"/>
         <ImageButton
             android:layout_width="0dp"
             android:layout_weight="10"
-            android:layout_height="wrap_content"
+            android:layout_height="30dip"
             android:id="@+id/toolbarShare"
-
-            android:backgroundTint="#FFFFFF"
-            android:backgroundTintMode="src_atop"/>
+            android:scaleType="fitXY"
+            android:tint="#FFFFFFFF"
+            android:background="@color/transparent"
+            android:src="@drawable/icon_share"/>
 <TextView
             android:layout_width="0dp"
             android:layout_weight="5"
@@ -44,12 +45,12 @@
         <ImageButton
             android:layout_width="0dp"
             android:layout_weight="10"
-            android:layout_height="wrap_content"
+            android:layout_height="30dip"
             android:id="@+id/toolbarDelete"
-
-            android:backgroundTint="#FFFFFF"
-            android:backgroundTintMode="src_atop"
-            android:background="@android:drawable/ic_menu_delete" />
+            android:scaleType="fitXY"
+            android:background="@color/transparent"
+            android:tint="#FFFFFFFF"
+            android:src="@drawable/icon_delete" />
         <TextView
             android:layout_width="0dp"
             android:layout_weight="5"

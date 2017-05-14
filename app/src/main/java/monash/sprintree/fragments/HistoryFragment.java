@@ -21,6 +21,7 @@ import java.util.List;
 import monash.sprintree.R;
 import monash.sprintree.activities.MapsActivity;
 import monash.sprintree.activities.Statistics;
+import monash.sprintree.data.Constants;
 import monash.sprintree.data.Journey;
 import monash.sprintree.data.JourneyPath;
 import monash.sprintree.data.JourneyTree;
@@ -121,6 +122,7 @@ public class HistoryFragment extends Fragment {
 
                 Intent intent = new Intent(getActivity(), Statistics.class);
                 intent.putExtra( "journeyId", journey.getId() );
+                Constants.jumpingToAnotherActivity = true;
                 startActivityForResult(intent, 0);
 
                 /*new AlertDialog.Builder(getActivity())

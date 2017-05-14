@@ -63,6 +63,8 @@ import monash.sprintree.data.JourneyPath;
 import monash.sprintree.data.JourneyTree;
 import monash.sprintree.data.Tree;
 import monash.sprintree.utils.Utils;
+import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 import static android.R.attr.cacheColorHint;
 import static android.R.attr.path;
@@ -122,9 +124,19 @@ public class Statistics extends AppCompatActivity implements OnMapReadyCallback 
     }
 
     @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         Utils.fullScreen(this);
         super.onCreate(savedInstanceState);
+        CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
+                .setDefaultFontPath("fonts/Lato-Light.ttf")
+                .setFontAttrId(R.attr.fontPath)
+                .build()
+        );
         setContentView(R.layout.activity_statistics);
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -305,7 +317,7 @@ public class Statistics extends AppCompatActivity implements OnMapReadyCallback 
         String seconds = journey.seconds < 10 ? "0" + String.valueOf(journey.seconds) : String.valueOf(journey.seconds);
         durationLabel.setText( hours + ":" + mins + ":" + seconds );
         distanceLabel.setText(String.valueOf((Math.round(journey.distance))));
-        toolbarTitle.setText( "History " + Utils.getDateCurrentTimeZone(journey.timestamp));
+        toolbarTitle.setText( "History " + Utils.timestampToDate(journey.timestamp));
     }
 
     private void deleteJourney() {

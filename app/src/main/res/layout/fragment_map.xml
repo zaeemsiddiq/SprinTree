@@ -29,7 +29,7 @@
             <LinearLayout
                 android:layout_width="0px"
                 android:layout_height="match_parent"
-                android:layout_weight="20"
+                android:layout_weight="30"
                 android:orientation="horizontal">
 
                 <ImageView
@@ -43,7 +43,8 @@
                     android:id="@+id/treeCounter"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
+                    android:layout_gravity="start|center_vertical"
+
                     android:gravity="center"
                     android:textColor="@color/kopie_green"
                     android:textSize="35sp" />
@@ -51,7 +52,7 @@
             <View
                 android:layout_width="0px"
                 android:layout_height="match_parent"
-                android:layout_weight="10" />
+                android:layout_weight="0" />
             <LinearLayout
                 android:layout_width="0px"
                 android:layout_weight="25"
@@ -242,7 +243,7 @@
                         android:layout_height="wrap_content"
                         android:background="@color/kopie_blue"
                         android:elevation="5dp"
-                        android:text="START"
+                        android:text="START EXPLORING"
                         android:textColor="@color/kopie_green"
                         android:textSize="20sp"
                         android:visibility="visible"

@@ -40,6 +40,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
@@ -199,17 +200,8 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
                 displayAll = 1;
                 addMarkers(displayAll);
             }
-        });;
-
-        Animation mAnimation = new AlphaAnimation(1, 0);
-        mAnimation.setDuration(300);
-        mAnimation.setInterpolator(new LinearInterpolator());
-        mAnimation.setRepeatCount(4);
-        mAnimation.setRepeatMode(Animation.REVERSE);
-
-        visitedButton.startAnimation(mAnimation);
-        allButton.startAnimation(mAnimation);
-        uncommonButton.startAnimation(mAnimation);
+        });
+        animateButtons();
 
         treeScore = (TickerView) view.findViewById(R.id.treeCounter);
         treeScore.setCharacterList(TickerUtils.getDefaultNumberList());
@@ -259,14 +251,13 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
 
         startButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-                if (startButton.getText().equals("START")) {
+                if (startButton.getText().equals("START EXPLORING")) {
                     //((MapsActivity)getActivity()).hideTab();
                     startButton.setText("CANCEL");
-
                     countdownTimer(countdown, 3);
                     // initiate countdown timer, when its done, start the journey procedure
                 } else {
-                    startButton.setText("START");
+                    startButton.setText("START EXPLORING");
                     countdown.cancelLongPress();
                     countDownAnimation.cancel();
                 }
@@ -328,6 +319,20 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
         treeScore.setText(String.valueOf(score));
     }
 
+    public void animateButtons() {
+        Animation blinkAnimation = new AlphaAnimation(1, 0);
+        blinkAnimation.setDuration(300);
+        blinkAnimation.setInterpolator(new LinearInterpolator());
+        blinkAnimation.setRepeatCount(4);
+        blinkAnimation.setRepeatMode(Animation.REVERSE);
+
+        if(visitedButton != null )
+            visitedButton.startAnimation(blinkAnimation);
+        if(allButton != null )
+            allButton.startAnimation(blinkAnimation);
+        if(uncommonButton != null )
+            uncommonButton.startAnimation(blinkAnimation);
+    }
     private Runnable updateTimerThread = new Runnable() {
 
         public void run() {
@@ -440,11 +445,17 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
         if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
             mMap.setMyLocationEnabled(true);
+            UiSettings uiSettings = mMap.getUiSettings();
+            uiSettings.setCompassEnabled(false);
+            uiSettings.setZoomControlsEnabled(true);
         } else {
             Toast.makeText(getActivity(), "You have to accept to enjoy all app's services!", Toast.LENGTH_LONG).show();
             if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION)
                     == PackageManager.PERMISSION_GRANTED) {
                 mMap.setMyLocationEnabled(true);
+                UiSettings uiSettings = mMap.getUiSettings();
+                uiSettings.setCompassEnabled(false);
+                uiSettings.setZoomControlsEnabled(true);
             }
         }
         listener.mapReady();
@@ -693,7 +704,7 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
         countDownAnimation.setCountDownListener(new CountDownAnimation.CountDownListener() {
             @Override
             public void onCountDownEnd(CountDownAnimation animation) {
-                startButton.setText("START");
+                startButton.setText("START EXPLORING");
                 Toast.makeText(getActivity(), "Your journey has started", Toast.LENGTH_SHORT).show();
                 makeClockVisible(true);
                 displayAll = 0;

@@ -49,6 +49,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -111,6 +112,7 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
     int journeySecs;
     List<JourneyPath> journeyPathList;
     List<JourneyTree> journeyTreeList;
+    List<Tree> savedJourneyTrees;
     List<Polyline> polyLines;
 
     private Location lastLocationMilestone;
@@ -134,8 +136,25 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
             handlePermissions();
         } else {
             initiateLocationManager();
-            loadData();
-            initLayout();
+            new Thread() {
+                @Override
+                public void run() {
+                    loadData();
+                    try {
+                        // code runs in a thread
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                initLayout();
+                            }
+                        });
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }.start();
+            //loadData();
+            //initLayout();
         }
     }
 
@@ -149,6 +168,7 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
         journeySecs = 0;
         journeyPathList = new ArrayList<>();
         journeyTreeList = new ArrayList<>();
+        savedJourneyTrees = TreeService.getVisitedTrees();
 
         uniqueMarkers = new ArrayList<>();
         nonUniqueMarkers = new ArrayList<>();
@@ -199,7 +219,7 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
         }
         if (nearestTrees.size() == 0) {
             if (currentFragment == mapFragment) {
-                Toast.makeText(this, "No Trees Nearby, Try in CBD", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(this, "No Trees Nearby, Try in CBD", Toast.LENGTH_SHORT).show();
             }
         }
         return nearestTrees;
@@ -226,7 +246,7 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
         tabLayoutDashboard = (TabLayout) findViewById(R.id.mainTabs);
         tabLayoutDashboard.addTab(tabLayoutDashboard.newTab().setText("Map").setIcon(R.drawable.mapico)); //0
         tabLayoutDashboard.addTab(tabLayoutDashboard.newTab().setText("History").setIcon(R.drawable.historyico)); //1
-        tabLayoutDashboard.addTab(tabLayoutDashboard.newTab().setText("My Forest").setIcon(R.drawable.treeico)); //2
+        tabLayoutDashboard.addTab(tabLayoutDashboard.newTab().setText("My Tree").setIcon(R.drawable.treeico)); //2
 
         tabLayoutDashboard.getTabAt(0).getIcon().setColorFilter(Color.parseColor("#A1D700"), PorterDuff.Mode.SRC_IN);
         tabLayoutDashboard.getTabAt(1).getIcon().setColorFilter(Color.parseColor("#A1D700"), PorterDuff.Mode.SRC_IN);
@@ -244,6 +264,8 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
                         hideFragment(currentFragment);
                         // add/show the fragment
                         showFragment(mapFragment);
+                        mapFragment.animateButtons();
+
                     }
                 }
                 if (tab.getPosition() == 1) {
@@ -302,7 +324,7 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
 
     @Override
     public void onLocationChanged(Location location) {
-
+        Constants.LAST_LOCATION = location;
         if (lastLocationMilestone == null) {
             lastLocationMilestone = location;
         }
@@ -319,13 +341,13 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
                 for (Marker marker : uniqueMarkers) {
                     float[] results = new float[1];
                     Location.distanceBetween(lat, lng, marker.getPosition().latitude, marker.getPosition().longitude, results); // in case of 0 previous stop is the starting stop
-                    if ( results[0] < Constants.UNIQUE_TREE_NOTIFICATION_DISTANCE ) {
-                        generateNotification( "Hang On!!", "There is a unique tree nearby" );
+                    if (results[0] < Constants.UNIQUE_TREE_NOTIFICATION_DISTANCE) {
+                        generateNotification("Hang On!!", "There is a unique tree nearby");
                     }
                 }
             }
         }
-        Constants.LAST_LOCATION = location;
+        // load trees if user has travelled more than specified distance
         if (distanceTravelled((float) lastLocationMilestone.getLatitude(), (float) lastLocationMilestone.getLongitude()) >= Constants.MILESTONE_DISTANCE) {   // load nearest trees
             lastLocationMilestone = location;
             loadTrees();
@@ -347,7 +369,7 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
                         .setContentText(message);
 
         Intent notificationIntent = getIntent();
-        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
         PendingIntent resultPendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_ONE_SHOT);
         mBuilder.setContentIntent(resultPendingIntent);
@@ -366,9 +388,9 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
         removePolyLines();
         PolylineOptions polylineOptions = new PolylineOptions().width(5).color(Color.RED);
         ArrayList<LatLng> coordList = new ArrayList<LatLng>();
-        for( JourneyPath path : journeyPathList  ) {
-            coordList.add( new LatLng(path.latitude, path.longitude));
-            polylineOptions.add( new LatLng(path.latitude, path.longitude));
+        for (JourneyPath path : journeyPathList) {
+            coordList.add(new LatLng(path.latitude, path.longitude));
+            polylineOptions.add(new LatLng(path.latitude, path.longitude));
         }
         polyLines.add(mapFragment.addPolylines(polylineOptions));
 
@@ -404,7 +426,7 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
                 break;
             }
         }
-        for (Tree journeyTree : TreeService.getVisitedTrees()) {
+        for (Tree journeyTree : savedJourneyTrees) {
             if (journeyTree.comId.equals(tree.comId)) {
                 treeVisited = true;
                 break;
@@ -502,6 +524,7 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
         dialog.setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
             @Override
             public void onClick(SweetAlertDialog sweetAlertDialog) {
+                Constants.jumpingToAnotherActivity = true;
                 startActivityForResult(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS), 3);
                 sweetAlertDialog.dismiss();
             }
@@ -533,8 +556,9 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
 
     @Override
     protected void onUserLeaveHint() {
-        if (isActivityDataLoaded) {
+        if (isActivityDataLoaded && !Constants.jumpingToAnotherActivity) {
             Constants.IS_APPLICATION_MINIMIZED = true;  // app is minimised
+            generateNotification("SprinTree", "running in the background");
         }
         Log.d("onUserLeaveHint", "Home button pressed");
         super.onUserLeaveHint();
@@ -559,6 +583,7 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Constants.jumpingToAnotherActivity = false;
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 3) {
 
@@ -584,8 +609,25 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
             case REQUEST_PERMISSION_CODE:
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     initiateLocationManager();
-                    loadData();
-                    initLayout();
+                    new Thread() {
+                        @Override
+                        public void run() {
+                            loadData();
+                            try {
+                                // code runs in a thread
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        initLayout();
+                                    }
+                                });
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }.start();
+                    //loadData();
+                    //initLayout();
                 }
         }
     }
@@ -665,7 +707,6 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
     }
 
     private void stopJourney() {
-
         new SweetAlertDialog(this, SweetAlertDialog.NORMAL_TYPE)
                 .setTitleText("Do you want to save this run?")
                 .setCancelText("No,Don't!")
@@ -700,7 +741,7 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
                                 .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
                                     @Override
                                     public void onClick(SweetAlertDialog sweetAlertDialog) {
-                                        System.out.println("Clicked");
+                                        Constants.jumpingToAnotherActivity = true;
                                         startActivityForResult(intent, 0);
                                         sweetAlertDialog.cancel();
                                         return;
@@ -710,22 +751,6 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
                     }
                 })
                 .show();
-        /*new AlertDialog.Builder(this)
-                .setTitle("Caution")
-                .setMessage("Do you want to save your journey ?")
-                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        saveJourney();
-                        removePolyLines();
-                    }
-                })
-                .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        removePolyLines();
-                    }
-                })
-                .setIcon(android.R.drawable.ic_menu_help)
-                .show();*/
     }
 
 
@@ -750,7 +775,7 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
             journeyTree.journey = journey;
             journeyTree.save();
         }
-
+        savedJourneyTrees = TreeService.getVisitedTrees();
         journeyPathList.clear();
         journeyTreeList.clear();
         journeyDistance = 0;
@@ -765,7 +790,65 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
 
     @Override
     public void onBackPressed() {   // this is fired if user presses the back button. its a good idea to ask the user before quitting the app
-        finish();
+        if (JOURNEY_STARTED) {
+            new SweetAlertDialog(this, SweetAlertDialog.NORMAL_TYPE)
+                    .setTitleText("Do you want to exit?")
+                    .setCancelText("Cancel")
+                    .setConfirmText("Yes")
+                    .showCancelButton(true)
+                    .setCancelClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                        @Override
+                        public void onClick(SweetAlertDialog sDialog) {
+                            sDialog.cancel();
+                        }
+                    })
+                    .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+
+                        @Override
+                        public void onClick(SweetAlertDialog sweetAlertDialog) {
+                            showTab();
+                            sweetAlertDialog.setTitleText("Save Journey ?")
+                                    .setConfirmText("Yes")
+                                    .setCancelText("NO")
+                                    .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                                        @Override
+                                        public void onClick(SweetAlertDialog sweetAlertDialog) {
+                                            JOURNEY_STARTED = false;
+                                            final Journey journey = saveJourney();
+                                            removePolyLines();
+                                            final Intent intent = new Intent(getApplicationContext(), Statistics.class);
+                                            intent.putExtra("journeyId", journey.getId());
+
+                                            sweetAlertDialog.setTitleText("Saved")
+                                                    .setContentText("Your journey has been saved")
+                                                    .setConfirmText("OK")
+                                                    .showCancelButton(false)
+                                                    .setCancelClickListener(null)
+                                                    .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                                                        @Override
+                                                        public void onClick(SweetAlertDialog sweetAlertDialog) {
+                                                            Constants.jumpingToAnotherActivity = true;
+                                                            startActivityForResult(intent, 0);
+                                                            sweetAlertDialog.cancel();
+                                                            return;
+                                                        }
+                                                    })
+                                                    .changeAlertType(SweetAlertDialog.SUCCESS_TYPE);
+                                        }
+                                    })
+                                    .setCancelClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                                        @Override
+                                        public void onClick(SweetAlertDialog sweetAlertDialog) {
+                                            JOURNEY_STARTED = false;
+                                            finish();
+                                        }
+                                    });
+                        }
+                    })
+                    .show();
+        } else {
+            finish();
+        }
     }
 
     protected void stopLocationUpdates() {
