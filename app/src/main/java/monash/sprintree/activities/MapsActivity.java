@@ -379,12 +379,13 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
     }
 
     private float distanceTravelled(float lat, float lng) {
+        float distance = 0;
         if (Constants.LAST_LOCATION != null) {
             float[] results = new float[1];
             Location.distanceBetween(lat, lng, Constants.LAST_LOCATION.getLatitude(), Constants.LAST_LOCATION.getLongitude(), results);
-            return results[0];
+            distance = results[0];
         }
-        return 0;
+        return distance;
     }
 
     private void drawLineOnMap(Location location) {
