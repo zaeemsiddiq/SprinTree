@@ -147,7 +147,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:gravity="center"
-                        android:text="Duration (m)" />
+                        android:text="Duration (h:m:s)" />
                 </LinearLayout>
 
                 <View
@@ -174,7 +174,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:gravity="center"
-                        android:text="Distance (m)" />
+                        android:text="Distance (meters)" />
                 </LinearLayout>
             </LinearLayout>
 

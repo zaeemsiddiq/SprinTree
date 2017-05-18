@@ -23,6 +23,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.animation.RotateAnimation;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -58,6 +59,7 @@ import java.util.List;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
 import monash.sprintree.R;
+import monash.sprintree.data.Constants;
 import monash.sprintree.data.Journey;
 import monash.sprintree.data.JourneyPath;
 import monash.sprintree.data.JourneyTree;
@@ -72,6 +74,8 @@ import static android.R.attr.path;
 public class Statistics extends AppCompatActivity implements OnMapReadyCallback {
 
     private final int REQUEST_CODE_IMAGE_PICK = 1;
+    private final int REQUEST_CODE_IMAGE_TAKE = 2;
+    File destination;
 
     ImageView journeyImageView;
     private TextView toolbarTitle;
@@ -317,7 +321,7 @@ public class Statistics extends AppCompatActivity implements OnMapReadyCallback 
         String seconds = journey.seconds < 10 ? "0" + String.valueOf(journey.seconds) : String.valueOf(journey.seconds);
         durationLabel.setText( hours + ":" + mins + ":" + seconds );
         distanceLabel.setText(String.valueOf((Math.round(journey.distance))));
-        toolbarTitle.setText( "History " + Utils.timestampToDate(journey.timestamp));
+        toolbarTitle.setText( "History " + Utils.timestampToDate(journey.timestamp, "yyyy-MM-dd hh:mm:ss a"));
     }
 
     private void deleteJourney() {
@@ -433,9 +437,39 @@ public class Statistics extends AppCompatActivity implements OnMapReadyCallback 
     }
 
     public void imageUpload(View view) {
-        Intent pickPhoto = new Intent(Intent.ACTION_PICK,
-                android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        startActivityForResult(pickPhoto , REQUEST_CODE_IMAGE_PICK);//one can be replaced with any action code
+
+
+        new SweetAlertDialog(this, SweetAlertDialog.NORMAL_TYPE)
+                .setTitleText("Select picture from")
+                .setCancelText("Camera")
+                .setConfirmText("Gallery")
+                .showCancelButton(true)
+                .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                    @Override
+                    public void onClick(SweetAlertDialog sDialog) {
+                        Intent pickPhoto = new Intent(Intent.ACTION_PICK,
+                                android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                        startActivityForResult(pickPhoto , REQUEST_CODE_IMAGE_PICK);//one can be replaced with any action code
+                        sDialog.dismiss();
+                    }
+                })
+                .setCancelClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                    @Override
+                    public void onClick(SweetAlertDialog sweetAlertDialog) {
+                        Intent pickPhoto = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                        String name = System.currentTimeMillis()+"_j.jpg";
+                        destination = new File(Environment
+                                .getExternalStorageDirectory(), name );
+                        pickPhoto.putExtra(MediaStore.EXTRA_OUTPUT,
+                                Uri.fromFile(destination));
+                        startActivityForResult(pickPhoto , REQUEST_CODE_IMAGE_TAKE);
+                        sweetAlertDialog.dismiss();
+                    }
+                })
+                .show();
+
+
+        /**/
     }
     private void loadImageFromStorage(String path)
     {
@@ -470,6 +504,35 @@ public class Statistics extends AppCompatActivity implements OnMapReadyCallback 
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
+                    break;
+
+                case REQUEST_CODE_IMAGE_TAKE:
+                    try {
+                        FileInputStream in = new FileInputStream(destination);
+                        BitmapFactory.Options options = new BitmapFactory.Options();
+                        options.inSampleSize = 4;
+                        journey.journeyImagePath = destination.getAbsolutePath();
+                        journey.save();
+
+                        Bitmap myBitmap = BitmapFactory.decodeFile( journey.journeyImagePath);
+                        journeyImageView.setImageBitmap(myBitmap);
+
+                        final RotateAnimation rotateAnim = new RotateAnimation(0.0f, 90,
+                                RotateAnimation.RELATIVE_TO_SELF, 0.5f,
+                                RotateAnimation.RELATIVE_TO_SELF, 0.5f);
+
+                        rotateAnim.setDuration(0);
+                        rotateAnim.setFillAfter(true);
+                        journeyImageView.startAnimation(rotateAnim);
+
+                        new SweetAlertDialog(this, SweetAlertDialog.NORMAL_TYPE)
+                                .setTitleText("Picture saved")
+                                .setConfirmText("Ok").show();
+                    } catch (FileNotFoundException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
+
                     break;
             }
 

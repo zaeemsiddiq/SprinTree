@@ -25,7 +25,7 @@ public class HistoryListAdapter extends ArrayAdapter<Journey> implements Filtera
 
     private class ViewHolder {
         TextView TreeScore;
-        TextView JourneyDate;
+        TextView JourneyDuration;
         TextView JourneyTime;
         ImageView WalkLogo;
     }
@@ -64,7 +64,7 @@ public class HistoryListAdapter extends ArrayAdapter<Journey> implements Filtera
             ImageView WalkLogo = (ImageView) v.findViewById(R.id.walkIcon);
 
             viewHolder.TreeScore = TreeScore;
-            viewHolder.JourneyDate = JourneyDate;
+            viewHolder.JourneyDuration = JourneyDate;
             viewHolder.JourneyTime =  JourneyTime;
             viewHolder.WalkLogo = WalkLogo;
             v.setTag(viewHolder);
@@ -73,8 +73,14 @@ public class HistoryListAdapter extends ArrayAdapter<Journey> implements Filtera
             viewHolder = (ViewHolder) v.getTag();
 
         Journey d = getItem(position);
-        viewHolder.JourneyTime.setText(Utils.timestampToDate(d.timestamp));
-        viewHolder.JourneyDate.setText(d.date);
+
+
+        String hours = d.hours < 10 ? "0" + String.valueOf(d.hours) : String.valueOf(d.hours);
+        String mins = d.mins < 10 ? "0" + String.valueOf(d.mins) : String.valueOf(d.mins);
+        String seconds = d.seconds < 10 ? "0" + String.valueOf(d.seconds) : String.valueOf(d.seconds);
+
+        viewHolder.JourneyTime.setText("Duration - "+ hours + ":" + mins + ":" + seconds);
+        viewHolder.JourneyDuration.setText( Utils.timestampToDate(d.timestamp, "dd MMM hh:mm:ss a") );
         viewHolder.TreeScore.setText(Long.toString(d.score));
         return v;
     }

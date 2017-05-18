@@ -23,6 +23,7 @@ import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkInfo;
 import android.os.Build;
+import android.os.PowerManager;
 import android.os.Vibrator;
 import android.provider.Settings;
 import android.support.design.widget.AppBarLayout;
@@ -324,7 +325,6 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
 
     @Override
     public void onLocationChanged(Location location) {
-        Constants.LAST_LOCATION = location;
         if (lastLocationMilestone == null) {
             lastLocationMilestone = location;
         }
@@ -354,7 +354,7 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
             mapFragment.reloadTrees(nonUniqueMarkers, uniqueMarkers, unlockedMarkers);
             drawLineOnMap(location);
         }
-
+        Constants.LAST_LOCATION = location;
     }
 
     private void generateNotification(String title, String message) {
@@ -379,9 +379,12 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
     }
 
     private float distanceTravelled(float lat, float lng) {
-        float[] results = new float[1];
-        Location.distanceBetween(lat, lng, Constants.LAST_LOCATION.getLatitude(), Constants.LAST_LOCATION.getLongitude(), results);
-        return results[0];
+        if (Constants.LAST_LOCATION != null) {
+            float[] results = new float[1];
+            Location.distanceBetween(lat, lng, Constants.LAST_LOCATION.getLatitude(), Constants.LAST_LOCATION.getLongitude(), results);
+            return results[0];
+        }
+        return 0;
     }
 
     private void drawLineOnMap(Location location) {
@@ -582,6 +585,24 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
     }
 
     @Override
+    protected void onPause() {
+        super.onPause();
+        PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
+        boolean isScreenOn;
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
+            isScreenOn = powerManager.isInteractive();
+        } else {
+            isScreenOn = powerManager.isScreenOn();
+        }
+
+        if (!isScreenOn) {
+
+            Constants.IS_APPLICATION_MINIMIZED = true;  // app is minimised
+            generateNotification("SprinTree", "running in the background");
+        }
+    }
+
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         Constants.jumpingToAnotherActivity = false;
         super.onActivityResult(requestCode, resultCode, data);
@@ -716,6 +737,15 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
                     @Override
                     public void onClick(SweetAlertDialog sDialog) {
                         removePolyLines();
+                        savedJourneyTrees = TreeService.getVisitedTrees();
+                        journeyPathList.clear();
+                        journeyTreeList.clear();
+                        journeyDistance = 0;
+                        journeyHours = 0;
+                        journeyMins = 0;
+                        journeySecs = 0;
+                        journeyScore = 0;
+                        mapFragment.updateViews(0);
                         sDialog.setTitleText("Cancelled!")
                                 .setConfirmText("OK")
                                 .showCancelButton(false)
@@ -730,6 +760,7 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
                     public void onClick(SweetAlertDialog sweetAlertDialog) {
                         final Journey journey = saveJourney();
                         removePolyLines();
+                        mapFragment.updateViews(0);
                         final Intent intent = new Intent(getApplicationContext(), Statistics.class);
                         intent.putExtra("journeyId", journey.getId());
 

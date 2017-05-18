@@ -161,10 +161,10 @@ public class Utils {
         return sdf.format(new Date());
     }
 
-    public  static String timestampToDate(long timestamp) {
+    public  static String timestampToDate(long timestamp, String format) {
         try{
             Date date = new Date(timestamp*1000L); // *1000 is to convert seconds to milliseconds
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss a"); // the format of your date
+            SimpleDateFormat sdf = new SimpleDateFormat(format); // the format of your date
             sdf.setTimeZone(TimeZone.getDefault()); // give a timezone reference for formating (see comment at the bottom
             String formattedDate = sdf.format(date);
             System.out.println(formattedDate);

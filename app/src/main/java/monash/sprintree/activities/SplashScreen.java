@@ -166,7 +166,6 @@ public class SplashScreen extends AppCompatActivity implements SyncServiceComple
             public void run() {
                 final List<Tree> trees = Tree.findWithQuery(Tree.class, "SELECT * FROM TREE");
                 //final List<Tree> commonTrees = Tree.findWithQuery(Tree.class, "SELECT COUNT(genus), genus FROM TREE GROUP BY genus ORDER BY count(genus) DESC LIMIT 10");
-
                 Constants.trees = trees;
                 try {
                     // code runs in a thread
@@ -193,6 +192,7 @@ public class SplashScreen extends AppCompatActivity implements SyncServiceComple
 
     private void deleteDB() {
         Utils.deleteDB(getApplicationContext());
+        Toast.makeText(this, "File deleted", Toast.LENGTH_SHORT).show();
     }
 
     private void startMapsActivity() {
