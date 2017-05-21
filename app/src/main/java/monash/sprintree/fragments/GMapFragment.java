@@ -87,31 +87,24 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
         ClusterManager.OnClusterItemInfoWindowClickListener<Marker> {
 
     /* References
-    1 - Info Window Reload after loading the picture dynamically:
-    http://stackoverflow.com/questions/16662484/why-custom-infowindow-of-google-map-v2-not-load-url-image
-
-    2 - Clustering:
+    1 - Clustering:
     Google map-utils (github)
-
-    3 - Image downloading from URL:
-    http://square.github.io/picasso/
-
-    4 - Opentrees.org wikimedia data loading
-    https://stevebennett.me/2015/04/07/opentrees-org-how-to-aggregate-373000-trees-from-9-open-data-sources/
-    http://www.opentrees.org/v1/index.html#Melbourne-1287384
-
-    5 -
      */
-    private ClusterManager<Marker> mClusterManager;
+
+    /*
+      Holds google map, timer, treee counter, selector icons for selecting various trees (Visited, All, Unique) and journey control buttons
+      Start, Pause, Resume and stop
+     */
+    private ClusterManager<Marker> mClusterManager; // google map's api
     /*
     View Objects
      */
     View v;
     private GoogleMap mMap;
     private FragmentListener listener;
-    MapWrapperLayout mapWrapperLayout;
+    MapWrapperLayout mapWrapperLayout;  // holds map inside
 
-    CircleButton visitedButton, allButton, uncommonButton;
+    CircleButton visitedButton, allButton, uncommonButton;  // 3 filter buttons
 
     LinearLayout clockView;
 
@@ -385,10 +378,12 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
                 .color(Color.RED));
     }
 
+    // adds polylines to google map
     public Polyline addPolylines( PolylineOptions polylineOptions ) {
         return mMap.addPolyline(polylineOptions);
     }
 
+    // displayAll acts as an identifier for display, 0 is all, 1 is unique and 2 is visited
     private void addMarkers(int displayAll) {
 
         if (isAdded()) {
@@ -420,6 +415,7 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
         }
     }
 
+    // refresh marker lists
     public void reloadTrees(List<Marker> nonUniqueTrees, List<Marker> uniqueTrees, List<Marker> unlockedTrees) {
         this.uniqueTrees = uniqueTrees;
         this.nonUniqueTrees = nonUniqueTrees;
@@ -429,6 +425,7 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
+        // add google maps style
         mMap = googleMap;
         /* for custom info window clusters */
         //mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
@@ -461,6 +458,7 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
         listener.mapReady();
     }
 
+    // move camera
     public void moveCamera(Location location) {
         if (location != null) {
             LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
@@ -474,6 +472,7 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
         }
     }
 
+    // move camera with zoom
     public void moveCameraZoom(Location location) {
         if (location != null) {
             LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
@@ -519,6 +518,7 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
             mClusterIconGenerator = new IconGenerator(context);
         }
 
+        // create a custom cluster marker icon
         @Override
         protected void onBeforeClusterItemRendered(Marker item, MarkerOptions markerOptions) {
             if (GMapFragment.this.isAdded()) {
@@ -564,6 +564,7 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
         }
     }
 
+    // class to deal with custom infowindow, images from wikipedia can also be fetched
     private class MyCustomAdapterForItems implements GoogleMap.InfoWindowAdapter, WikimediaServiceComplete {
 
         private View myContentsView;

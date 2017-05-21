@@ -96,14 +96,14 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
     private String provider;
 
     /*
-    Data objects
+    Data objects, store current markers and send to GMapFragment for displaying purposes
      */
     List<Marker> nonUniqueMarkers;
     List<Marker> uniqueMarkers;
     List<Marker> unlockedMarkers;
 
     /*
-    Journey Objects
+    Journey Objects, all the data (except journey picture) is populated in this mapsAvtivity
      */
     boolean JOURNEY_STARTED;
     int journeyScore;
@@ -332,8 +332,8 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
         float lng = (float) (location.getLongitude());
 
         if (JOURNEY_STARTED) {
-            addJourneyPathToList(lat, lng);
-            calculateAndAddNearestTree(lat, lng);
+            addJourneyPathToList(lat, lng); // add lats and longs to the journey path, so that when the user decides to save the journey, this array is persisted along with journey
+            calculateAndAddNearestTree(lat, lng);   //
             journeyDistance += distanceTravelled(lat, lng);
             mapFragment.moveCamera(location);
             drawLineOnMap(location);
@@ -347,7 +347,8 @@ public class MapsActivity extends FragmentActivity implements LocationListener, 
                 }
             }
         }
-        // load trees if user has travelled more than specified distance
+        // load trees if user has travelled more than specified distance, store the last LAST LONG in locationMilestone as a checkpoint
+        // if distance between current lat long and previous milestoe is greateer than specified distance, then load new trees
         if (distanceTravelled((float) lastLocationMilestone.getLatitude(), (float) lastLocationMilestone.getLongitude()) >= Constants.MILESTONE_DISTANCE) {   // load nearest trees
             lastLocationMilestone = location;
             loadTrees();

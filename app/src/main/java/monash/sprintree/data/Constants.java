@@ -13,6 +13,9 @@ import monash.sprintree.fragments.HistoryFragment;
 
 public class Constants {
 
+    /*
+    Settings class
+     */
     public static int REQUEST_EXIT = 0;
 
     //public static int TOTAL_TREES = 66949;

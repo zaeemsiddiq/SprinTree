@@ -9,6 +9,9 @@ import com.orm.SugarRecord;
 
 public class Tree extends SugarRecord<Tree> {
 
+    /*
+    Reads JSON and populates this object
+     */
     @SerializedName("com_id")
     public String comId;
 

@@ -20,6 +20,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.maps.android.clustering.ClusterItem;
 
 public class Marker implements ClusterItem {
+    // part of google map v2 map api library, a custom class which is used to populate a custom marker
     private final String title;
     public final int image;
     private final LatLng mPosition;

@@ -50,6 +50,11 @@ import monash.sprintree.data.Tree;
 
 public class Utils {
 
+    /*
+    This class deals with reading and parsing the data from files,
+    making an activity full screen,
+    deals with timestamps
+     */
 
     public static void openRenderer(final Context context, String fileName) throws IOException {
 

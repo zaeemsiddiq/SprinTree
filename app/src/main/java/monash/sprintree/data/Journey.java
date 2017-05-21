@@ -10,6 +10,7 @@ import java.util.List;
 
 public class Journey extends SugarRecord<Journey> {
 
+    // Journey DAO
     public Long timestamp;
     public String date;
     public long score;

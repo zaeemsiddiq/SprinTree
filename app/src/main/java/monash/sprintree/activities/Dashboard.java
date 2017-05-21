@@ -42,6 +42,10 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 public class Dashboard extends AppCompatActivity {
 
     /*
+    This class opens up MapsActivity and selects a fragment based on user's choice.
+     */
+
+    /*
     View objects
      */
 
@@ -102,28 +106,9 @@ public class Dashboard extends AppCompatActivity {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-
-
-
-        /*new AlertDialog.Builder(this)
-                .setTitle("Caution")
-                .setMessage("Do you want to exit the application ?")
-                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        removeFragment();
-                        stopLocationUpdates();
-                        setResult(Constants.REQUEST_EXIT);
-                        finish();
-                    }
-                })
-                .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        // do nothing
-                    }
-                })
-                .setIcon(android.R.drawable.button_onoff_indicator_on)
-                .show();*/
     }
+
+    // launch by passing the tab identifier, 0 is map tab, 1 is history tab and 2 is myTree tab
 
     public void launchMap(View view) {
         startMapsActivity(0);

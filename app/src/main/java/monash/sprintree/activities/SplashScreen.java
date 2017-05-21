@@ -49,6 +49,9 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 public class SplashScreen extends AppCompatActivity implements SyncServiceComplete {
 
     /*
+    This file is responsible for data loading and internet checks
+     */
+    /*
     View objects
      */
     ProgressBar syncProgress;
@@ -74,13 +77,17 @@ public class SplashScreen extends AppCompatActivity implements SyncServiceComple
                 .setDefaultFontPath("fonts/Lato-Light.ttf")
                 .setFontAttrId(R.attr.fontPath)
                 .build()
-        );
+        );  // initialize typefaces i.e. fonts
         Utils.fullScreen(SplashScreen.this);
         setContentView(R.layout.activity_splash_screen);
         if (getIntent().getBooleanExtra("Exit me", false)) {
             finish();
         }
         initiateLayout();
+
+        /*
+        Check if internet is working, redirect user to settings if it si off
+         */
         merlin = new Merlin.Builder().withConnectableCallbacks().build(this);
         merlin.registerConnectable(new Connectable() {
             @Override
@@ -100,6 +107,7 @@ public class SplashScreen extends AppCompatActivity implements SyncServiceComple
         //test();
     }
 
+    // hides the progress bar and displays the error text
     private void hideProgressViews() {
         findViewById(R.id.mainProgressBar).setVisibility(View.INVISIBLE);
         TextView textView = (TextView) findViewById(R.id.mainProgressText);
@@ -124,6 +132,7 @@ public class SplashScreen extends AppCompatActivity implements SyncServiceComple
         super.onPause();
     }
 
+    // show dialog and redirect user to settings if internet is off
     private void showDialog() {
         hideProgressViews();
         SweetAlertDialog dialog = new SweetAlertDialog(this, SweetAlertDialog.NORMAL_TYPE);
@@ -142,6 +151,7 @@ public class SplashScreen extends AppCompatActivity implements SyncServiceComple
         dialog.show();
     }
 
+    //user turned on the iternet, stat loading the data
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if(requestCode == 0) {
@@ -159,6 +169,7 @@ public class SplashScreen extends AppCompatActivity implements SyncServiceComple
         System.out.println(journeys.size());
     }
 
+    // start loading the data from structured2.json file
     private void startLoading() {
         showProgressViews();
         new Thread() {
@@ -190,6 +201,7 @@ public class SplashScreen extends AppCompatActivity implements SyncServiceComple
         }.start();
     }
 
+    // manually delete the database
     private void deleteDB() {
         Utils.deleteDB(getApplicationContext());
         Toast.makeText(this, "File deleted", Toast.LENGTH_SHORT).show();

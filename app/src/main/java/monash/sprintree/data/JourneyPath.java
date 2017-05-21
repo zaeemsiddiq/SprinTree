@@ -7,6 +7,7 @@ import com.orm.SugarRecord;
  */
 
 public class JourneyPath extends SugarRecord<JourneyPath> {
+    // connected by a journeyId and has other fields
     public Journey journey;
     public double timestamp;
     public double latitude;

@@ -7,6 +7,9 @@ import monash.sprintree.data.Tree;
  */
 
 public interface FragmentListener {
+    /*
+    Used to communicate between MapActivity and various fragments
+     */
     public void mapReady();
     public void mapButtonPressed( int buttonIdentifier );
     public boolean isTreeVisited(Tree tree);
